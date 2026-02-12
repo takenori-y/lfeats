@@ -1,0 +1,21 @@
+# project
+.venv/
+dist/
+
+# codecov
+.coverage
+coverage.xml
+
+# docs
+build/
+
+# tools
+tools/**/
+
+# misc
+__pycache__/
+*.pyc
+*~
+*.swp
+\#*#
+.\#*

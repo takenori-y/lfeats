@@ -1,0 +1,77 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "lfeats"
+authors = [{ name = "Takenori Yoshimura" }]
+maintainers = [
+  { name = "Takenori Yoshimura", email = "takenori@sp.nitech.ac.jp" },
+]
+description = "A unified interface to extract hidden representations from speech foundation models"
+readme = "README.md"
+requires-python = ">=3.10"
+keywords = ["pytorch"]
+license = { text = "MIT" }
+classifiers = [
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3 :: Only",
+]
+dependencies = [
+  "numpy >= 1.23.0",
+  "torch >= 2.3.1",
+  "huggingface-hub >= 0.23.0",
+  "platformdirs >= 2.0.0",
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = [
+  "build",
+  "mdformat",
+  "numpydoc",
+  "pkginfo",
+  "pydata-sphinx-theme",
+  "pyright",
+  "pytest",
+  "pytest-cov",
+  "ruff",
+  "sphinx",
+  "twine",
+]
+
+[project.urls]
+Documentation = "https://takenori-y.github.io/lfeats/latest/"
+Source = "https://github.com/takenori-y/lfeats"
+
+[tool.hatch.build.targets.sdist]
+only-include = ["lfeats"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.version]
+path = "lfeats/version.py"
+
+[tool.ruff]
+exclude = ["third_party"]
+target-version = "py310"
+
+[tool.ruff.lint]
+extend-select = ["D", "E", "I", "UP"]
+ignore = [
+  "D203", # 1 blank line required before class docstring
+  "D213", # Multi-line docstring summary should start at the second line
+]
+
+[tool.pyright]
+exclude = ["**/third_party"]
+
+[tool.pytest.ini_options]
+addopts = "--cov=. --cov-report xml -s -x"

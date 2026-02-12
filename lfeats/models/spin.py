@@ -1,0 +1,259 @@
+# Copyright (c) 2026 Takenori Yoshimura
+# Released under the MIT License.
+
+"""A module for the Spin model."""
+
+import sys
+from collections.abc import Generator
+from contextlib import contextmanager
+from enum import Enum
+from types import ModuleType
+from typing import cast
+
+import torch
+
+from ..utils.io import download_hf_file
+from .base import Audio, Backend, BaseModel, Features
+
+
+@contextmanager
+def lightning_mock_context() -> Generator[None, None, None]:
+    """Context manager to mock PyTorch Lightning and its dependencies."""
+    dummy_targets = [
+        "pytorch_lightning",
+        "pytorch_lightning.loggers.wandb",
+    ]
+    added_modules = []
+
+    class UniversalMock(type):
+        def __getattr__(cls, name):
+            return cls
+
+        def __call__(cls, *args, **kwargs):
+            return cls
+
+        def __iter__(cls):
+            return iter([])
+
+        @property
+        def __path__(cls):
+            return []
+
+    class DummyClass(metaclass=UniversalMock):
+        pass
+
+    for target in dummy_targets:
+        if target in sys.modules:
+            continue
+        try:
+            import importlib.util
+
+            spec = importlib.util.find_spec(target)
+            if spec is None:
+                raise ImportError
+        except (ImportError, AttributeError, TypeError):
+            sys.modules[target] = cast(ModuleType, DummyClass)
+            added_modules.append(target)
+
+    try:
+        yield
+    finally:
+        for target in added_modules:
+            if target in sys.modules:
+                del sys.modules[target]
+
+
+class SpinVariant(str, Enum):
+    """Enumeration of supported Spin model variants.
+
+    The number in the variant name indicates the codebook size used in the model.
+
+    """
+
+    HUBERT_128 = "hubert-128"
+    HUBERT_256 = "hubert-256"
+    HUBERT_512 = "hubert-512"
+    HUBERT_1024 = "hubert-1024"
+    HUBERT_2048 = "hubert-2048"
+    WAVLM_128 = "wavlm-128"
+    WAVLM_256 = "wavlm-256"
+    WAVLM_512 = "wavlm-512"
+    WAVLM_1024 = "wavlm-1024"
+    WAVLM_2048 = "wavlm-2048"
+
+    @property
+    def checkpoint_filename(self) -> str:
+        """Returns the corresponding checkpoint filename for the variant.
+
+        Returns
+        -------
+        out : str
+            The checkpoint filename.
+
+        """
+        return f"spin_{self.value.replace('-', '_')}.ckpt"
+
+
+class SpinModel(BaseModel):
+    """A class for the Spin model."""
+
+    def __init__(self, variant: str | None = None, device: str = "cpu") -> None:
+        """Initialize the Spin model.
+
+        Parameters
+        ----------
+        variant : str | None, optional
+            The variant of the Spin model to use.
+
+        device : str, optional
+            The device to run the model on (e.g., 'cpu' or 'cuda').
+
+        """
+        super().__init__()
+
+        if variant is None:
+            variant = SpinVariant.HUBERT_256.value
+        try:
+            self.variant = SpinVariant(variant)
+        except ValueError as e:
+            raise ValueError(
+                f"Unsupported variant '{variant}'. "
+                f"Supported variants are: {[v.value for v in SpinVariant]}"
+            ) from e
+
+        self.model = None
+        self.device = device
+
+    def load(self, model_dir: str) -> None:
+        """Load the Spin model from the specified directory.
+
+        Parameters
+        ----------
+        model_dir : str
+            The directory where the model checkpoint will be stored.
+
+        """
+        if self.model is not None:
+            return
+
+        model_path = download_hf_file(
+            repo_id="vectominist/spin_ckpt",
+            filename=self.variant.checkpoint_filename,
+            repo_type="dataset",
+            local_dir=model_dir,
+        )
+
+        with lightning_mock_context():
+            checkpoint = torch.load(model_path, map_location=torch.device("cpu"))
+
+        from lfeats.third_party.spin.model import SpinModel as _SpinModel
+
+        self.model = _SpinModel(checkpoint["hyper_parameters"])
+        self.model.load_state_dict(checkpoint["state_dict"])
+        self.model.eval()
+        self.model.to(self.device)
+
+        from lfeats.third_party.spin.util import len_to_padding
+
+        self.len_to_padding = len_to_padding
+
+    def extract_features_impl(self, audio: Audio, layers: list[int]) -> Features:
+        """Extract features from the input audio using the Spin model.
+
+        Parameters
+        ----------
+        audio : Audio
+            The input audio data with shape (B, T).
+
+        layers : list[int]
+            The layer(s) from which to extract features.
+
+        Returns
+        -------
+        out : Features
+            The extracted features.
+
+        Raises
+        ------
+        RuntimeError
+            If the model is not loaded.
+
+        """
+        if self.model is None:
+            raise RuntimeError("Model is not loaded. Call 'load' method first.")
+
+        with torch.inference_mode():
+            wavs = audio.tensor().to(self.device)
+            wavs_len = torch.LongTensor(
+                [wavs.shape[1]] * wavs.shape[0], device=self.device
+            )
+            padding_mask = self.len_to_padding(cast(torch.LongTensor, wavs_len)).to(
+                self.device
+            )
+            outputs = self.model((wavs, wavs_len, padding_mask), feat_only=True)
+            vectors = torch.concat([outputs["feat_list"][i] for i in layers], dim=-1)
+
+        return Features(vectors=vectors)
+
+    @property
+    def sample_rate(self) -> int:
+        """Get the sample rate required by the Spin model.
+
+        Returns
+        -------
+        out : int
+            The sample rate in Hz.
+
+        """
+        return 16000
+
+    @property
+    def num_layers(self) -> int:
+        """Get the number of available layers in the Spin model.
+
+        Returns
+        -------
+        out : int
+            The number of layers.
+
+        """
+        return 13  # including projection layer
+
+    @property
+    def frame_shift(self) -> int:
+        """Get the frame shift of the Spin model.
+
+        Returns
+        -------
+        out : int
+            The frame shift in samples.
+
+        """
+        return int(20.0 * self.sample_rate / 1000)
+
+    @property
+    def center_offset(self) -> int:
+        """Get the center offset of the Spin model.
+
+        The feature extraction layer in the upstream model employs a VALID convolution
+        with a receptive field of 25 ms, resulting in a center offset of 12.5 ms.
+
+        Returns
+        -------
+        out : int
+            The center offset in samples.
+
+        """
+        return int(12.5 * self.sample_rate / 1000)
+
+    @property
+    def backend(self) -> Backend:
+        """Get the backend framework used by the Spin model.
+
+        Returns
+        -------
+        out : Backend
+            The backend framework name.
+
+        """
+        return Backend.TORCH
