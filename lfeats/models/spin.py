@@ -12,8 +12,9 @@ from typing import cast
 
 import torch
 
+from ..interfaces.types import Audio, Backend, Features
 from ..utils.io import download_hf_file
-from .base import Audio, Backend, BaseModel, Features
+from .base import BaseModel
 
 
 @contextmanager
@@ -183,7 +184,7 @@ class SpinModel(BaseModel):
             raise RuntimeError("Model is not loaded. Call 'load' method first.")
 
         with torch.inference_mode():
-            wavs = audio.tensor().to(self.device)
+            wavs = audio.tensor.to(self.device)
             wavs_len = torch.LongTensor(
                 [wavs.shape[1]] * wavs.shape[0], device=self.device
             )
@@ -193,7 +194,7 @@ class SpinModel(BaseModel):
             outputs = self.model((wavs, wavs_len, padding_mask), feat_only=True)
             vectors = torch.concat([outputs["feat_list"][i] for i in layers], dim=-1)
 
-        return Features(vectors=vectors)
+        return Features(data=vectors, source=self.model_id)
 
     @property
     def sample_rate(self) -> int:
@@ -257,3 +258,15 @@ class SpinModel(BaseModel):
 
         """
         return Backend.TORCH
+
+    @property
+    def model_id(self) -> str:
+        """Get the model identifier.
+
+        Returns
+        -------
+        out : str
+            The model identifier.
+
+        """
+        return f"spin-{self.variant.value}"

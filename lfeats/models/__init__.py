@@ -3,7 +3,7 @@
 
 """The module for audio feature extraction models."""
 
-from .base import Audio, Features
+from .manager import ModelManager
 from .spin import SpinModel
 
 MODEL_MAP = {
@@ -11,7 +11,6 @@ MODEL_MAP = {
 }
 
 __all__ = [
-    "Audio",
-    "Features",
+    "ModelManager",
     "MODEL_MAP",
 ]

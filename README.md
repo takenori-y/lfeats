@@ -1,6 +1,6 @@
 # lfeats
 
-*lfeats* provides a unified interface to extract hidden representations from various speech foundation modles such as HuBERT and Whisper.
+*lfeats* provides a unified interface to extract hidden representations from various speech foundation models such as HuBERT and Whisper.
 
 ## Requirements
 
@@ -27,7 +27,7 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 
 ## Supported Models
 
-| Model Family | Variant | Dimension | Description |
+| Model Name | Variant | Dimension | Description |
 | :--- | :--- | :--- | :--- |
 | `spin` | `hubert-128` | 768 | HuBERT encoder with codebook size 128 |
 | | `hubert-256` | 768 | |
