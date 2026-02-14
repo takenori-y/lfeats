@@ -73,6 +73,14 @@ ignore = [
   "D213", # Multi-line docstring summary should start at the second line
 ]
 
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "except",
+  "raise",
+  "verbose",
+]
+
 [tool.pyright]
 exclude = ["**/third_party"]
 

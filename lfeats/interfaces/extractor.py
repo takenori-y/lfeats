@@ -114,11 +114,14 @@ class Extractor:
         Raises
         ------
         ValueError
-            If sample_rate is not provided when source is not an Audio object.
+            If the given parameters are invalid.
+
+        RuntimeError
+            If the number of frames in the extracted features is unexpected.
 
         """
         if (
-            chunk_length_sec < 0.1
+            chunk_length_sec < 1.0
             or overlap_length_sec < 0.0
             or chunk_length_sec <= overlap_length_sec
         ):
@@ -146,6 +149,11 @@ class Extractor:
 
         # Prepare the audio data.
         if isinstance(source, Audio):
+            if sample_rate is not None and source.sample_rate != sample_rate:
+                raise ValueError(
+                    "sample_rate must be None when source is an Audio object "
+                    "or must match the sample rate of the Audio object."
+                )
             audio = source
         else:
             if sample_rate is None:
@@ -171,7 +179,6 @@ class Extractor:
 
         # Calculate chunk start and end indices considering padding and overlap.
         chunks = []
-
         chunk_length = int(chunk_length_sec * model.sample_rate)
         overlap_length = int(overlap_length_sec * model.sample_rate)
         for chunk_start in range(
@@ -191,17 +198,19 @@ class Extractor:
                 break
 
         # Extract features for each chunk and concatenate them.
-        features = []
-
+        features = None
         normalized_layers = self._normalize_layers(layers)
         for chunk in chunks:
             audio_chunk = Audio(
                 audio.data[:, chunk.start : chunk.end], audio.sample_rate
             )
             chunk_features = model.extract_features(audio_chunk, normalized_layers)
-            chunk_features = chunk_features.cut((chunk.overlap, chunk_features.length))
-            features.append(chunk_features)
-        features = Features.concat(features)
+            if features is None:
+                features = chunk_features
+            else:
+                features = features.merge(chunk_features, chunk.overlap)
+        if features is None:
+            raise RuntimeError("No features extracted from the audio.")
 
         # Validate the number of frames in the extracted features.
         actual_num_frames = features.length

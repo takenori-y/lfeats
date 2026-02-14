@@ -179,90 +179,70 @@ class Features(Container):
         """
         return self.data.shape[1]
 
-    def fit_to_length(self, length: int) -> Features:
-        """Fit the features to the specified length by padding or cutting.
+    def merge(self, other: Features, overlap_length: int = 0) -> Features:
+        """Merge this Features instance with another one along the time dimension.
+
+        Linearly crossfade the overlapping frames if overlap_length is greater than 0.
 
         Parameters
         ----------
-        length : int
-            The desired number of frames.
+        other : Features
+            The other Features instance to merge with.
+
+        overlap_length : int, optional
+            The number of frames to overlap between the two features when merging.
 
         Returns
         -------
         out : Features
-            A new Features instance fitted to the specified length.
-
-        """
-        diff = length - self.length
-        if diff == 0:
-            return self
-
-        if diff > 0:
-            padding = (0, diff)
-            if isinstance(self.data, np.ndarray):
-                fitted_vectors = np.pad(self.data, ((0, 0), padding, (0, 0)))
-            else:
-                fitted_vectors = F.pad(self.data, (0, 0, *padding))
-        else:
-            fitted_vectors = self.data[:, :length]
-        return Features(data=fitted_vectors, source=self.source)
-
-    def cut(self, span: tuple[int, int]) -> Features:
-        """Cut the features to the specified span.
-
-        Parameters
-        ----------
-        span : tuple[int, int]
-            The start and end frame indices to cut.
-
-        Returns
-        -------
-        out : Features
-            A new Features instance with the specified span.
-
-        """
-        start, end = span
-        if start < 0 or end > self.length or start >= end:
-            raise ValueError("Invalid span values.")
-        cut_vectors = self.data[:, start:end]
-        return Features(data=cut_vectors, source=self.source)
-
-    @staticmethod
-    def concat(features_list: list[Features]) -> Features:
-        """Concatenate a list of Features instances along the batch dimension.
-
-        Parameters
-        ----------
-        features_list : list[Features]
-            The list of Features instances to concatenate.
-
-        Returns
-        -------
-        out : Features
-            A new Features instance with concatenated data.
+            A new Features instance with merged data.
 
         Raises
         ------
         ValueError
-            If the features_list is empty or if the sources are not the same.
+            If the sources are not the same or if the overlap_length is invalid.
 
         """
-        if not features_list:
-            raise ValueError("features_list must not be empty.")
+        if self.source != other.source:
+            raise ValueError("Both Features instances must have the same source.")
+        if overlap_length < 0 or overlap_length >= min(self.length, other.length):
+            raise ValueError("Invalid overlap_length value.")
 
-        first_source = features_list[0].source
-        for feat in features_list:
-            if feat.source != first_source:
-                raise ValueError("All Features instances must have the same source.")
-
-        first_type = type(features_list[0].data)
-        if first_type is np.ndarray:
-            concatenated_data = np.concatenate(
-                [feat.array for feat in features_list], axis=1
-            )
+        if overlap_length > 0:
+            if isinstance(self.data, np.ndarray):
+                fade_in = np.linspace(0, 1, overlap_length)[..., None]
+                fade_out = 1 - fade_in
+                merged_data = np.concatenate(
+                    [
+                        self.array[:, :-overlap_length],
+                        (
+                            self.array[:, -overlap_length:] * fade_out
+                            + other.array[:, :overlap_length] * fade_in
+                        ),
+                        other.array[:, overlap_length:],
+                    ],
+                    axis=1,
+                )
+            else:
+                fade_in = torch.linspace(
+                    0, 1, overlap_length, device=self.tensor.device
+                )[..., None]
+                fade_out = 1 - fade_in
+                merged_data = torch.cat(
+                    [
+                        self.tensor[:, :-overlap_length],
+                        (
+                            self.tensor[:, -overlap_length:] * fade_out
+                            + other.tensor[:, :overlap_length] * fade_in
+                        ),
+                        other.tensor[:, overlap_length:],
+                    ],
+                    dim=1,
+                )
         else:
-            concatenated_data = torch.cat(
-                [feat.tensor for feat in features_list], dim=1
-            )
+            if isinstance(self.data, np.ndarray):
+                merged_data = np.concatenate([self.array, other.array], axis=1)
+            else:
+                merged_data = torch.cat([self.tensor, other.tensor], dim=1)
 
-        return Features(data=concatenated_data, source=first_source)
+        return Features(data=merged_data, source=self.source)
