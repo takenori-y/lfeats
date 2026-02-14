@@ -36,6 +36,7 @@ dynamic = ["version"]
 [project.optional-dependencies]
 dev = [
   "build",
+  "matplotlib",
   "mdformat",
   "numpydoc",
   "pkginfo",

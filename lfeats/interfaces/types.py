@@ -206,3 +206,63 @@ class Features(Container):
         else:
             fitted_vectors = self.data[:, :length]
         return Features(data=fitted_vectors, source=self.source)
+
+    def cut(self, span: tuple[int, int]) -> Features:
+        """Cut the features to the specified span.
+
+        Parameters
+        ----------
+        span : tuple[int, int]
+            The start and end frame indices to cut.
+
+        Returns
+        -------
+        out : Features
+            A new Features instance with the specified span.
+
+        """
+        start, end = span
+        if start < 0 or end > self.length or start >= end:
+            raise ValueError("Invalid span values.")
+        cut_vectors = self.data[:, start:end]
+        return Features(data=cut_vectors, source=self.source)
+
+    @staticmethod
+    def concat(features_list: list[Features]) -> Features:
+        """Concatenate a list of Features instances along the batch dimension.
+
+        Parameters
+        ----------
+        features_list : list[Features]
+            The list of Features instances to concatenate.
+
+        Returns
+        -------
+        out : Features
+            A new Features instance with concatenated data.
+
+        Raises
+        ------
+        ValueError
+            If the features_list is empty or if the sources are not the same.
+
+        """
+        if not features_list:
+            raise ValueError("features_list must not be empty.")
+
+        first_source = features_list[0].source
+        for feat in features_list:
+            if feat.source != first_source:
+                raise ValueError("All Features instances must have the same source.")
+
+        first_type = type(features_list[0].data)
+        if first_type is np.ndarray:
+            concatenated_data = np.concatenate(
+                [feat.array for feat in features_list], axis=1
+            )
+        else:
+            concatenated_data = torch.cat(
+                [feat.tensor for feat in features_list], dim=1
+            )
+
+        return Features(data=concatenated_data, source=first_source)
