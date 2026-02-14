@@ -187,9 +187,7 @@ class SpinModel(BaseModel):
 
         with torch.inference_mode():
             wavs = audio.tensor.to(self.device)
-            wavs_len = torch.LongTensor(
-                [wavs.shape[1]] * wavs.shape[0], device=self.device
-            )
+            wavs_len = torch.LongTensor([wavs.shape[1]] * wavs.shape[0]).to(self.device)
             padding_mask = self.len_to_padding(cast(torch.LongTensor, wavs_len)).to(
                 self.device
             )

@@ -6,6 +6,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
+import torch
 
 from lfeats import Extractor, Features
 from tests.utils import generate_dummy_waveform
@@ -19,9 +20,12 @@ from tests.utils import generate_dummy_waveform
         ("whisper", "tiny"),
     ],
 )
-def test_running(model_name: str, variant: str) -> None:
+@pytest.mark.parametrize(
+    "device", ["cpu", "cuda"] if torch.cuda.is_available() else ["cpu"]
+)
+def test_running(model_name: str, variant: str, device: str) -> None:
     """Test if the model can run without errors."""
-    extractor = Extractor(model_name, variant)
+    extractor = Extractor(model_name, variant, device=device)
 
     audio, sr = generate_dummy_waveform(1)
     features = extractor(audio, sr)

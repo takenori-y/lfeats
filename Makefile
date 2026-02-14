@@ -56,6 +56,7 @@ test-example: tool
 
 test-clean:
 	rm -rf tests/__pycache__
+	rm -f *.png
 
 tool:
 	cd tools && make
