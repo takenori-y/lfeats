@@ -5,9 +5,11 @@
 
 from .manager import ModelManager
 from .spin import SpinModel
+from .whisper import WhisperModel
 
 MODEL_MAP = {
     "spin": SpinModel,
+    "whisper": WhisperModel,
 }
 
 __all__ = [

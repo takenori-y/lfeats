@@ -145,7 +145,9 @@ class SpinModel(BaseModel):
         )
 
         with lightning_mock_context():
-            checkpoint = torch.load(model_path, map_location=torch.device("cpu"))
+            checkpoint = torch.load(
+                model_path, map_location=torch.device("cpu"), weights_only=False
+            )
 
         from lfeats.third_party.spin.model import SpinModel as _SpinModel
 

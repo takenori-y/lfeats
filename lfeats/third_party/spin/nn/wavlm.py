@@ -41,7 +41,7 @@ class WavLM(nn.Module):
         if ckpt.startswith("https"):
             ckpt = _urls_to_filepaths(ckpt, refresh=refresh)
 
-        checkpoint = torch.load(ckpt)
+        checkpoint = torch.load(ckpt, weights_only=True)
         self.cfg = WavLMConfig(checkpoint["cfg"])
         self.model = WavLMModel(self.cfg)
         self.model.load_state_dict(checkpoint["model"])

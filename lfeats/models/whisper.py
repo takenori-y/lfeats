@@ -1,0 +1,230 @@
+# Copyright (c) 2026 Takenori Yoshimura
+# Released under the MIT License.
+
+"""A module for the Whisper model."""
+
+from enum import Enum
+
+import torch
+
+from ..interfaces.types import Audio, Backend, Features
+from ..utils.io import silence_hf_hub, silence_transformers
+from .base import BaseModel
+
+
+class WhisperVariant(str, Enum):
+    """Enumeration of supported Whisper model variants."""
+
+    TINY = "tiny"
+    BASE = "base"
+    SMALL = "small"
+    # MEDIUM = "medium"
+    # LARGE = "large"
+    # TURBO = "turbo"
+
+    @property
+    def model_name(self) -> str:
+        """Return the model name corresponding to the variant.
+
+        Returns
+        -------
+        out : str
+            The model name corresponding to the variant.
+
+        """
+        return f"openai/whisper-{self.value}"
+
+
+class WhisperModel(BaseModel):
+    """A class for the Whisper model."""
+
+    def __init__(self, variant: str | None = None, device: str = "cpu") -> None:
+        """Initialize the Whisper model.
+
+        Parameters
+        ----------
+        variant : str | None, optional
+            The variant of the Whisper model to use.
+
+        device : str, optional
+            The device to run the model on (e.g., 'cpu' or 'cuda').
+
+        """
+        super().__init__()
+
+        if variant is None:
+            variant = WhisperVariant.SMALL.value
+        try:
+            self.variant = WhisperVariant(variant)
+        except ValueError as e:
+            raise ValueError(
+                f"Unsupported variant '{variant}'. "
+                f"Supported variants are: {[v.value for v in WhisperVariant]}"
+            ) from e
+
+        self.processor = None
+        self.model = None
+        self.device = device
+
+    def load(self, model_dir: str) -> None:
+        """Load the Whisper model from the specified directory.
+
+        Parameters
+        ----------
+        model_dir : str
+            The directory where the model files will be stored.
+
+        """
+        if self.processor is not None and self.model is not None:
+            return
+
+        from transformers import WhisperModel, WhisperProcessor
+
+        with silence_hf_hub(), silence_transformers():
+            self.processor = WhisperProcessor.from_pretrained(
+                self.variant.model_name, cache_dir=model_dir
+            )
+            self.model = WhisperModel.from_pretrained(
+                self.variant.model_name, cache_dir=model_dir
+            )
+        self.model.eval()
+        self.model.to(self.device)  # type: ignore
+
+    def extract_features_impl(self, audio: Audio, layers: list[int]) -> Features:
+        """Extract features from the input audio using the Spin model.
+
+        Parameters
+        ----------
+        audio : Audio
+            The input audio data with shape (B, T).
+
+        layers : list[int]
+            The layer(s) from which to extract features.
+
+        Returns
+        -------
+        out : Features
+            The extracted features.
+
+        Raises
+        ------
+        RuntimeError
+            If the model is not loaded.
+
+        """
+        if self.processor is None or self.model is None:
+            raise RuntimeError("Model not loaded. Call 'load' method first.")
+
+        inputs = self.processor(
+            audio.array,
+            return_tensors="pt",
+            return_attention_mask=True,
+            sampling_rate=audio.sample_rate,
+        )
+
+        with torch.inference_mode():
+            input_features = self.model._mask_input_features(
+                inputs.input_features, attention_mask=inputs.attention_mask
+            ).to(device=self.device, dtype=self.model.encoder.dtype)
+
+            outputs = self.model.encoder(
+                input_features,
+                head_mask=None,
+                output_attentions=False,
+                output_hidden_states=True,
+                return_dict=True,
+            )
+
+            hidden_states = outputs.hidden_states
+            vectors = torch.concat([hidden_states[i] for i in layers], dim=-1)
+
+        return Features(data=vectors, source=self.model_id)
+
+    @property
+    def sample_rate(self) -> int:
+        """Get the sample rate required by the Spin model.
+
+        Returns
+        -------
+        out : int
+            The sample rate in Hz.
+
+        """
+        return 16000
+
+    @property
+    def num_layers(self) -> int:
+        """Get the number of available layers in the Spin model.
+
+        Returns
+        -------
+        out : int
+            The number of layers.
+
+        """
+        variant_map = {
+            WhisperVariant.TINY: 5,
+            WhisperVariant.BASE: 7,
+            WhisperVariant.SMALL: 13,
+        }
+        return variant_map.get(self.variant, 0)
+
+    @property
+    def frame_shift(self) -> int:
+        """Get the frame shift of the Whisper model.
+
+        Returns
+        -------
+        out : int
+            The frame shift in samples.
+
+        """
+        return int(20.0 * self.sample_rate / 1000)
+
+    @property
+    def center_offset(self) -> int:
+        """Get the center offset of the Whisper model.
+
+        Returns
+        -------
+        out : int
+            The center offset in samples.
+
+        """
+        return 0
+
+    @property
+    def chunk_length_sec(self) -> int | None:
+        """Get the chunk length in seconds of the Whisper model.
+
+        Returns
+        -------
+        out : int | None
+            The chunk length in seconds, or None if not applicable.
+
+        """
+        return 30
+
+    @property
+    def backend(self) -> Backend:
+        """Get the backend framework used by the Whisper model.
+
+        Returns
+        -------
+        out : Backend
+            The backend framework name.
+
+        """
+        return Backend.TORCH
+
+    @property
+    def model_id(self) -> str:
+        """Get the model identifier.
+
+        Returns
+        -------
+        out : str
+            The model identifier.
+
+        """
+        return f"whisper-{self.variant.value}"

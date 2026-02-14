@@ -25,11 +25,12 @@ classifiers = [
 ]
 dependencies = [
   "numpy >= 1.23.0",
-  "torch >= 2.3.1",
+  "torch >= 2.4.0",
+  "transformers >= 4.30.0",
   "huggingface-hub >= 0.23.0",
   "platformdirs >= 2.0.0",
   # Resamplers
-  "torchaudio >= 2.3.1",
+  "torchaudio >= 2.4.0",
 ]
 dynamic = ["version"]
 
@@ -74,12 +75,7 @@ ignore = [
 ]
 
 [tool.coverage.report]
-exclude_lines = [
-  "pragma: no cover",
-  "except",
-  "raise",
-  "verbose",
-]
+exclude_lines = ["pragma: no cover", "except", "raise", "verbose"]
 
 [tool.pyright]
 exclude = ["**/third_party"]

@@ -6,13 +6,24 @@
 from collections.abc import Generator
 from contextlib import contextmanager
 
-from huggingface_hub import hf_hub_download
-from huggingface_hub.utils import logging
+
+@contextmanager
+def silence_transformers() -> Generator[None, None, None]:
+    """Context manager to silence Transformers logging."""
+    from transformers.utils.logging import disable_progress_bar, enable_progress_bar
+
+    disable_progress_bar()
+    try:
+        yield
+    finally:
+        enable_progress_bar()
 
 
 @contextmanager
 def silence_hf_hub() -> Generator[None, None, None]:
     """Context manager to silence Hugging Face Hub logging."""
+    from huggingface_hub.utils import logging
+
     previous_verbosity = logging.get_verbosity()
     logging.set_verbosity_error()
     try:
@@ -35,5 +46,7 @@ def download_hf_file(**kwargs) -> str:
         The path to the downloaded file.
 
     """
+    from huggingface_hub import hf_hub_download
+
     with silence_hf_hub():
         return hf_hub_download(**kwargs)

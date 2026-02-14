@@ -179,6 +179,39 @@ class Features(Container):
         """
         return self.data.shape[1]
 
+    def trim(self, start: int, end: int) -> Features:
+        """Trim the features along the time dimension.
+
+        Parameters
+        ----------
+        start : int
+            The starting frame index to trim from.
+
+        end : int
+            The ending frame index to trim to (exclusive).
+
+        Returns
+        -------
+        out : Features
+            A new Features instance with trimmed data.
+
+        Raises
+        ------
+        ValueError
+            If the start or end indices are out of bounds.
+
+        """
+        if start < 0 or end > self.length or start >= end:
+            raise ValueError(
+                f"Invalid parameters: start={start}, end={end}, length={self.length}"
+            )
+
+        if isinstance(self.data, np.ndarray):
+            trimmed_data = self.array[:, start:end]
+        else:
+            trimmed_data = self.tensor[:, start:end]
+        return Features(data=trimmed_data, source=self.source)
+
     def merge(self, other: Features, overlap_length: int = 0) -> Features:
         """Merge this Features instance with another one along the time dimension.
 
@@ -206,7 +239,10 @@ class Features(Container):
         if self.source != other.source:
             raise ValueError("Both Features instances must have the same source.")
         if overlap_length < 0 or overlap_length >= min(self.length, other.length):
-            raise ValueError("Invalid overlap_length value.")
+            raise ValueError(
+                f"Invalid parameters: overlap_length={overlap_length}, "
+                f"length1={self.length}, length2={other.length}"
+            )
 
         if overlap_length > 0:
             if isinstance(self.data, np.ndarray):

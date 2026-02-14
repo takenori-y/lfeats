@@ -4,8 +4,8 @@
 PROJECT := lfeats
 
 PYTHON_VERSION     := 3.11
-TORCH_VERSION      := 2.3.1
-TORCHAUDIO_VERSION := 2.3.1
+TORCH_VERSION      := 2.4.0
+TORCHAUDIO_VERSION := 2.4.0
 PLATFORM           := cu121
 
 venv:
@@ -37,14 +37,14 @@ check: tool
 	. .venv/bin/activate && python -m pyright $(PROJECT) tests
 	. .venv/bin/activate && python -m mdformat --check *.md
 	./tools/taplo/taplo fmt --check *.toml
-	./tools/yamlfmt/yamlfmt --lint *.cff *.yml .github/workflows/*.yml
+	./tools/yamlfmt/yamlfmt --lint *.yml .github/workflows/*.yml
 
 format: tool
 	. .venv/bin/activate && python -m ruff check --fix $(PROJECT) tests
 	. .venv/bin/activate && python -m ruff format $(PROJECT) tests
 	. .venv/bin/activate && python -m mdformat *.md
 	./tools/taplo/taplo fmt *.toml
-	./tools/yamlfmt/yamlfmt *.cff *.yml .github/workflows/*.yml
+	./tools/yamlfmt/yamlfmt *.yml .github/workflows/*.yml
 
 test-all: test-example test
 

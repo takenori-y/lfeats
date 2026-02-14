@@ -139,6 +139,18 @@ class BaseModel(ABC):
         raise NotImplementedError
 
     @property
+    def chunk_length_sec(self) -> int | None:
+        """Get the chunk length in seconds of the model, if applicable.
+
+        Returns
+        -------
+        out : int | None
+            The chunk length in seconds, or None if not applicable.
+
+        """
+        return None
+
+    @property
     @abstractmethod
     def backend(self) -> Backend:
         """Get the backend framework used by the model.

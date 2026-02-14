@@ -83,8 +83,8 @@ class Extractor:
         source: np.ndarray | torch.Tensor | Audio,
         sample_rate: int | None = None,
         layers: int | Sequence[int] | Literal["all", "last"] = "last",
-        chunk_length_sec: float = 30.0,
-        overlap_length_sec: float = 5.0,
+        chunk_length_sec: int = 30,
+        overlap_length_sec: int = 5,
     ) -> Features:
         """Extract features from the input waveform.
 
@@ -100,10 +100,10 @@ class Extractor:
         layers : int | list[int] | Literal["all", "last"], optional
             The layer(s) from which to extract features.
 
-        chunk_length_sec : float, optional
+        chunk_length_sec : int, optional
             The chunk length in seconds for processing long audio.
 
-        overlap_length_sec : float, optional
+        overlap_length_sec : int, optional
             The overlap length in seconds between chunks.
 
         Returns
@@ -121,8 +121,8 @@ class Extractor:
 
         """
         if (
-            chunk_length_sec < 1.0
-            or overlap_length_sec < 0.0
+            chunk_length_sec < 1
+            or overlap_length_sec < 0
             or chunk_length_sec <= overlap_length_sec
         ):
             raise ValueError("Invalid chunk_length_sec and overlap_length_sec values.")
@@ -131,21 +131,8 @@ class Extractor:
         model = self.model_manager.get_model()
         model.load(self.cache_dir)
 
-        def _get_num_frames(length: int) -> int:
-            """Calculate the number of frames for a given sample length.
-
-            Parameters
-            ----------
-            length : int
-                The length of the audio in samples.
-
-            Returns
-            -------
-            out : int
-                The number of frames corresponding to the given length.
-
-            """
-            return int(np.ceil(length / model.frame_shift))
+        if model.chunk_length_sec is not None:
+            chunk_length_sec = model.chunk_length_sec
 
         # Prepare the audio data.
         if isinstance(source, Audio):
@@ -161,7 +148,9 @@ class Extractor:
                     "sample_rate must be provided when source is not an Audio object."
                 )
             audio = Audio(source, sample_rate)
-        expected_num_frames = _get_num_frames(audio.length)
+
+        expected_num_frames = self._get_num_frames(audio.length, model.frame_shift)
+        normalized_layers = self._normalize_layers(layers, model.num_layers)
 
         # Resample the audio if needed.
         if sample_rate != model.sample_rate:
@@ -171,44 +160,43 @@ class Extractor:
             audio = resampler.resample(audio)
 
         # Pad the audio if needed.
-        left_padding = model.center_offset
-        right_padding = model.center_offset - 1
-        padding_length = left_padding + right_padding
-        if padding_length > 0:
-            audio = audio.pad((left_padding, right_padding))
+        padding = (model.center_offset, max(model.center_offset - 1, 0))
+        if model.center_offset > 0:
+            audio = audio.pad(padding)
 
         # Calculate chunk start and end indices considering padding and overlap.
-        chunks = []
-        chunk_length = int(chunk_length_sec * model.sample_rate)
-        overlap_length = int(overlap_length_sec * model.sample_rate)
-        for chunk_start in range(
-            left_padding, audio.length - right_padding, chunk_length - overlap_length
-        ):
-            s = chunk_start - left_padding
-            e = chunk_start + chunk_length + right_padding
-            if e > audio.length:
-                s = max(audio.length - chunk_length - padding_length, 0)
-                e = audio.length
-            if len(chunks) == 0:
-                overlap_frames = 0
-            else:
-                overlap_frames = _get_num_frames(chunks[-1].end - s - padding_length)
-            chunks.append(Chunk(s, e, overlap_frames))
-            if e == audio.length:
-                break
+        chunks = self._create_chunks(
+            audio.length,
+            padding,
+            int(chunk_length_sec) * model.sample_rate,
+            int(overlap_length_sec) * model.sample_rate,
+            model.frame_shift,
+        )
 
         # Extract features for each chunk and concatenate them.
         features = None
-        normalized_layers = self._normalize_layers(layers)
         for chunk in chunks:
             audio_chunk = Audio(
                 audio.data[:, chunk.start : chunk.end], audio.sample_rate
             )
             chunk_features = model.extract_features(audio_chunk, normalized_layers)
+
+            # Trim the features if the model outputs fixed-length features
+            # regardless of the input length.
+            if model.chunk_length_sec is not None:
+                end = self._get_num_frames(chunk.end - chunk.start, model.frame_shift)
+                chunk_features = chunk_features.trim(0, end)
+
             if features is None:
                 features = chunk_features
             else:
-                features = features.merge(chunk_features, chunk.overlap)
+                # Merge the chunk features with the previously extracted features.
+                overlap = chunk.overlap
+                if overlap is None:
+                    remaining_frames = expected_num_frames - features.length
+                    overlap = chunk_features.length - remaining_frames
+                features = features.merge(chunk_features, overlap)
+
         if features is None:
             raise RuntimeError("No features extracted from the audio.")
 
@@ -222,8 +210,29 @@ class Extractor:
 
         return features
 
+    @staticmethod
+    def _get_num_frames(length: int, frame_shift: int) -> int:
+        """Calculate the number of frames for a given sample length.
+
+        Parameters
+        ----------
+        length : int
+            The length of the audio in samples.
+
+        frame_shift : int
+            The frame shift in samples of the model.
+
+        Returns
+        -------
+        out : int
+            The number of frames corresponding to the given length.
+
+        """
+        return int(np.ceil(length / frame_shift))
+
+    @staticmethod
     def _normalize_layers(
-        self, layers: int | Sequence[int] | Literal["all", "last"]
+        layers: int | Sequence[int] | Literal["all", "last"], num_layers: int
     ) -> list[int]:
         """Normalize the layer specification to a list of layer indices.
 
@@ -231,6 +240,9 @@ class Extractor:
         ----------
         layers : int | list[int] | Literal["all", "last"]
             The layer(s) from which to extract features.
+
+        num_layers : int
+            The total number of layers in the model.
 
         Returns
         -------
@@ -243,8 +255,6 @@ class Extractor:
             If the layers specification is invalid.
 
         """
-        num_layers = self.model_manager.get_model().num_layers
-
         if layers == "all":
             return list(range(num_layers))
         if layers == "last":
@@ -261,3 +271,61 @@ class Extractor:
             return layers
 
         raise ValueError(f"Invalid layers specification type: {layers}")
+
+    @staticmethod
+    def _create_chunks(
+        audio_length: int,
+        padding: tuple[int, int],
+        chunk_length: int,
+        overlap_length: int,
+        frame_shift: int,
+    ) -> list[Chunk]:
+        """Create a list of chunks with start and end indices for processing long audio.
+
+        Parameters
+        ----------
+        audio_length : int
+            The length of the audio in samples.
+
+        padding : tuple[int, int]
+            The left and right padding in samples.
+
+        chunk_length : int
+            The chunk length in samples.
+
+        overlap_length : int
+            The overlap length in samples between chunks.
+
+        frame_shift : int
+            The frame shift in samples of the model.
+
+        Returns
+        -------
+        out : list[Chunk]
+            A list of Chunk namedtuples with start, end, and overlap information.
+
+        """
+        chunks = []
+        left_padding, right_padding = padding
+        for chunk_start in range(
+            left_padding, audio_length - right_padding, chunk_length - overlap_length
+        ):
+            s = chunk_start - left_padding
+            e = chunk_start + chunk_length + right_padding
+
+            is_last = e >= audio_length
+            if is_last:
+                s = max(audio_length - chunk_length - sum(padding), 0)
+                s = int(np.ceil(s / frame_shift) * frame_shift)  # align to frame shift
+                e = audio_length
+                overlap_frames = None
+            elif len(chunks) == 0:
+                overlap_frames = 0
+            else:
+                overlap_frames = Extractor._get_num_frames(overlap_length, frame_shift)
+
+            chunks.append(Chunk(s, e, overlap_frames))
+            if is_last:
+                break
+
+        return chunks

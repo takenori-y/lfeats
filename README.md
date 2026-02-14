@@ -5,7 +5,7 @@
 ## Requirements
 
 - Python 3.10+
-- PyTorch 2.3.1+
+- PyTorch 2.4.0+
 
 ## Documentation
 
@@ -39,6 +39,9 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | | `wavlm-512` | 768 | |
 | | `wavlm-1024` | 768 | |
 | | `wavlm-2048` | 768 | |
+| `whisper` | `tiny` | 384 | |
+| | `base` | 512 | |
+| | `small` | 768 | |
 
 ## License
 
