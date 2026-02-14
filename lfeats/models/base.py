@@ -87,7 +87,6 @@ class BaseModel(ABC):
         raise NotImplementedError
 
     @property
-    @abstractmethod
     def sample_rate(self) -> int:
         """Get the sample rate required by the model.
 
@@ -97,7 +96,7 @@ class BaseModel(ABC):
             The sample rate in Hz.
 
         """
-        raise NotImplementedError
+        return 16000
 
     @property
     @abstractmethod
@@ -113,7 +112,6 @@ class BaseModel(ABC):
         raise NotImplementedError
 
     @property
-    @abstractmethod
     def frame_shift(self) -> int:
         """Get the frame shift of the model.
 
@@ -123,12 +121,14 @@ class BaseModel(ABC):
             The frame shift in samples.
 
         """
-        raise NotImplementedError
+        return int(20.0 * self.sample_rate / 1000)
 
     @property
-    @abstractmethod
     def center_offset(self) -> int:
         """Get the center offset of the model.
+
+        The feature extraction layer in the upstream model employs a VALID convolution
+        with a receptive field of 25 ms, resulting in a center offset of 12.5 ms.
 
         Returns
         -------
@@ -136,7 +136,7 @@ class BaseModel(ABC):
             The center offset in samples.
 
         """
-        raise NotImplementedError
+        return int(12.5 * self.sample_rate / 1000)
 
     @property
     def chunk_length_sec(self) -> int | None:
@@ -151,7 +151,6 @@ class BaseModel(ABC):
         return None
 
     @property
-    @abstractmethod
     def backend(self) -> Backend:
         """Get the backend framework used by the model.
 
@@ -161,7 +160,7 @@ class BaseModel(ABC):
             The backend framework.
 
         """
-        raise NotImplementedError
+        return Backend.TORCH
 
     @property
     @abstractmethod

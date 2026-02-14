@@ -29,6 +29,8 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 
 | Model Name | Variant | Dimension | Description |
 | :--- | :--- | :--- | :--- |
+| `hubert` | `base` | 768 | |
+| | `large` | 1024 | |
 | `spin` | `hubert-128` | 768 | HuBERT encoder with codebook size 128 |
 | | `hubert-256` | 768 | |
 | | `hubert-512` | 768 | |

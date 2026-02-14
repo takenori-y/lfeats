@@ -25,12 +25,12 @@ classifiers = [
 ]
 dependencies = [
   "numpy >= 1.23.0",
-  "torch >= 2.4.0",
+  "torch >= 2.6.0",
   "transformers >= 4.30.0",
   "huggingface-hub >= 0.23.0",
   "platformdirs >= 2.0.0",
   # Resamplers
-  "torchaudio >= 2.4.0",
+  "torchaudio >= 2.6.0",
 ]
 dynamic = ["version"]
 

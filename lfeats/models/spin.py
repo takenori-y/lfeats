@@ -12,7 +12,7 @@ from typing import cast
 
 import torch
 
-from ..interfaces.types import Audio, Backend, Features
+from ..interfaces.types import Audio, Features
 from ..utils.io import download_hf_file
 from .base import BaseModel
 
@@ -104,7 +104,7 @@ class SpinModel(BaseModel):
         Parameters
         ----------
         variant : str | None, optional
-            The variant of the Spin model to use.
+            The variant of the model to use.
 
         device : str, optional
             The device to run the model on (e.g., 'cpu' or 'cuda').
@@ -126,7 +126,7 @@ class SpinModel(BaseModel):
         self.device = device
 
     def load(self, model_dir: str) -> None:
-        """Load the Spin model from the specified directory.
+        """Load the model from the specified directory.
 
         Parameters
         ----------
@@ -161,7 +161,7 @@ class SpinModel(BaseModel):
         self.len_to_padding = len_to_padding
 
     def extract_features_impl(self, audio: Audio, layers: list[int]) -> Features:
-        """Extract features from the input audio using the Spin model.
+        """Extract features from the input audio using the model.
 
         Parameters
         ----------
@@ -197,20 +197,8 @@ class SpinModel(BaseModel):
         return Features(data=vectors, source=self.model_id)
 
     @property
-    def sample_rate(self) -> int:
-        """Get the sample rate required by the Spin model.
-
-        Returns
-        -------
-        out : int
-            The sample rate in Hz.
-
-        """
-        return 16000
-
-    @property
     def num_layers(self) -> int:
-        """Get the number of available layers in the Spin model.
+        """Get the number of available layers in the model.
 
         Returns
         -------
@@ -219,45 +207,6 @@ class SpinModel(BaseModel):
 
         """
         return 13  # including projection layer
-
-    @property
-    def frame_shift(self) -> int:
-        """Get the frame shift of the Spin model.
-
-        Returns
-        -------
-        out : int
-            The frame shift in samples.
-
-        """
-        return int(20.0 * self.sample_rate / 1000)
-
-    @property
-    def center_offset(self) -> int:
-        """Get the center offset of the Spin model.
-
-        The feature extraction layer in the upstream model employs a VALID convolution
-        with a receptive field of 25 ms, resulting in a center offset of 12.5 ms.
-
-        Returns
-        -------
-        out : int
-            The center offset in samples.
-
-        """
-        return int(12.5 * self.sample_rate / 1000)
-
-    @property
-    def backend(self) -> Backend:
-        """Get the backend framework used by the Spin model.
-
-        Returns
-        -------
-        out : Backend
-            The backend framework name.
-
-        """
-        return Backend.TORCH
 
     @property
     def model_id(self) -> str:

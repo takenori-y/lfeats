@@ -15,6 +15,7 @@ from tests.utils import generate_dummy_waveform
 @pytest.mark.parametrize(
     ("model_name", "variant"),
     [
+        ("hubert", "base"),
         ("spin", "hubert-128"),
         ("spin", "wavlm-128"),
         ("whisper", "tiny"),
@@ -35,6 +36,7 @@ def test_running(model_name: str, variant: str, device: str) -> None:
 @pytest.mark.parametrize(
     ("model_name", "variant"),
     [
+        ("hubert", "base"),
         ("spin", "hubert-128"),
     ],
 )

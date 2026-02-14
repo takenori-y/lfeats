@@ -4,9 +4,9 @@
 PROJECT := lfeats
 
 PYTHON_VERSION     := 3.11
-TORCH_VERSION      := 2.4.0
-TORCHAUDIO_VERSION := 2.4.0
-PLATFORM           := cu121
+TORCH_VERSION      := 2.6.0
+TORCHAUDIO_VERSION := 2.6.0
+PLATFORM           := cu124
 
 venv:
 	test -d .venv || python$(PYTHON_VERSION) -m venv .venv

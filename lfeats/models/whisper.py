@@ -7,7 +7,7 @@ from enum import Enum
 
 import torch
 
-from ..interfaces.types import Audio, Backend, Features
+from ..interfaces.types import Audio, Features
 from ..utils.io import silence_hf_hub, silence_transformers
 from .base import BaseModel
 
@@ -44,7 +44,7 @@ class WhisperModel(BaseModel):
         Parameters
         ----------
         variant : str | None, optional
-            The variant of the Whisper model to use.
+            The variant of the model to use.
 
         device : str, optional
             The device to run the model on (e.g., 'cpu' or 'cuda').
@@ -67,7 +67,7 @@ class WhisperModel(BaseModel):
         self.device = device
 
     def load(self, model_dir: str) -> None:
-        """Load the Whisper model from the specified directory.
+        """Load the model from the specified directory.
 
         Parameters
         ----------
@@ -127,30 +127,17 @@ class WhisperModel(BaseModel):
                 inputs.input_features, attention_mask=inputs.attention_mask
             ).to(device=self.device, dtype=self.model.encoder.dtype)
 
-            outputs = self.model.encoder(
+            hidden_states = self.model.encoder(
                 input_features,
                 head_mask=None,
                 output_attentions=False,
                 output_hidden_states=True,
                 return_dict=True,
-            )
+            ).hidden_states
 
-            hidden_states = outputs.hidden_states
             vectors = torch.concat([hidden_states[i] for i in layers], dim=-1)
 
         return Features(data=vectors, source=self.model_id)
-
-    @property
-    def sample_rate(self) -> int:
-        """Get the sample rate required by the Spin model.
-
-        Returns
-        -------
-        out : int
-            The sample rate in Hz.
-
-        """
-        return 16000
 
     @property
     def num_layers(self) -> int:
@@ -170,20 +157,8 @@ class WhisperModel(BaseModel):
         return variant_map.get(self.variant, 0)
 
     @property
-    def frame_shift(self) -> int:
-        """Get the frame shift of the Whisper model.
-
-        Returns
-        -------
-        out : int
-            The frame shift in samples.
-
-        """
-        return int(20.0 * self.sample_rate / 1000)
-
-    @property
     def center_offset(self) -> int:
-        """Get the center offset of the Whisper model.
+        """Get the center offset of the model.
 
         Returns
         -------
@@ -195,7 +170,7 @@ class WhisperModel(BaseModel):
 
     @property
     def chunk_length_sec(self) -> int | None:
-        """Get the chunk length in seconds of the Whisper model.
+        """Get the chunk length in seconds of the model.
 
         Returns
         -------
@@ -204,18 +179,6 @@ class WhisperModel(BaseModel):
 
         """
         return 30
-
-    @property
-    def backend(self) -> Backend:
-        """Get the backend framework used by the Whisper model.
-
-        Returns
-        -------
-        out : Backend
-            The backend framework name.
-
-        """
-        return Backend.TORCH
 
     @property
     def model_id(self) -> str:
