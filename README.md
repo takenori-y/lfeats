@@ -28,7 +28,7 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 ## Supported Models
 
 | Model Name | Model Variant | Layers | Dimension | Source |
-| :--- | :--- | :--- | :--- |
+| :--- | :--- | :--- | :--- | :--- |
 | `hubert` | `base` | 12 | 768 | |
 | | `large` | 24 | 1024 | |
 | `spin` | `hubert-128` | 12 | 768 | [vectominist/spin](https://github.com/vectominist/spin) |
