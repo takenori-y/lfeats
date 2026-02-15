@@ -569,7 +569,7 @@ class MultiheadAttention(nn.Module):
                 self.out_proj.bias,
                 self.training,
                 # self.training or self.dropout_module.apply_during_inference,
-                key_padding_mask.float(),
+                None if key_padding_mask is None else key_padding_mask.float(),
                 need_weights,
                 attn_mask_rel_pos,
                 use_separate_proj_weight=True,

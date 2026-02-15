@@ -31,6 +31,14 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | :--- | :--- | :--- | :--- | :--- |
 | `hubert` | `base` | 12 | 768 | |
 | | `large` | 24 | 1024 | |
+| `rspin` | `hubert-128` | 12 | 768 | [vectominist/rspin](https://github.com/vectominist/rspin) |
+| | `wavlm-32` | 12 | 768 | |
+| | `wavlm-64` | 12 | 768 | |
+| | `wavlm-128` | 12 | 768 | |
+| | `wavlm-256` | 12 | 768 | |
+| | `wavlm-512` | 12 | 768 | |
+| | `wavlm-1024` | 12 | 768 | |
+| | `wavlm-2048` | 12 | 768 | |
 | `spin` | `hubert-128` | 12 | 768 | [vectominist/spin](https://github.com/vectominist/spin) |
 | | `hubert-256` | 12 | 768 | |
 | | `hubert-512` | 12 | 768 | |
@@ -56,5 +64,6 @@ This package incorpolates the following repositories:
 
 | Repository | License |
 | :--- | :--- |
+| [R-Spin](https://github.com/vectominist/rspin) | MIT License |
 | [S3PRL](https://github.com/s3prl/s3prl) | Apache License 2.0 |
 | [Spin](https://github.com/vectominist/spin) | MIT License |

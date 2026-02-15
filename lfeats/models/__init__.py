@@ -5,12 +5,14 @@
 
 from .hubert import HubertModel
 from .manager import ModelManager
+from .rspin import RSpinModel
 from .spin import SpinModel
 from .sslzip import SslZipModel
 from .whisper import WhisperModel
 
 MODEL_MAP = {
     "hubert": HubertModel,
+    "rspin": RSpinModel,
     "spin": SpinModel,
     "sslzip": SslZipModel,
     "whisper": WhisperModel,
