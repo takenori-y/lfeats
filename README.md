@@ -31,8 +31,7 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | :--- | :--- | :--- | :--- | :--- |
 | `hubert` | `base` | 12 | 768 | |
 | | `large` | 24 | 1024 | |
-| `rspin` | `hubert-128` | 12 | 768 | [vectominist/rspin](https://github.com/vectominist/rspin) |
-| | `wavlm-32` | 12 | 768 | |
+| `rspin` | `wavlm-32` | 12 | 768 | [vectominist/rspin](https://github.com/vectominist/rspin) |
 | | `wavlm-64` | 12 | 768 | |
 | | `wavlm-128` | 12 | 768 | |
 | | `wavlm-256` | 12 | 768 | |
