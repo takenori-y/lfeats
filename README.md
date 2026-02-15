@@ -27,23 +27,26 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 
 ## Supported Models
 
-| Model Name | Variant | Dimension | Description |
+| Model Name | Model Variant | Layers | Dimension | Source |
 | :--- | :--- | :--- | :--- |
-| `hubert` | `base` | 768 | |
-| | `large` | 1024 | |
-| `spin` | `hubert-128` | 768 | HuBERT encoder with codebook size 128 |
-| | `hubert-256` | 768 | |
-| | `hubert-512` | 768 | |
-| | `hubert-1024` | 768 | |
-| | `hubert-2048` | 768 | |
-| | `wavlm-128` | 768 | WavLM encoder with codebook size 128 |
-| | `wavlm-256` | 768 | |
-| | `wavlm-512` | 768 | |
-| | `wavlm-1024` | 768 | |
-| | `wavlm-2048` | 768 | |
-| `whisper` | `tiny` | 384 | |
-| | `base` | 512 | |
-| | `small` | 768 | |
+| `hubert` | `base` | 12 | 768 | |
+| | `large` | 24 | 1024 | |
+| `spin` | `hubert-128` | 12 | 768 | [vectominist/spin](https://github.com/vectominist/spin) |
+| | `hubert-256` | 12 | 768 | |
+| | `hubert-512` | 12 | 768 | |
+| | `hubert-1024` | 12 | 768 | |
+| | `hubert-2048` | 12 | 768 | |
+| | `wavlm-128` | 12 | 768 | |
+| | `wavlm-256` | 12 | 768 | |
+| | `wavlm-512` | 12 | 768 | |
+| | `wavlm-1024` | 12 | 768 | |
+| | `wavlm-2048` | 12 | 768 | |
+| `sslzip` | `tight` | 0 | 16 | [sp-nitech/SSLZip](https://github.com/sp-nitech/SSLZip) |
+| | `loose` | 0 | 256 | |
+| `whisper` | `tiny` | 4 | 384 | [openai/whisper](https://github.com/openai/whisper) |
+| | `base` | 6 | 512 | |
+| | `small` | 12 | 768 | |
+| | `medium` | 24 | 1024 | |
 
 ## License
 

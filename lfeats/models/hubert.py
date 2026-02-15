@@ -9,6 +9,7 @@ import torch
 
 from ..interfaces.types import Audio, Features
 from ..utils.io import silence_hf_hub, silence_transformers
+from ..utils.validation import validate_enum
 from .base import BaseModel
 
 
@@ -53,18 +54,10 @@ class HubertModel(BaseModel):
         """
         super().__init__()
 
-        if variant is None:
-            variant = HubertVariant.BASE.value
-        try:
-            self.variant = HubertVariant(variant)
-        except ValueError as e:
-            raise ValueError(
-                f"Unsupported variant '{variant}'. "
-                f"Supported variants are: {[v.value for v in HubertVariant]}"
-            ) from e
+        self.variant = validate_enum(variant, HubertVariant, HubertVariant.BASE)
+        self.device = device
 
         self.model = None
-        self.device = device
 
     def load(self, model_dir: str) -> None:
         """Load the HuBERT model from the specified directory.

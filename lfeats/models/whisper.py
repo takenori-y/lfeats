@@ -9,6 +9,7 @@ import torch
 
 from ..interfaces.types import Audio, Features
 from ..utils.io import silence_hf_hub, silence_transformers
+from ..utils.validation import validate_enum
 from .base import BaseModel
 
 
@@ -18,9 +19,7 @@ class WhisperVariant(str, Enum):
     TINY = "tiny"
     BASE = "base"
     SMALL = "small"
-    # MEDIUM = "medium"
-    # LARGE = "large"
-    # TURBO = "turbo"
+    MEDIUM = "medium"
 
     @property
     def model_name(self) -> str:
@@ -52,19 +51,11 @@ class WhisperModel(BaseModel):
         """
         super().__init__()
 
-        if variant is None:
-            variant = WhisperVariant.SMALL.value
-        try:
-            self.variant = WhisperVariant(variant)
-        except ValueError as e:
-            raise ValueError(
-                f"Unsupported variant '{variant}'. "
-                f"Supported variants are: {[v.value for v in WhisperVariant]}"
-            ) from e
+        self.variant = validate_enum(variant, WhisperVariant, WhisperVariant.SMALL)
+        self.device = device
 
         self.processor = None
         self.model = None
-        self.device = device
 
     def load(self, model_dir: str) -> None:
         """Load the model from the specified directory.
@@ -141,7 +132,7 @@ class WhisperModel(BaseModel):
 
     @property
     def num_layers(self) -> int:
-        """Get the number of available layers in the Spin model.
+        """Get the number of available layers in the model.
 
         Returns
         -------
@@ -153,6 +144,7 @@ class WhisperModel(BaseModel):
             WhisperVariant.TINY: 5,
             WhisperVariant.BASE: 7,
             WhisperVariant.SMALL: 13,
+            WhisperVariant.MEDIUM: 25,
         }
         return variant_map.get(self.variant, 0)
 

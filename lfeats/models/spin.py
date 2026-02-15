@@ -14,6 +14,7 @@ import torch
 
 from ..interfaces.types import Audio, Features
 from ..utils.io import download_hf_file
+from ..utils.validation import validate_enum
 from .base import BaseModel
 
 
@@ -112,18 +113,10 @@ class SpinModel(BaseModel):
         """
         super().__init__()
 
-        if variant is None:
-            variant = SpinVariant.HUBERT_256.value
-        try:
-            self.variant = SpinVariant(variant)
-        except ValueError as e:
-            raise ValueError(
-                f"Unsupported variant '{variant}'. "
-                f"Supported variants are: {[v.value for v in SpinVariant]}"
-            ) from e
+        self.variant = validate_enum(variant, SpinVariant, SpinVariant.HUBERT_256)
+        self.device = device
 
         self.model = None
-        self.device = device
 
     def load(self, model_dir: str) -> None:
         """Load the model from the specified directory.
