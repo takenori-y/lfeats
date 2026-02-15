@@ -15,6 +15,7 @@ from tests.utils import generate_dummy_waveform
 @pytest.mark.parametrize(
     ("model_name", "variant"),
     [
+        ("contentvec", "hubert-100"),
         ("hubert", "base"),
         ("rspin", "wavlm-32"),
         ("spin", "hubert-128"),
@@ -54,11 +55,10 @@ def test_chunking(model_name: str, variant: str, verbose: bool = False) -> None:
 
     error1 = np.abs(features1.array - org_features.array)[0]
     error2 = np.abs(features2.array - org_features.array)[0]
-    assert error1.mean() < error2.mean()
-
     if verbose:
         plt.imsave(f"{model_name}_chunking_error1.png", error1.T)
         plt.imsave(f"{model_name}_chunking_error2.png", error2.T)
+    assert error1.mean() < error2.mean()
 
 
 @pytest.mark.parametrize(

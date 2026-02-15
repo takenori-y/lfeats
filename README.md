@@ -29,6 +29,8 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 
 | Model Name | Model Variant | Layers | Dimension | Source |
 | :--- | :--- | :--- | :--- | :--- |
+| `contentvec` | `hubert-100` | 12 | 768 | [auspicious3000/contentvec](https://github.com/auspicious3000/contentvec) |
+| | `hubert-500` | 12 | 768 | |
 | `hubert` | `base` | 12 | 768 | |
 | | `large` | 24 | 1024 | |
 | `rspin` | `wavlm-32` | 12 | 768 | [vectominist/rspin](https://github.com/vectominist/rspin) |
@@ -63,6 +65,7 @@ This package incorpolates the following repositories:
 
 | Repository | License |
 | :--- | :--- |
+| [fairseq](https://github.com/facebookresearch/fairseq) | MIT License |
 | [R-Spin](https://github.com/vectominist/rspin) | MIT License |
 | [S3PRL](https://github.com/s3prl/s3prl) | Apache License 2.0 |
 | [Spin](https://github.com/vectominist/spin) | MIT License |

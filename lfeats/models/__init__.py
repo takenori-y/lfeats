@@ -3,6 +3,7 @@
 
 """The module for audio feature extraction models."""
 
+from .contentvec import ContentVecModel
 from .hubert import HubertModel
 from .manager import ModelManager
 from .rspin import RSpinModel
@@ -11,6 +12,7 @@ from .sslzip import SslZipModel
 from .whisper import WhisperModel
 
 MODEL_MAP = {
+    "contentvec": ContentVecModel,
     "hubert": HubertModel,
     "rspin": RSpinModel,
     "spin": SpinModel,
