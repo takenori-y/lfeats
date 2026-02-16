@@ -141,6 +141,32 @@ features = extractor(waveform, sample_rate, upsample_factor=4)
 print(f"Shape: {features.shape}")  # (1, 200, 768)
 ```
 
+### Command-line Interface
+
+Once installed via pip, you can use the `lfeats` command directly from your terminal.
+
+```sh
+# Basic usage: extract features from a wav file
+$ lfeats input.wav --output_format npz
+
+# Process all audio files in a directory
+$ lfeats audio_dir --output_dir feats
+
+# Process files listed in a file
+$ lfeats input.scp --output_dir feats
+
+# Specify model and layer
+$ lfeats input.wav --model_name hubert --model_variant base --layer 12
+```
+
+[!TIP]
+
+For more details on all available flags and default values, simply run:
+
+```sh
+$ lfeats --help
+```
+
 ## License
 
 This project is released under the MIT License.
