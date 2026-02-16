@@ -2,6 +2,8 @@
 
 *lfeats* provides a unified interface to extract hidden representations from various speech foundation models such as HuBERT and Whisper.
 
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+
 ## Requirements
 
 - Python 3.10+
@@ -108,6 +110,10 @@ extractor = lfeats.Extractor(model_name="hubert")
 # Get the second-to-last layer output.
 features = extractor(waveform, sample_rate, layers=-2)
 print(f"Shape: {features.shape}")  # (1, 50, 768)
+
+# Get the multiple layer outputs.
+features = extractor(waveform, sample_rate, layers=(11, 12))
+print(f"Shape: {features.shape}")  # (1, 50, 1536)
 
 # Get all layer outputs as a concatenated vector.
 features = extractor(waveform, sample_rate, layers="all")
