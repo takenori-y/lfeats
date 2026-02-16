@@ -8,7 +8,6 @@ from enum import Enum
 import torch
 
 from ..interfaces.types import Audio, Features
-from ..utils.io import silence_hf_hub, silence_transformers
 from ..utils.validation import validate_enum
 from .base import BaseModel
 
@@ -71,13 +70,12 @@ class WhisperModel(BaseModel):
 
         from transformers import WhisperModel, WhisperProcessor
 
-        with silence_hf_hub(), silence_transformers():
-            self.processor = WhisperProcessor.from_pretrained(
-                self.variant.model_name, cache_dir=model_dir
-            )
-            self.model = WhisperModel.from_pretrained(
-                self.variant.model_name, cache_dir=model_dir
-            )
+        self.processor = WhisperProcessor.from_pretrained(
+            self.variant.model_name, cache_dir=model_dir
+        )
+        self.model = WhisperModel.from_pretrained(
+            self.variant.model_name, cache_dir=model_dir
+        )
         self.model.eval()
         self.model.to(self.device)  # type: ignore
 

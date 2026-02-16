@@ -35,13 +35,11 @@ class ContentVecVariant(str, Enum):
 
         """
         _, num_classes = self.value.split("-")
-        filename=f"checkpoint_best_legacy_{num_classes}.pt"
+        filename = f"checkpoint_best_legacy_{num_classes}.pt"
         if self.value == "hubert-100":
             token = "t76fff0dciyjqt1db03y48323qp99bg9"
-            #token = "oxly542k5v3bhkfw6g8esatxziarymam"
         elif self.value == "hubert-500":
             token = "z1wgl1stco8ffooyatzdwsqn2psd9lrr"
-            #token = "nv35hsry0v2y595etzysgnn2amsxxb0u"
         else:
             token = ""
         return token, filename
@@ -64,7 +62,9 @@ class ContentVecModel(BaseModel):
         """
         super().__init__()
 
-        self.variant = validate_enum(variant, ContentVecVariant, ContentVecVariant.HUBERT_100)
+        self.variant = validate_enum(
+            variant, ContentVecVariant, ContentVecVariant.HUBERT_100
+        )
         self.device = device
 
         self.model = None
@@ -103,7 +103,9 @@ class ContentVecModel(BaseModel):
         if third_party_dir not in sys.path:
             sys.path.append(third_party_dir)
 
-        from fairseq.checkpoint_utils import load_model_ensemble_and_task
+        from lfeats.third_party.fairseq.checkpoint_utils import (
+            load_model_ensemble_and_task,
+        )
 
         models, _, _ = load_model_ensemble_and_task([checkpoint])
         self.model = models[0]

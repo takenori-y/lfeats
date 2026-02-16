@@ -233,4 +233,4 @@ def import_models(models_dir, namespace):
 
 # automatically import any Python files in the models/ directory
 models_dir = os.path.dirname(__file__)
-import_models(models_dir, "fairseq.models")
+import_models(models_dir, "lfeats.third_party.fairseq.models")

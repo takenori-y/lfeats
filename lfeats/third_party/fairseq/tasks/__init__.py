@@ -135,4 +135,4 @@ def import_tasks(tasks_dir, namespace):
 
 # automatically import any Python files in the tasks/ directory
 tasks_dir = os.path.dirname(__file__)
-import_tasks(tasks_dir, "fairseq.tasks")
+import_tasks(tasks_dir, "lfeats.third_party.fairseq.tasks")

@@ -8,7 +8,6 @@ from enum import Enum
 import torch
 
 from ..interfaces.types import Audio, Features
-from ..utils.io import silence_hf_hub, silence_transformers
 from ..utils.validation import validate_enum
 from .base import BaseModel
 
@@ -73,10 +72,9 @@ class HubertModel(BaseModel):
 
         from transformers import HubertModel
 
-        with silence_hf_hub(), silence_transformers():
-            self.model = HubertModel.from_pretrained(
-                self.variant.model_name, cache_dir=model_dir
-            )
+        self.model = HubertModel.from_pretrained(
+            self.variant.model_name, cache_dir=model_dir
+        )
         self.model.eval()
         self.model.to(self.device)  # type: ignore
 

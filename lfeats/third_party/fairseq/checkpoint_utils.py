@@ -10,7 +10,6 @@ import inspect
 import logging
 # import os
 # import re
-import sys
 import time
 # import traceback
 # from collections import OrderedDict
@@ -31,8 +30,6 @@ from .models import FairseqDecoder, FairseqEncoder
 from omegaconf import DictConfig, OmegaConf, open_dict
 
 logger = logging.getLogger(__name__)
-
-sys.path.append(Path(__file__).resolve().parents[1].as_posix())
 
 
 def save_checkpoint(cfg: CheckpointConfig, trainer, epoch_itr, val_loss):
