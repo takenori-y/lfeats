@@ -159,13 +159,12 @@ $ lfeats input.scp --output_dir feats
 $ lfeats input.wav --model_name hubert --model_variant base --layer 12
 ```
 
-[!TIP]
-
-For more details on all available flags and default values, simply run:
-
-```sh
-$ lfeats --help
-```
+> [!TIP]
+> For more details on all available flags and default values, simply run:
+>
+> ```sh
+> $ lfeats --help
+> ```
 
 ## License
 
