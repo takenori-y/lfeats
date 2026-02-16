@@ -78,7 +78,106 @@ class Extractor:
         else:
             self.cache_dir = cache_dir
 
+    def load(self) -> None:
+        """Download and load the model if it is not already loaded."""
+        self.model_manager.get_model().load(self.cache_dir)
+
     def __call__(
+        self,
+        source: np.ndarray | torch.Tensor | Audio,
+        sample_rate: int | None = None,
+        layers: int | Sequence[int] | Literal["all", "last"] = "last",
+        chunk_length_sec: int = 30,
+        overlap_length_sec: int = 5,
+        upsample_factor: int = 1,
+    ) -> Features:
+        """Extract features from the input waveform.
+
+        Parameters
+        ----------
+        source : np.ndarray | torch.Tensor | Audio
+            The input waveform data with shape (T,) or (B, T) or an Audio object.
+
+        sample_rate : int | None, optional
+            The sample rate of the input waveform.
+            Must be provided if `source` is not an Audio object.
+
+        layers : int | list[int] | Literal["all", "last"], optional
+            The layer(s) from which to extract features.
+
+        chunk_length_sec : int, optional
+            The chunk length in seconds for processing long audio.
+
+        overlap_length_sec : int, optional
+            The overlap length in seconds between chunks.
+
+        upsample_factor : int, optional
+            The factor by which to upsample the features in the time dimension.
+
+        Returns
+        -------
+        out : Features
+            The extracted features.
+
+        Raises
+        ------
+        ValueError
+            If the given parameters are invalid.
+
+        RuntimeError
+            If the number of frames in the extracted features is unexpected.
+
+        """
+        if upsample_factor < 1:
+            raise ValueError("upsample_factor must be a positive integer.")
+
+        if upsample_factor == 1:
+            return self._extract(
+                source,
+                sample_rate,
+                layers,
+                chunk_length_sec,
+                overlap_length_sec,
+            )
+
+        # Prepare the audio data and validate the upsample factor.
+        audio = self._create_audio_object(source, sample_rate)
+        B, T = audio.data.shape
+        frame_shift = self.model_manager.get_model().frame_shift
+        if frame_shift % upsample_factor != 0:
+            raise ValueError(
+                f"Upsample factor {upsample_factor} must be a divisor of "
+                f"the model's frame shift {frame_shift}."
+            )
+        step = frame_shift // upsample_factor
+
+        # Create shifted waveforms for upsampling the features.
+        shifted_waveforms = audio.zeros((B * upsample_factor, T))
+        for i in range(upsample_factor):
+            offset = i * step
+            end = T - offset
+            shifted_waveforms[i::upsample_factor, :end] = audio.data[:, offset:]  # type: ignore
+
+        # Extract features from the shifted waveforms.
+        features = self._extract(
+            shifted_waveforms,
+            audio.sample_rate,
+            layers,
+            chunk_length_sec,
+            overlap_length_sec,
+        )
+
+        # Interleave the features from the shifted waveforms.
+        _, N, D = features.data.shape
+        interleaved_features = features.zeros((B, upsample_factor * N, D))
+        for i in range(upsample_factor):
+            interleaved_features[:, i::upsample_factor] = features.data[  # type: ignore
+                i::upsample_factor
+            ]
+
+        return Features(data=interleaved_features, source=features.source)
+
+    def _extract(
         self,
         source: np.ndarray | torch.Tensor | Audio,
         sample_rate: int | None = None,
@@ -135,19 +234,7 @@ class Extractor:
             chunk_length_sec = model.chunk_length_sec
 
         # Prepare the audio data.
-        if isinstance(source, Audio):
-            if sample_rate is not None and source.sample_rate != sample_rate:
-                raise ValueError(
-                    "sample_rate must be None when source is an Audio object "
-                    "or must match the sample rate of the Audio object."
-                )
-            audio = source
-        else:
-            if sample_rate is None:
-                raise ValueError(
-                    "sample_rate must be provided when source is not an Audio object."
-                )
-            audio = Audio(source, sample_rate)
+        audio = self._create_audio_object(source, sample_rate)
 
         expected_num_frames = self._get_num_frames(audio.length, model.frame_shift)
         normalized_layers = self._normalize_layers(layers, model.num_layers)
@@ -271,6 +358,46 @@ class Extractor:
             return layers
 
         raise ValueError(f"Invalid layers specification type: {layers}")
+
+    @staticmethod
+    def _create_audio_object(
+        source: np.ndarray | torch.Tensor | Audio, sample_rate: int | None
+    ) -> Audio:
+        """Create an Audio object from the input source.
+
+        Parameters
+        ----------
+        source : np.ndarray | torch.Tensor | Audio
+            The input waveform data with shape (T,) or (B, T) or an Audio object.
+
+        sample_rate : int | None
+            The sample rate of the input waveform.
+
+        Returns
+        -------
+        out : Audio
+            The created Audio object.
+
+        Raises
+        ------
+        ValueError
+            If the sample_rate is invalid for the given source.
+
+        """
+        if isinstance(source, Audio):
+            if sample_rate is not None and source.sample_rate != sample_rate:
+                raise ValueError(
+                    "sample_rate must be None when source is an Audio object "
+                    "or must match the sample rate of the Audio object."
+                )
+            audio = source
+        else:
+            if sample_rate is None:
+                raise ValueError(
+                    "sample_rate must be provided when source is not an Audio object."
+                )
+            audio = Audio(source, sample_rate)
+        return audio
 
     @staticmethod
     def _create_chunks(

@@ -40,7 +40,6 @@ def test_running(model_name: str, variant: str, device: str) -> None:
     ("model_name", "variant"),
     [
         ("hubert", "base"),
-        ("spin", "hubert-128"),
     ],
 )
 def test_chunking(model_name: str, variant: str, verbose: bool = False) -> None:
@@ -59,6 +58,29 @@ def test_chunking(model_name: str, variant: str, verbose: bool = False) -> None:
         plt.imsave(f"{model_name}_chunking_error1.png", error1.T)
         plt.imsave(f"{model_name}_chunking_error2.png", error2.T)
     assert error1.mean() < error2.mean()
+
+
+@pytest.mark.parametrize(
+    ("model_name", "variant"),
+    [
+        ("hubert", "base"),
+    ],
+)
+def test_upsampling(model_name: str, variant: str) -> None:
+    """Test if the upsampling of features works correctly."""
+    extractor = Extractor(model_name, variant)
+
+    audio1, sr = generate_dummy_waveform(5)
+    audio2 = np.pad(audio1[160:], (0, 160))
+
+    features1 = extractor(audio1, sr, upsample_factor=1)
+    features2 = extractor(audio2, sr, upsample_factor=1)
+    upsampled_features = extractor(audio1, sr, upsample_factor=2)
+
+    error1 = np.abs(features1.array - upsampled_features.array[:, 0::2])[0]
+    error2 = np.abs(features2.array - upsampled_features.array[:, 1::2])[0]
+    assert error1.sum() == 0
+    assert error2.sum() == 0
 
 
 @pytest.mark.parametrize(

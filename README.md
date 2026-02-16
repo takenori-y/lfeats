@@ -9,7 +9,7 @@
 
 ## Documentation
 
-- [**Reference Manual**](https://takenori-y.github.io/lfeats/0.1.0/)
+- [Reference Manual](https://takenori-y.github.io/lfeats/0.1.0/)
 
 ## Installation
 
@@ -57,11 +57,91 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | | `small` | 12 | 768 | |
 | | `medium` | 24 | 1024 | |
 
+## Examples
+
+### Simple Usage
+
+`lfeats` simplifies the process of extracting hidden states from various speech foundation models.
+You don't need to worry about differences between model types or input/output data types.
+
+```python
+import lfeats
+import numpy as np
+
+# Prepare an audio waveform (1 second of random noise for this example).
+# Either a NumPy array or a Torch tensor are accepted as the input of the extractor.
+sample_rate = 16000
+waveform = np.random.randn(sample_rate)
+
+# Initialize the extractor.
+extractor = lfeats.Extractor(model_name="hubert", model_variant="base", device="cpu")
+
+# Note: The model weights are automatically loaded during the first call to extractor(),
+# so calling extractor.load() explicitly is optional.
+extractor.load()
+
+# Extract features.
+features = extractor(waveform, sample_rate)
+print(f"Shape: {features.shape}")  # (1, 50, 768)
+
+# You can access the features as a Numpy array.
+print(type(features.array))  # <class 'numpy.ndarray'>
+
+# You can also access the features as a Torch tensor.
+print(type(features.tensor))  # <class 'torch.Tensor'>
+```
+
+### Layer Selection
+
+`lfeats` allows you to extract features from specific layer(s).
+By default, the last layer is used.
+
+```python
+import lfeats
+import numpy as np
+
+sample_rate = 16000
+waveform = np.random.randn(sample_rate)
+
+extractor = lfeats.Extractor(model_name="hubert")
+
+# Get the second-to-last layer output.
+features = extractor(waveform, sample_rate, layers=-2)
+print(f"Shape: {features.shape}")  # (1, 50, 768)
+
+# Get all layer outputs as a concatenated vector.
+features = extractor(waveform, sample_rate, layers="all")
+print(f"Shape: {features.shape}")  # (1, 50, 9984)
+```
+
+### Virtual Upsampling
+
+Since the frame rate of speech foundation models is typically 20ms,
+it often doesn't match the 5ms requirement of speech generation tasks.
+`lfeats` bridges this gap by sliding the input waveform and interleaving the resulting features,
+providing a high-resolution output.
+
+```python
+import lfeats
+import numpy as np
+
+sample_rate = 16000
+waveform = np.random.randn(sample_rate)
+
+extractor = lfeats.Extractor(model_name="hubert")
+
+# Extract features at a 5ms frame rate.
+features = extractor(waveform, sample_rate, upsample_factor=4)
+print(f"Shape: {features.shape}")  # (1, 200, 768)
+```
+
 ## License
 
 This project is released under the MIT License.
 
-This package incorpolates the following repositories:
+### Third-Party Licenses
+
+`lfeats` incorporates the following repositories:
 
 | Repository | License |
 | :--- | :--- |

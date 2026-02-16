@@ -2,6 +2,7 @@
 # Released under the MIT License.
 
 PROJECT := lfeats
+MODULE  :=
 
 PYTHON_VERSION     := 3.11
 TORCH_VERSION      := 2.6.0
@@ -49,7 +50,8 @@ format: tool
 test-all: test-example test
 
 test: tool
-	. .venv/bin/activate && python -m pytest
+	[ -n "$(MODULE)" ] && module=tests/test_$(MODULE).py || module=; \
+	. .venv/bin/activate && python -m pytest $$module
 
 test-example: tool
 	. .venv/bin/activate &&	python -m pytest --doctest-modules --no-cov --ignore=$(PROJECT)/third_party
@@ -72,6 +74,6 @@ update: tool
 
 clean: dist-clean doc-clean test-clean tool-clean
 	rm -rf .venv
-	find . -name "__pycache__" -type d | xargs rm -rf
+	find . -name "__pycache__" -type d -print0 | xargs -0 rm -rf
 
 .PHONY: venv dist dist-clean doc doc-clean check format test test-clean tool tool-clean update clean

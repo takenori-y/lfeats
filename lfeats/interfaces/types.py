@@ -100,6 +100,36 @@ class Container:
             return self.data.ndim
         return self.data.dim()
 
+    @property
+    def shape(self) -> tuple[int, ...]:
+        """Get the shape of the data.
+
+        Returns
+        -------
+        out : tuple[int, ...]
+            The shape of the data.
+
+        """
+        return self.data.shape
+
+    def zeros(self, shape: tuple[int, ...]) -> np.ndarray | torch.Tensor:
+        """Create a new array/tensor of zeros with the same type as the data.
+
+        Parameters
+        ----------
+        shape : tuple[int, ...]
+            The shape of the new array/tensor.
+
+        Returns
+        -------
+        out : np.ndarray | torch.Tensor
+            A new array/tensor of zeros with the specified shape.
+
+        """
+        if isinstance(self.data, np.ndarray):
+            return np.zeros(shape, dtype=np.float32)
+        return torch.zeros(shape, dtype=torch.float32, device=self.data.device)
+
 
 @dataclass
 class Audio(Container):
