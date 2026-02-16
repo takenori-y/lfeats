@@ -26,14 +26,13 @@ classifiers = [
 dependencies = [
   "numpy >= 1.23.0",
   "torch >= 2.6.0",
+  "torchaudio >= 2.6.0",
   "transformers >= 4.30.0",
   "onnxruntime >= 1.19.0",
   "hydra-core >= 1.3.0",
   "huggingface-hub >= 0.23.0",
   "parfive >= 2.1.0",
   "platformdirs >= 2.0.0",
-  # Resamplers
-  "torchaudio >= 2.6.0",
 ]
 dynamic = ["version"]
 
@@ -56,6 +55,9 @@ dev = [
 [project.urls]
 Documentation = "https://takenori-y.github.io/lfeats/latest/"
 Source = "https://github.com/takenori-y/lfeats"
+
+[project.scripts]
+lfeats = "lfeats.cli:main"
 
 [tool.hatch.build.targets.sdist]
 only-include = ["lfeats"]

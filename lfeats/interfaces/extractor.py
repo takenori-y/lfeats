@@ -175,7 +175,9 @@ class Extractor:
                 i::upsample_factor
             ]
 
-        return Features(data=interleaved_features, source=features.source)
+        return Features(
+            data=interleaved_features, source=features.source, layers=features.layers
+        )
 
     def _extract(
         self,

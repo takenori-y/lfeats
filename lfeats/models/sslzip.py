@@ -120,7 +120,7 @@ class SslZipModel(BaseModel):
             h = self.upstream.extract_features(audio, layers=[-1])
             z = self.model.run(None, {node_name: h.array})[0]
 
-        return Features(data=z, source=self.model_id)
+        return Features(data=z, source=self.model_id, layers=layers)
 
     @property
     def num_layers(self) -> int:

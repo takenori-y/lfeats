@@ -187,7 +187,7 @@ class SpinModel(BaseModel):
             outputs = self.model((wavs, wavs_len, padding_mask), feat_only=True)
             vectors = torch.concat([outputs["feat_list"][i] for i in layers], dim=-1)
 
-        return Features(data=vectors, source=self.model_id)
+        return Features(data=vectors, source=self.model_id, layers=layers)
 
     @property
     def num_layers(self) -> int:

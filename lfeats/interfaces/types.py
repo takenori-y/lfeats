@@ -187,6 +187,7 @@ class Features(Container):
     """Dataclass to hold latent features."""
 
     source: str  # The source of the features.
+    layers: list[int]  # The layer(s) from which the features were extracted.
 
     def __post_init__(self):
         """Validate the input data."""
@@ -240,7 +241,7 @@ class Features(Container):
             trimmed_data = self.array[:, start:end]
         else:
             trimmed_data = self.tensor[:, start:end]
-        return Features(data=trimmed_data, source=self.source)
+        return Features(data=trimmed_data, source=self.source, layers=self.layers)
 
     def merge(self, other: Features, overlap_length: int = 0) -> Features:
         """Merge this Features instance with another one along the time dimension.
@@ -268,6 +269,8 @@ class Features(Container):
         """
         if self.source != other.source:
             raise ValueError("Both Features instances must have the same source.")
+        if self.layers != other.layers:
+            raise ValueError("Both Features instances must have the same layers.")
         if overlap_length < 0 or overlap_length >= min(self.length, other.length):
             raise ValueError(
                 f"Invalid parameters: overlap_length={overlap_length}, "
@@ -311,4 +314,4 @@ class Features(Container):
             else:
                 merged_data = torch.cat([self.tensor, other.tensor], dim=1)
 
-        return Features(data=merged_data, source=self.source)
+        return Features(data=merged_data, source=self.source, layers=self.layers)

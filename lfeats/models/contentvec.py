@@ -146,7 +146,7 @@ class ContentVecModel(BaseModel):
 
             vectors = torch.concat([features[i] for i in layers], dim=-1)
 
-        return Features(data=vectors, source=self.model_id)
+        return Features(data=vectors, source=self.model_id, layers=layers)
 
     @property
     def num_layers(self) -> int:
