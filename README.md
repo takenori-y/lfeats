@@ -91,7 +91,13 @@ sample_rate = 16000
 waveform = np.random.randn(sample_rate)
 
 # Initialize the extractor.
-extractor = lfeats.Extractor(model_name="hubert", model_variant="base", device="cpu")
+extractor = lfeats.Extractor(
+    model_name="hubert",
+    model_variant="base",
+    resampler_type="torchaudio",
+    resampler_preset="kaiser-best",
+    device="cpu",
+)
 
 # Note: The model weights are automatically loaded during the first call to extractor(),
 # so calling extractor.load() explicitly is optional.
