@@ -35,7 +35,7 @@ def get_arguments() -> argparse.Namespace:
         "--output_format",
         type=str,
         default="npz",
-        choices=["npz", "pt", "bin"],
+        choices=["npz", "pt", "float", "double"],
         help="The format to save the extracted features.",
     )
     parser.add_argument(
@@ -63,7 +63,10 @@ def get_arguments() -> argparse.Namespace:
         help="The resampling preset to use.",
     )
     parser.add_argument(
-        "--device", type=str, default="cpu", help="The device to run the model on."
+        "--device",
+        type=str,
+        default="cpu",
+        help="The device to run the model on.",
     )
     parser.add_argument(
         "--cache_dir",
@@ -145,6 +148,13 @@ def main() -> None:
     if args.output_dir is not None:
         os.makedirs(args.output_dir, exist_ok=True)
 
+    output_ext = {
+        "npz": "npz",
+        "pt": "pt",
+        "float": "feats",
+        "double": "feats",
+    }[args.output_format]
+
     # Initialize the feature extractor.
     extractor = lfeats.Extractor(
         model_name=args.model_name,
@@ -163,7 +173,7 @@ def main() -> None:
             continue
 
         base, _ = os.path.splitext(os.path.basename(input_file))
-        output_file = f"{base}.{args.output_format}"
+        output_file = f"{base}.{output_ext}"
         if args.output_dir is not None:
             output_file = os.path.join(args.output_dir, output_file)
 
@@ -198,8 +208,10 @@ def main() -> None:
                 "layers": features.layers,
             }
             torch.save(result, output_file)
-        elif args.output_format == "bin":
+        elif args.output_format == "float":
             features.array.tofile(output_file)
+        elif args.output_format == "double":
+            features.array.astype(np.float64).tofile(output_file)
         else:
             raise ValueError(f"Unsupported output format: {args.output_format}")
 

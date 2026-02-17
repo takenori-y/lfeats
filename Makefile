@@ -50,6 +50,7 @@ format: tool
 test-all: test-example test
 
 test: tool
+	mkdir -p tests/outputs
 	[ -n "$(MODULE)" ] && module=tests/test_$(MODULE).py || module=; \
 	. .venv/bin/activate && python -m pytest $$module
 
@@ -57,8 +58,7 @@ test-example: tool
 	. .venv/bin/activate &&	python -m pytest --doctest-modules --no-cov --ignore=$(PROJECT)/third_party
 
 test-clean:
-	rm -rf tests/__pycache__
-	rm -f *.png
+	rm -rf tests/__pycache__ tests/outputs
 
 tool:
 	cd tools && make

@@ -55,8 +55,8 @@ def test_chunking(model_name: str, variant: str, verbose: bool = False) -> None:
     error1 = np.abs(features1.array - org_features.array)[0]
     error2 = np.abs(features2.array - org_features.array)[0]
     if verbose:
-        plt.imsave(f"{model_name}_chunking_error1.png", error1.T)
-        plt.imsave(f"{model_name}_chunking_error2.png", error2.T)
+        plt.imsave(f"tests/outputs/{model_name}_chunking_error1.png", error1.T)
+        plt.imsave(f"tests/outputs/{model_name}_chunking_error2.png", error2.T)
     assert error1.mean() < error2.mean()
 
 
