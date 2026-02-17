@@ -33,7 +33,7 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | :--- | :--- | :--- | :--- | :--- |
 | `contentvec` | `hubert-100` | 12 | 768 | [auspicious3000/contentvec](https://github.com/auspicious3000/contentvec) |
 | | `hubert-500` | 12 | 768 | |
-| `hubert` | `base` | 12 | 768 | |
+| `hubert` | `base` | 12 | 768 | [facebookresearch/fairseq](https://github.com/facebookresearch/fairseq) |
 | | `large` | 24 | 1024 | |
 | `rspin` | `wavlm-32` | 12 | 768 | [vectominist/rspin](https://github.com/vectominist/rspin) |
 | | `wavlm-64` | 12 | 768 | |

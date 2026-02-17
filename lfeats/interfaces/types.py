@@ -156,6 +156,30 @@ class Audio(Container):
         """
         return self.data.shape[1]
 
+    def normalize(self, eps=1e-5) -> Audio:
+        """Normalize the audio samples to have zero mean and unit variance.
+
+        Parameters
+        ----------
+        eps : float, optional
+            A small value to avoid division by zero when normalizing.
+
+        Returns
+        -------
+        out : Audio
+            A new Audio instance with normalized samples.
+
+        """
+        if isinstance(self.data, np.ndarray):
+            mean = np.mean(self.data, axis=1, keepdims=True)
+            var = np.var(self.data, axis=1, keepdims=True)
+            scale = 1.0 / np.sqrt(var + eps)
+        else:
+            var, mean = torch.var_mean(self.data, dim=1, correction=0, keepdim=True)
+            scale = torch.rsqrt(var + eps)
+        normalized_samples = (self.data - mean) * scale
+        return Audio(data=normalized_samples, sample_rate=self.sample_rate)
+
     def pad(self, padding: tuple[int, int]) -> Audio:
         """Pad the audio samples.
 

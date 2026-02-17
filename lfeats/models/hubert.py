@@ -102,6 +102,9 @@ class HubertModel(BaseModel):
         if self.model is None:
             raise RuntimeError("Model not loaded. Call 'load' method first.")
 
+        if self.variant != HubertVariant.BASE:
+            audio = audio.normalize()
+
         with torch.inference_mode():
             hidden_states = self.model(
                 input_values=audio.tensor.to(self.device), output_hidden_states=True
