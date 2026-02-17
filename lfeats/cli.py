@@ -6,12 +6,6 @@ import argparse
 import logging
 import os
 
-import numpy as np
-import torch
-
-import lfeats
-from lfeats.utils.io import load_audio
-
 logger = logging.getLogger("lfeats")
 
 
@@ -114,6 +108,12 @@ def main() -> None:
         level=logging.ERROR if args.quiet else logging.INFO,
         format="%(message)s",
     )
+
+    import numpy as np
+    import torch
+
+    import lfeats
+    from lfeats.utils.io import load_audio
 
     # Get the list of input files from the source argument.
     if os.path.isfile(args.source):

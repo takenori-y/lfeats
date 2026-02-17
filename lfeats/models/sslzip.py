@@ -4,7 +4,9 @@
 """A module for the SSLZip model."""
 
 from enum import Enum
+from typing import cast
 
+import numpy as np
 import torch
 
 from ..interfaces.types import Audio, Features
@@ -119,6 +121,7 @@ class SslZipModel(BaseModel):
         with torch.inference_mode():
             h = self.upstream.extract_features(audio, layers=[-1])
             z = self.model.run(None, {node_name: h.array})[0]
+            z = cast(np.ndarray, z)
 
         return Features(data=z, source=self.model_id, layers=layers)
 

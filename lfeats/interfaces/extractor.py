@@ -127,6 +127,19 @@ class Extractor:
         RuntimeError
             If the number of frames in the extracted features is unexpected.
 
+        Examples
+        --------
+        >>> import lfeats
+        >>> import numpy as np
+        >>>
+        >>> sample_rate = 16000
+        >>> waveform = np.random.randn(sample_rate)
+        >>>
+        >>> extractor = lfeats.Extractor(model_name="hubert")
+        >>> features = extractor(waveform, sample_rate)
+        >>> features.shape
+        (1, 50, 768)
+
         """
         if upsample_factor < 1:
             raise ValueError("upsample_factor must be a positive integer.")

@@ -110,7 +110,9 @@ class Container:
             The shape of the data.
 
         """
-        return self.data.shape
+        if isinstance(self.data, np.ndarray):
+            return self.data.shape
+        return tuple(self.data.shape)
 
     def zeros(self, shape: tuple[int, ...]) -> np.ndarray | torch.Tensor:
         """Create a new array/tensor of zeros with the same type as the data.

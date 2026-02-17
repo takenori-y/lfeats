@@ -3,7 +3,14 @@
 
 """The main module for the audio feature extraction package."""
 
-from .interfaces.extractor import Extractor as Extractor
-from .interfaces.types import Audio as Audio
-from .interfaces.types import Features as Features
-from .version import __version__ as __version__
+from .interfaces.extractor import Extractor
+from .interfaces.types import Audio, Container, Features
+from .version import __version__
+
+__all__ = [
+    "Extractor",
+    "Audio",
+    "Container",
+    "Features",
+    "__version__",
+]

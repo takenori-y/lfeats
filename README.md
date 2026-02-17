@@ -150,7 +150,7 @@ Once installed via pip, you can use the `lfeats` command directly from your term
 $ lfeats input.wav --output_format npz
 
 # Process all audio files in a directory
-$ lfeats audio_dir --output_dir feats
+$ lfeats input/dir --output_dir feats
 
 # Process files listed in a file
 $ lfeats input.scp --output_dir feats

@@ -34,7 +34,7 @@ doc-clean:
 
 check: tool
 	. .venv/bin/activate && python -m ruff check $(PROJECT) tests
-	. .venv/bin/activate && python -m ruff format --check $(PROJECT) tests
+	. .venv/bin/activate && python -m ruff format --check $(PROJECT) tests docs/source
 	. .venv/bin/activate && python -m pyright $(PROJECT) tests
 	. .venv/bin/activate && python -m mdformat --check *.md
 	./tools/taplo/taplo fmt --check *.toml
@@ -42,7 +42,7 @@ check: tool
 
 format: tool
 	. .venv/bin/activate && python -m ruff check --fix $(PROJECT) tests
-	. .venv/bin/activate && python -m ruff format $(PROJECT) tests
+	. .venv/bin/activate && python -m ruff format $(PROJECT) tests docs/source
 	. .venv/bin/activate && python -m mdformat *.md
 	./tools/taplo/taplo fmt *.toml
 	./tools/yamlfmt/yamlfmt *.yml .github/workflows/*.yml
@@ -55,7 +55,7 @@ test: tool
 	. .venv/bin/activate && python -m pytest $$module
 
 test-example: tool
-	. .venv/bin/activate &&	python -m pytest --doctest-modules --no-cov --ignore=$(PROJECT)/third_party
+	. .venv/bin/activate &&	python -m pytest --doctest-modules --no-cov --ignore=$(PROJECT)/third_party $(PROJECT)
 
 test-clean:
 	rm -rf tests/__pycache__ tests/outputs
