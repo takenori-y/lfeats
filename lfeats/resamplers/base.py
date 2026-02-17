@@ -5,13 +5,15 @@
 
 from abc import ABC, abstractmethod
 
-from ..models.base import Audio, Backend
+from ..models.base import Audio
 
 
 class BaseResampler(ABC):
     """An abstract base class for audio resamplers."""
 
-    def __init__(self, src_rate: int, dst_rate: int, preset: str | None) -> None:
+    def __init__(
+        self, src_rate: int, dst_rate: int, preset: str | None, device: str
+    ) -> None:
         """Initialize the BaseResampler with source and destination sample rates.
 
         Parameters
@@ -25,9 +27,13 @@ class BaseResampler(ABC):
         preset : str | None
             The preset for the resampler.
 
+        device : str
+            The device to run the model on (e.g., 'cpu' or 'cuda').
+
         """
         self.src_rate = src_rate
         self.dst_rate = dst_rate
+        self.device = device
 
     def resample(self, audio: Audio) -> Audio:
         """Resample the given audio to the target sample rate.
@@ -65,19 +71,6 @@ class BaseResampler(ABC):
         -------
         out : Audio
             The resampled audio.
-
-        """
-        raise NotImplementedError
-
-    @property
-    @abstractmethod
-    def backend(self) -> Backend:
-        """Get the backend framework used by the resampler.
-
-        Returns
-        -------
-        out : Backend
-            The backend framework.
 
         """
         raise NotImplementedError

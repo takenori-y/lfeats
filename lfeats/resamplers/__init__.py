@@ -3,10 +3,12 @@
 
 """The module for audio resamplers."""
 
+from .lilfilter import LilFilterResampler
 from .manager import ResamplerManager
 from .torchaudio import TorchAudioResampler
 
 RESAMPLER_MAP = {
+    "lilfilter": LilFilterResampler,
     "torchaudio": TorchAudioResampler,
 }
 

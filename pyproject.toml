@@ -33,6 +33,7 @@ dependencies = [
   "huggingface-hub >= 0.23.0",
   "parfive >= 2.1.0",
   "platformdirs >= 2.0.0",
+  "lilfilter >= 0.0.1",
 ]
 dynamic = ["version"]
 

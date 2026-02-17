@@ -5,7 +5,7 @@
 
 from abc import ABC, abstractmethod
 
-from ..interfaces.types import Audio, Backend, Features
+from ..interfaces.types import Audio, Features
 
 
 class BaseModel(ABC):
@@ -149,18 +149,6 @@ class BaseModel(ABC):
 
         """
         return None
-
-    @property
-    def backend(self) -> Backend:
-        """Get the backend framework used by the model.
-
-        Returns
-        -------
-        out : Backend
-            The backend framework.
-
-        """
-        return Backend.TORCH
 
     @property
     @abstractmethod

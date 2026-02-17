@@ -28,6 +28,7 @@ class ResamplerManager:
         """
         self.resampler_cls = resampler_cls
         self.preset = preset
+        self.device = device
 
         self._cache: dict[tuple[int, int], BaseResampler] = {}
 
@@ -51,6 +52,9 @@ class ResamplerManager:
         key = (src_rate, dst_rate)
         if key not in self._cache:
             self._cache[key] = self.resampler_cls(
-                src_rate=src_rate, dst_rate=dst_rate, preset=self.preset
+                src_rate=src_rate,
+                dst_rate=dst_rate,
+                preset=self.preset,
+                device=self.device,
             )
         return self._cache[key]

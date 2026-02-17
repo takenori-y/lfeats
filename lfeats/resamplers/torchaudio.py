@@ -7,7 +7,7 @@ from enum import Enum
 
 import torch
 
-from ..models.base import Audio, Backend
+from ..interfaces.types import Audio
 from .base import BaseResampler
 
 
@@ -27,7 +27,7 @@ class TorchAudioResampler(BaseResampler):
         dst_rate: int,
         preset: str | None = None,
         device: str = "cpu",
-    ):
+    ) -> None:
         """Initialize the TorchAudioResampler.
 
         Parameters
@@ -45,7 +45,9 @@ class TorchAudioResampler(BaseResampler):
             The device to run the model on (e.g., 'cpu' or 'cuda').
 
         """
-        super().__init__(src_rate, dst_rate, preset)
+        super().__init__(src_rate, dst_rate, preset, device)
+
+        self.device = device
 
         if preset is None:
             preset = TorchAudioPreset.KAISER_BEST
@@ -92,17 +94,5 @@ class TorchAudioResampler(BaseResampler):
             The resampled audio.
 
         """
-        samples = self.resampler(audio.tensor)
+        samples = self.resampler(audio.tensor.to(self.device))
         return Audio(data=samples, sample_rate=self.dst_rate)
-
-    @property
-    def backend(self) -> Backend:
-        """Get the backend framework used by the resampler.
-
-        Returns
-        -------
-        out : Backend
-            The backend framework.
-
-        """
-        return Backend.TORCH

@@ -59,6 +59,14 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | | `small` | 12 | 768 | |
 | | `medium` | 24 | 1024 | |
 
+## Supported Resamplers
+
+| Resampler Type | Resampler Preset | Source |
+| :--- | :--- | :--- |
+| `lilfilter` | N/A | [danpovey/filtering](https://github.com/danpovey/filtering) |
+| `torchaudio` | `kaiser-fast` | [pytorch/audio](https://github.com/pytorch/audio) |
+| | `kaiser-best` | |
+
 ## Examples
 
 ### Simple Usage

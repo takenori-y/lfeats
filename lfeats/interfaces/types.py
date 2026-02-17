@@ -6,17 +6,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import Enum
 
 import numpy as np
 import torch
 import torch.nn.functional as F
-
-
-class Backend(str, Enum):
-    """Enumeration of running backends."""
-
-    TORCH = "torch"
 
 
 @dataclass

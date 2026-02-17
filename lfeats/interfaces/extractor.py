@@ -14,6 +14,7 @@ from platformdirs import user_cache_dir
 from ..models import MODEL_MAP, ModelManager
 from ..resamplers import RESAMPLER_MAP, ResamplerManager
 from .types import Audio, Features
+from .utils import create_audio_object
 
 Chunk = namedtuple("Chunk", ["start", "end", "overlap"])
 
@@ -86,6 +87,7 @@ class Extractor:
         self,
         source: np.ndarray | torch.Tensor | Audio,
         sample_rate: int | None = None,
+        *,
         layers: int | Sequence[int] | Literal["all", "last"] = "last",
         chunk_length_sec: int = 30,
         overlap_length_sec: int = 5,
@@ -154,7 +156,7 @@ class Extractor:
             )
 
         # Prepare the audio data and validate the upsample factor.
-        audio = self._create_audio_object(source, sample_rate)
+        audio = create_audio_object(source, sample_rate)
         B, T = audio.data.shape
         frame_shift = self.model_manager.get_model().frame_shift
         if frame_shift % upsample_factor != 0:
@@ -244,22 +246,20 @@ class Extractor:
         # Load the model.
         model = self.model_manager.get_model()
         model.load(self.cache_dir)
-
         if model.chunk_length_sec is not None:
             chunk_length_sec = model.chunk_length_sec
-
-        # Prepare the audio data.
-        audio = self._create_audio_object(source, sample_rate)
-
-        expected_num_frames = self._get_num_frames(audio.length, model.frame_shift)
         normalized_layers = self._normalize_layers(layers, model.num_layers)
 
+        # Prepare the audio data.
+        audio = create_audio_object(source, sample_rate)
+
         # Resample the audio if needed.
-        if sample_rate != model.sample_rate:
+        if audio.sample_rate != model.sample_rate:
             resampler = self.resampler_manager.get_resampler(
                 audio.sample_rate, model.sample_rate
             )
             audio = resampler.resample(audio)
+        expected_num_frames = self._get_num_frames(audio.length, model.frame_shift)
 
         # Pad the audio if needed.
         padding = (model.center_offset, max(model.center_offset - 1, 0))
@@ -373,46 +373,6 @@ class Extractor:
             return layers
 
         raise ValueError(f"Invalid layers specification type: {layers}")
-
-    @staticmethod
-    def _create_audio_object(
-        source: np.ndarray | torch.Tensor | Audio, sample_rate: int | None
-    ) -> Audio:
-        """Create an Audio object from the input source.
-
-        Parameters
-        ----------
-        source : np.ndarray | torch.Tensor | Audio
-            The input waveform data with shape (T,) or (B, T) or an Audio object.
-
-        sample_rate : int | None
-            The sample rate of the input waveform.
-
-        Returns
-        -------
-        out : Audio
-            The created Audio object.
-
-        Raises
-        ------
-        ValueError
-            If the sample_rate is invalid for the given source.
-
-        """
-        if isinstance(source, Audio):
-            if sample_rate is not None and source.sample_rate != sample_rate:
-                raise ValueError(
-                    "sample_rate must be None when source is an Audio object "
-                    "or must match the sample rate of the Audio object."
-                )
-            audio = source
-        else:
-            if sample_rate is None:
-                raise ValueError(
-                    "sample_rate must be provided when source is not an Audio object."
-                )
-            audio = Audio(source, sample_rate)
-        return audio
 
     @staticmethod
     def _create_chunks(
