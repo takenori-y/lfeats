@@ -5,10 +5,12 @@
 
 from .lilfilter import LilFilterResampler
 from .manager import ResamplerManager
+from .soxr import SoxrResampler
 from .torchaudio import TorchAudioResampler
 
 RESAMPLER_MAP = {
     "lilfilter": LilFilterResampler,
+    "soxr": SoxrResampler,
     "torchaudio": TorchAudioResampler,
 }
 

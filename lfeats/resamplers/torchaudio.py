@@ -8,6 +8,7 @@ from enum import Enum
 import torch
 
 from ..interfaces.types import Audio
+from ..utils.validation import validate_enum
 from .base import BaseResampler
 
 
@@ -47,32 +48,26 @@ class TorchAudioResampler(BaseResampler):
         """
         super().__init__(src_rate, dst_rate, preset, device)
 
-        self.device = device
+        self.preset = validate_enum(
+            preset, TorchAudioPreset, TorchAudioPreset.KAISER_BEST
+        )
 
-        if preset is None:
-            preset = TorchAudioPreset.KAISER_BEST
-        try:
-            preset = TorchAudioPreset(preset)
-        except ValueError as e:
-            raise ValueError(
-                f"Unsupported preset '{preset}'. "
-                f"Supported presets are: {[v.value for v in TorchAudioPreset]}"
-            ) from e
-
-        if preset == TorchAudioPreset.KAISER_FAST:
+        if self.preset == TorchAudioPreset.KAISER_FAST:
             params = {
                 "resampling_method": "sinc_interp_kaiser",
                 "lowpass_filter_width": 16,
                 "rolloff": 0.85,
                 "beta": 8.555504641634386,
             }
-        elif preset == TorchAudioPreset.KAISER_BEST:
+        elif self.preset == TorchAudioPreset.KAISER_BEST:
             params = {
                 "resampling_method": "sinc_interp_kaiser",
                 "lowpass_filter_width": 64,
                 "rolloff": 0.9475937167399596,
                 "beta": 14.769656459379492,
             }
+        else:
+            raise ValueError(f"Please implement the preset '{self.preset}'.")
 
         import torchaudio
 

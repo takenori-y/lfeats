@@ -60,12 +60,11 @@ class ContentVecModel(BaseModel):
             The device to run the model on (e.g., 'cpu' or 'cuda').
 
         """
-        super().__init__()
+        super().__init__(variant, device)
 
         self.variant = validate_enum(
             variant, ContentVecVariant, ContentVecVariant.HUBERT_100
         )
-        self.device = device
 
         self.model = None
 

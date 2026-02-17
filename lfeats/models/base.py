@@ -11,19 +11,19 @@ from ..interfaces.types import Audio, Features
 class BaseModel(ABC):
     """An abstract base class for feature extraction models."""
 
-    def __init__(self, variant: str | None = None, device: str = "cpu") -> None:
+    def __init__(self, variant: str | None, device: str) -> None:
         """Initialize the BaseModel.
 
         Parameters
         ----------
-        variant : str | None, optional
+        variant : str | None
             The variant of the model to use.
 
-        device : str, optional
+        device : str
             The device to run the model on (e.g., 'cpu' or 'cuda').
 
         """
-        pass
+        self.device = device
 
     @abstractmethod
     def load(self, model_dir: str) -> None:

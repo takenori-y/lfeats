@@ -48,10 +48,9 @@ class WhisperModel(BaseModel):
             The device to run the model on (e.g., 'cpu' or 'cuda').
 
         """
-        super().__init__()
+        super().__init__(variant, device)
 
         self.variant = validate_enum(variant, WhisperVariant, WhisperVariant.SMALL)
-        self.device = device
 
         self.processor = None
         self.model = None

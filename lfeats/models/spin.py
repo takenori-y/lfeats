@@ -111,10 +111,9 @@ class SpinModel(BaseModel):
             The device to run the model on (e.g., 'cpu' or 'cuda').
 
         """
-        super().__init__()
+        super().__init__(variant, device)
 
         self.variant = validate_enum(variant, SpinVariant, SpinVariant.HUBERT_256)
-        self.device = device
 
         self.model = None
 

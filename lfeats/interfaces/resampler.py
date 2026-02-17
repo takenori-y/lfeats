@@ -28,7 +28,7 @@ class Resampler:
             The type of resampler to use.
 
         resampler_preset : str | None, optional
-            The preset for the resampler. If None, the highest quality preset is used.
+            The preset for the resampler.
 
         device : str, optional
             The device to run the model on (e.g., 'cpu' or 'cuda').

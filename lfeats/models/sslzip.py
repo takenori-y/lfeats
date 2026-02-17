@@ -54,10 +54,9 @@ class SslZipModel(BaseModel):
             The device to run the model on (e.g., 'cpu' or 'cuda').
 
         """
-        super().__init__()
+        super().__init__(variant, device)
 
         self.variant = validate_enum(variant, SslZipVariant, SslZipVariant.LOOSE)
-        self.device = device
 
         self.upstream = HubertModel(variant=HubertVariant.BASE.value, device=device)
         self.model = None
