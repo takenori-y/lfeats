@@ -156,7 +156,7 @@ class Audio(Container):
         """
         return self.data.shape[1]
 
-    def normalize(self, eps=1e-5) -> Audio:
+    def normalize(self, eps: float = 1e-5) -> Audio:
         """Normalize the audio samples to have zero mean and unit variance.
 
         Parameters

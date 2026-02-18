@@ -38,6 +38,9 @@ class LilFilterResampler(BaseResampler):
         """
         super().__init__(src_rate, dst_rate, preset, device)
 
+        if preset is not None:
+            raise ValueError("LilFilterResampler does not support presets.")
+
         import lilfilter
 
         self.resampler = lilfilter.Resampler(
