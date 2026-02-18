@@ -19,8 +19,8 @@ from .hubert import HubertModel, HubertVariant
 class SSLZipVariant(str, Enum):
     """Enumeration of supported SSLZip model variants."""
 
-    TIGHT = "tight"
-    LOOSE = "loose"
+    TINY = "tiny"
+    BASE = "base"
 
     @property
     def repo_and_filename(self) -> tuple[str, str]:
@@ -32,9 +32,9 @@ class SSLZipVariant(str, Enum):
             The repository and filename corresponding to the variant.
 
         """
-        if self.value == "tight":
+        if self.value == "tiny":
             return "takenori-y/SSLZip-16", "sslzip_16.onnx"
-        elif self.value == "loose":
+        elif self.value == "base":
             return "takenori-y/SSLZip-256", "sslzip_256.onnx"
         raise ValueError(f"Unsupported SSLZip variant: {self.value}")
 
@@ -56,7 +56,7 @@ class SSLZipModel(BaseModel):
         """
         super().__init__(variant, device)
 
-        self.variant = validate_enum(variant, SSLZipVariant, SSLZipVariant.LOOSE)
+        self.variant = validate_enum(variant, SSLZipVariant, SSLZipVariant.BASE)
 
         self.upstream = HubertModel(variant=HubertVariant.BASE.value, device=device)
         self.model = None

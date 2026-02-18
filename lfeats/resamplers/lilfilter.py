@@ -3,10 +3,19 @@
 
 """A resampler implementation using lilfilter."""
 
+from enum import Enum
+
 import torch
 
 from ..interfaces.types import Audio
+from ..utils.validation import validate_enum
 from .base import BaseResampler
+
+
+class LilFilterPreset(str, Enum):
+    """Presets for the LilFilterResampler."""
+
+    BASE = "base"
 
 
 class LilFilterResampler(BaseResampler):
@@ -38,8 +47,7 @@ class LilFilterResampler(BaseResampler):
         """
         super().__init__(src_rate, dst_rate, preset, device)
 
-        if preset is not None:
-            raise ValueError("LilFilterResampler does not support presets.")
+        self.preset = validate_enum(preset, LilFilterPreset, LilFilterPreset.BASE)
 
         import lilfilter
 

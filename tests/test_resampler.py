@@ -13,7 +13,7 @@ from tests.utils import generate_dummy_waveform
 @pytest.mark.parametrize(
     ("resampler_type", "resampler_preset"),
     [
-        ("lilfilter", None),
+        ("lilfilter", "base"),
         ("soxr", "quick"),
         ("torchaudio", "kaiser-fast"),
         ("torchaudio", "kaiser-best"),
