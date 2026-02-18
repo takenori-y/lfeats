@@ -11,7 +11,7 @@
 
 ## Documentation
 
-- [Reference Manual](https://takenori-y.github.io/lfeats/0.1.0/)
+- [**Reference Manual**](https://takenori-y.github.io/lfeats/0.1.0/)
 
 ## Installation
 
@@ -29,13 +29,13 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 
 ## Supported Models
 
-| Model Name | Model Variant | Layers | Dimension | Source | Model Page |
-| :--- | :--- | :--- | :--- | :--- | :--- |
+| Model Name | Model Variant | Layers | Dimension | Source | Model Hub |
+| :--- | :--- | ---: | ---: | :---: | :---: |
 | `contentvec` | `hubert-100` | 12 | 768 | [GitHub](https://github.com/auspicious3000/contentvec) | |
 | | `hubert-500` | 12 | 768 | | |
-| `hubert` | `base` | 12 | 768 | [GitHub](https://github.com/facebookresearch/fairseq/tree/main/examples/hubert) | [Hugging Face](https://huggingface.co/facebook/hubert-base-ls960) |
-| | `large` | 24 | 1024 | | [Hugging Face](https://huggingface.co/facebook/hubert-large-ll60k) |
-| `rspin` | `wavlm-32` | 12 | 768 | [vectominist/rspin](https://github.com/vectominist/rspin) | |
+| `hubert` | `base` | 12 | 768 | [GitHub](https://github.com/facebookresearch/fairseq/tree/main/examples/hubert) | [🤗](https://huggingface.co/facebook/hubert-base-ls960) |
+| | `large` | 24 | 1024 | | [🤗](https://huggingface.co/facebook/hubert-large-ll60k) |
+| `rspin` | `wavlm-32` | 12 | 768 | [GitHub](https://github.com/vectominist/rspin) | |
 | | `wavlm-64` | 12 | 768 | | |
 | | `wavlm-128` | 12 | 768 | | |
 | | `wavlm-256` | 12 | 768 | | |
@@ -53,25 +53,25 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | | `wavlm-512` | 12 | 768 | | |
 | | `wavlm-1024` | 12 | 768 | | |
 | | `wavlm-2048` | 12 | 768 | | |
-| `sslzip` | `tight` | 0 | 16 | [GitHub](https://github.com/sp-nitech/SSLZip) | [Hugging Face](https://huggingface.co/takenori-y/SSLZip-16) |
-| | `loose` | 0 | 256 | | [Hugging Face](https://huggingface.co/takenori-y/SSLZip-256) |
-| `wavlm` | `base` | 12 | 768 | [GitHub](https://github.com/microsoft/unilm/tree/master/wavlm) | [Hugging Face](https://huggingface.co/microsoft/wavlm-base) |
-| | `base-plus` | 12 | 768 | | [Hugging Face](https://huggingface.co/microsoft/wavlm-base-plus) |
-| | `large` | 24 | 1024 | | [Hugging Face](https://huggingface.co/microsoft/wavlm-large) |
-| `whisper` | `tiny` | 4 | 384 | [openai/whisper](https://github.com/openai/whisper) | [Hugging Face](https://huggingface.co/openai/whisper-tiny) |
-| | `base` | 6 | 512 | | [Hugging Face](https://huggingface.co/openai/whisper-base) |
-| | `small` | 12 | 768 | | [Hugging Face](https://huggingface.co/openai/whisper-small) |
-| | `medium` | 24 | 1024 | | [Hugging Face](https://huggingface.co/openai/whisper-medium) |
+| `sslzip` | `tiny` | 0 | 16 | [GitHub](https://github.com/sp-nitech/SSLZip) | [🤗](https://huggingface.co/takenori-y/SSLZip-16) |
+| | `base` | 0 | 256 | | [🤗](https://huggingface.co/takenori-y/SSLZip-256) |
+| `wavlm` | `base` | 12 | 768 | [GitHub](https://github.com/microsoft/unilm/tree/master/wavlm) | [🤗](https://huggingface.co/microsoft/wavlm-base) |
+| | `base-plus` | 12 | 768 | | [🤗](https://huggingface.co/microsoft/wavlm-base-plus) |
+| | `large` | 24 | 1024 | | [🤗](https://huggingface.co/microsoft/wavlm-large) |
+| `whisper` | `tiny` | 4 | 384 | [GitHub](https://github.com/openai/whisper) | [🤗](https://huggingface.co/openai/whisper-tiny) |
+| | `base` | 6 | 512 | | [🤗](https://huggingface.co/openai/whisper-base) |
+| | `small` | 12 | 768 | | [🤗](https://huggingface.co/openai/whisper-small) |
+| | `medium` | 24 | 1024 | | [🤗](https://huggingface.co/openai/whisper-medium) |
 
 > [!IMPORTANT]
 > Users must comply with the respective licenses of the models.
-> Please refer to the original repositories for detailed licensing infomation.
+> Please refer to the original repositories for detailed licensing information.
 
 ## Supported Resamplers
 
-| Resampler Type | Resampler Preset | Source |
-| :--- | :--- | :--- |
-| `lilfilter` | N/A | [GitHub](https://github.com/danpovey/filtering) |
+| Resampler Type | Quality Preset | Source |
+| :--- | :--- | :---: |
+| `lilfilter` | `base` | [GitHub](https://github.com/danpovey/filtering) |
 | `soxr` | `quick` | [GitHub](https://github.com/dofuuz/python-soxr) |
 | | `low` | |
 | | `medium` | |
