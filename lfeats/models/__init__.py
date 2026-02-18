@@ -7,6 +7,7 @@ from .contentvec import ContentVecModel
 from .hubert import HubertModel
 from .manager import ModelManager
 from .rspin import RSpinModel
+from .spidr import SpidRModel
 from .spin import SpinModel
 from .sslzip import SSLZipModel
 from .wavlm import WavLMModel
@@ -16,6 +17,7 @@ MODEL_MAP = {
     "contentvec": ContentVecModel,
     "hubert": HubertModel,
     "rspin": RSpinModel,
+    "spidr": SpidRModel,
     "spin": SpinModel,
     "sslzip": SSLZipModel,
     "wavlm": WavLMModel,

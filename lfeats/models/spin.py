@@ -141,14 +141,15 @@ class SpinModel(BaseModel):
                 model_path, map_location=torch.device("cpu"), weights_only=False
             )
 
+        from lfeats.third_party.s3prl.util.download import set_dir
         from lfeats.third_party.spin.model import SpinModel as _SpinModel
+        from lfeats.third_party.spin.util import len_to_padding
 
+        set_dir(model_dir)
         self.model = _SpinModel(checkpoint["hyper_parameters"])
         self.model.load_state_dict(checkpoint["state_dict"])
         self.model.eval()
         self.model.to(self.device)
-
-        from lfeats.third_party.spin.util import len_to_padding
 
         self.len_to_padding = len_to_padding
 

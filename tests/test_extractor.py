@@ -18,6 +18,7 @@ from tests.utils import generate_dummy_waveform
         ("contentvec", "hubert-100"),
         ("hubert", "base"),
         ("rspin", "wavlm-32"),
+        ("spidr", "base"),
         ("spin", "hubert-128"),
         ("spin", "wavlm-128"),
         ("sslzip", "tight"),

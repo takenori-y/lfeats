@@ -3,8 +3,29 @@
 
 """I/O utilities."""
 
+from collections.abc import Generator
+from contextlib import contextmanager
+
 import torch
 import torchaudio
+
+
+@contextmanager
+def temporary_hub_dir(path: str) -> Generator[None, None, None]:
+    """Context manager to temporarily set the PyTorch Hub directory.
+
+    Parameters
+    ----------
+    path : str
+        The directory to set as the PyTorch Hub directory.
+
+    """
+    org_dir = torch.hub.get_dir()
+    torch.hub.set_dir(path)
+    try:
+        yield
+    finally:
+        torch.hub.set_dir(org_dir)
 
 
 def download_hf_file(**kwargs) -> str:

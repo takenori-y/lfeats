@@ -29,50 +29,55 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 
 ## Supported Models
 
-| Model Name | Model Variant | Layers | Dimension | Source |
-| :--- | :--- | :--- | :--- | :--- |
-| `contentvec` | `hubert-100` | 12 | 768 | [auspicious3000/contentvec](https://github.com/auspicious3000/contentvec) |
-| | `hubert-500` | 12 | 768 | |
-| `hubert` | `base` | 12 | 768 | [facebookresearch/fairseq](https://github.com/facebookresearch/fairseq) |
-| | `large` | 24 | 1024 | |
-| `rspin` | `wavlm-32` | 12 | 768 | [vectominist/rspin](https://github.com/vectominist/rspin) |
-| | `wavlm-64` | 12 | 768 | |
-| | `wavlm-128` | 12 | 768 | |
-| | `wavlm-256` | 12 | 768 | |
-| | `wavlm-512` | 12 | 768 | |
-| | `wavlm-1024` | 12 | 768 | |
-| | `wavlm-2048` | 12 | 768 | |
-| `spin` | `hubert-128` | 12 | 768 | [vectominist/spin](https://github.com/vectominist/spin) |
-| | `hubert-256` | 12 | 768 | |
-| | `hubert-512` | 12 | 768 | |
-| | `hubert-1024` | 12 | 768 | |
-| | `hubert-2048` | 12 | 768 | |
-| | `wavlm-128` | 12 | 768 | |
-| | `wavlm-256` | 12 | 768 | |
-| | `wavlm-512` | 12 | 768 | |
-| | `wavlm-1024` | 12 | 768 | |
-| | `wavlm-2048` | 12 | 768 | |
-| `sslzip` | `tight` | 0 | 16 | [sp-nitech/SSLZip](https://github.com/sp-nitech/SSLZip) |
-| | `loose` | 0 | 256 | |
-| `wavlm` | `base` | 12 | 768 | [microsoft/unilm](https://github.com/microsoft/unilm) |
-| | `base-plus` | 12 | 768 | |
-| | `large` | 24 | 1024 | |
-| `whisper` | `tiny` | 4 | 384 | [openai/whisper](https://github.com/openai/whisper) |
-| | `base` | 6 | 512 | |
-| | `small` | 12 | 768 | |
-| | `medium` | 24 | 1024 | |
+| Model Name | Model Variant | Layers | Dimension | Source | Model Page |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `contentvec` | `hubert-100` | 12 | 768 | [GitHub](https://github.com/auspicious3000/contentvec) | |
+| | `hubert-500` | 12 | 768 | | |
+| `hubert` | `base` | 12 | 768 | [GitHub](https://github.com/facebookresearch/fairseq/tree/main/examples/hubert) | [Hugging Face](https://huggingface.co/facebook/hubert-base-ls960) |
+| | `large` | 24 | 1024 | | [Hugging Face](https://huggingface.co/facebook/hubert-large-ll60k) |
+| `rspin` | `wavlm-32` | 12 | 768 | [vectominist/rspin](https://github.com/vectominist/rspin) | |
+| | `wavlm-64` | 12 | 768 | | |
+| | `wavlm-128` | 12 | 768 | | |
+| | `wavlm-256` | 12 | 768 | | |
+| | `wavlm-512` | 12 | 768 | | |
+| | `wavlm-1024` | 12 | 768 | | |
+| | `wavlm-2048` | 12 | 768 | | |
+| `spidr` | `base` | 12 | 768 | [GitHub](https://github.com/facebookresearch/spidr) | |
+| `spin` | `hubert-128` | 12 | 768 | [GitHub](https://github.com/vectominist/spin) | |
+| | `hubert-256` | 12 | 768 | | |
+| | `hubert-512` | 12 | 768 | | |
+| | `hubert-1024` | 12 | 768 | | |
+| | `hubert-2048` | 12 | 768 | | |
+| | `wavlm-128` | 12 | 768 | | |
+| | `wavlm-256` | 12 | 768 | | |
+| | `wavlm-512` | 12 | 768 | | |
+| | `wavlm-1024` | 12 | 768 | | |
+| | `wavlm-2048` | 12 | 768 | | |
+| `sslzip` | `tight` | 0 | 16 | [GitHub](https://github.com/sp-nitech/SSLZip) | [Hugging Face](https://huggingface.co/takenori-y/SSLZip-16) |
+| | `loose` | 0 | 256 | | [Hugging Face](https://huggingface.co/takenori-y/SSLZip-256) |
+| `wavlm` | `base` | 12 | 768 | [GitHub](https://github.com/microsoft/unilm/tree/master/wavlm) | [Hugging Face](https://huggingface.co/microsoft/wavlm-base) |
+| | `base-plus` | 12 | 768 | | [Hugging Face](https://huggingface.co/microsoft/wavlm-base-plus) |
+| | `large` | 24 | 1024 | | [Hugging Face](https://huggingface.co/microsoft/wavlm-large) |
+| `whisper` | `tiny` | 4 | 384 | [openai/whisper](https://github.com/openai/whisper) | [Hugging Face](https://huggingface.co/openai/whisper-tiny) |
+| | `base` | 6 | 512 | | [Hugging Face](https://huggingface.co/openai/whisper-base) |
+| | `small` | 12 | 768 | | [Hugging Face](https://huggingface.co/openai/whisper-small) |
+| | `medium` | 24 | 1024 | | [Hugging Face](https://huggingface.co/openai/whisper-medium) |
+
+> [!IMPORTANT]
+> Users must comply with the respective licenses of the models.
+> Please refer to the original repositories for detailed licensing infomation.
 
 ## Supported Resamplers
 
 | Resampler Type | Resampler Preset | Source |
 | :--- | :--- | :--- |
-| `lilfilter` | N/A | [danpovey/filtering](https://github.com/danpovey/filtering) |
-| `soxr` | `quick` | [dofuuz/python-soxr](https://github.com/dofuuz/python-soxr) |
+| `lilfilter` | N/A | [GitHub](https://github.com/danpovey/filtering) |
+| `soxr` | `quick` | [GitHub](https://github.com/dofuuz/python-soxr) |
 | | `low` | |
 | | `medium` | |
 | | `high` | |
 | | `very-high` | |
-| `torchaudio` | `kaiser-fast` | [pytorch/audio](https://github.com/pytorch/audio) |
+| `torchaudio` | `kaiser-fast` | [GitHub](https://github.com/pytorch/audio) |
 | | `kaiser-best` | |
 
 Note that Python-SoXR is licensed under LGPL v2.1+.
