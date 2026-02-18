@@ -83,6 +83,9 @@ class SpidRModel(BaseModel):
         if self.model is None:
             raise RuntimeError("Model is not loaded. Call 'load' method first.")
 
+        # The model expects standardized audio.
+        audio = audio.normalize()
+
         with torch.inference_mode():
             features = []
 
