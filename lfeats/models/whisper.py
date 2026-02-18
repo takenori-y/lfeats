@@ -79,7 +79,7 @@ class WhisperModel(BaseModel):
         self.model.to(self.device)  # type: ignore
 
     def extract_features_impl(self, audio: Audio, layers: list[int]) -> Features:
-        """Extract features from the input audio using the Spin model.
+        """Extract features from the input audio using the model.
 
         Parameters
         ----------

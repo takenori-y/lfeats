@@ -21,6 +21,7 @@ from tests.utils import generate_dummy_waveform
         ("spin", "hubert-128"),
         ("spin", "wavlm-128"),
         ("sslzip", "tight"),
+        ("wavlm", "base"),
         ("whisper", "tiny"),
     ],
 )

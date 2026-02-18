@@ -8,7 +8,8 @@ from .hubert import HubertModel
 from .manager import ModelManager
 from .rspin import RSpinModel
 from .spin import SpinModel
-from .sslzip import SslZipModel
+from .sslzip import SSLZipModel
+from .wavlm import WavLMModel
 from .whisper import WhisperModel
 
 MODEL_MAP = {
@@ -16,7 +17,8 @@ MODEL_MAP = {
     "hubert": HubertModel,
     "rspin": RSpinModel,
     "spin": SpinModel,
-    "sslzip": SslZipModel,
+    "sslzip": SSLZipModel,
+    "wavlm": WavLMModel,
     "whisper": WhisperModel,
 }
 

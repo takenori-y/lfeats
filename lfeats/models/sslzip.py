@@ -16,7 +16,7 @@ from .base import BaseModel
 from .hubert import HubertModel, HubertVariant
 
 
-class SslZipVariant(str, Enum):
+class SSLZipVariant(str, Enum):
     """Enumeration of supported SSLZip model variants."""
 
     TIGHT = "tight"
@@ -39,7 +39,7 @@ class SslZipVariant(str, Enum):
         raise ValueError(f"Unsupported SSLZip variant: {self.value}")
 
 
-class SslZipModel(BaseModel):
+class SSLZipModel(BaseModel):
     """A class for the SSLZip model."""
 
     def __init__(self, variant: str | None = None, device: str = "cpu") -> None:
@@ -56,7 +56,7 @@ class SslZipModel(BaseModel):
         """
         super().__init__(variant, device)
 
-        self.variant = validate_enum(variant, SslZipVariant, SslZipVariant.LOOSE)
+        self.variant = validate_enum(variant, SSLZipVariant, SSLZipVariant.LOOSE)
 
         self.upstream = HubertModel(variant=HubertVariant.BASE.value, device=device)
         self.model = None

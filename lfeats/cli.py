@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# Copyright (c) 2026 Takenori Yoshimura
+# Released under the MIT License.
+
 """A script to extract latent features from audio using pretrained models."""
 
 import argparse

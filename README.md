@@ -54,6 +54,9 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | | `wavlm-2048` | 12 | 768 | |
 | `sslzip` | `tight` | 0 | 16 | [sp-nitech/SSLZip](https://github.com/sp-nitech/SSLZip) |
 | | `loose` | 0 | 256 | |
+| `wavlm` | `base` | 12 | 768 | [microsoft/unilm](https://github.com/microsoft/unilm) |
+| | `base-plus` | 12 | 768 | |
+| | `large` | 24 | 1024 | |
 | `whisper` | `tiny` | 4 | 384 | [openai/whisper](https://github.com/openai/whisper) |
 | | `base` | 6 | 512 | |
 | | `small` | 12 | 768 | |

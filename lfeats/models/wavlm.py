@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Takenori Yoshimura
 # Released under the MIT License.
 
-"""A module for the HuBERT model."""
+"""A module for the WavLM model."""
 
 from enum import Enum
 
@@ -12,10 +12,11 @@ from ..utils.validation import validate_enum
 from .base import BaseModel
 
 
-class HubertVariant(str, Enum):
-    """Enumeration of supported HuBERT model variants."""
+class WavLMVariant(str, Enum):
+    """Enumeration of supported WavLM model variants."""
 
     BASE = "base"
+    BASE_PLUS = "base-plus"
     LARGE = "large"
 
     @property
@@ -28,19 +29,14 @@ class HubertVariant(str, Enum):
             The model name corresponding to the variant.
 
         """
-        base = f"facebook/hubert-{self.value}"
-        if self.value == "base":
-            return f"{base}-ls960"
-        elif self.value == "large":
-            return f"{base}-ll60k"
-        return base
+        return f"microsoft/wavlm-{self.value}"
 
 
-class HubertModel(BaseModel):
-    """A class for the HuBERT model."""
+class WavLMModel(BaseModel):
+    """A class for the WavLM model."""
 
     def __init__(self, variant: str | None = None, device: str = "cpu") -> None:
-        """Initialize the HuBERT model.
+        """Initialize the WavLM model.
 
         Parameters
         ----------
@@ -53,7 +49,7 @@ class HubertModel(BaseModel):
         """
         super().__init__(variant, device)
 
-        self.variant = validate_enum(variant, HubertVariant, HubertVariant.BASE)
+        self.variant = validate_enum(variant, WavLMVariant, WavLMVariant.BASE_PLUS)
 
         self.model = None
 
@@ -69,9 +65,9 @@ class HubertModel(BaseModel):
         if self.model is not None:
             return
 
-        from transformers import HubertModel
+        from transformers import WavLMModel as _WavLMModel
 
-        self.model = HubertModel.from_pretrained(
+        self.model = _WavLMModel.from_pretrained(
             self.variant.model_name, cache_dir=model_dir
         )
         self.model.eval()
@@ -102,7 +98,7 @@ class HubertModel(BaseModel):
         if self.model is None:
             raise RuntimeError("Model not loaded. Call 'load' method first.")
 
-        if self.variant == HubertVariant.LARGE:
+        if self.variant == WavLMVariant.LARGE:
             audio = audio.normalize()
 
         with torch.inference_mode():
@@ -125,8 +121,9 @@ class HubertModel(BaseModel):
 
         """
         variant_map = {
-            HubertVariant.BASE: 13,
-            HubertVariant.LARGE: 25,
+            WavLMVariant.BASE: 13,
+            WavLMVariant.BASE_PLUS: 13,
+            WavLMVariant.LARGE: 25,
         }
         return variant_map.get(self.variant, 0)
 
@@ -140,4 +137,4 @@ class HubertModel(BaseModel):
             The model identifier.
 
         """
-        return f"hubert-{self.variant.value}"
+        return f"wavlm-{self.variant.value}"
