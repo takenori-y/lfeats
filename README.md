@@ -31,7 +31,7 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 ## Supported Models
 
 | Model Name | Model Variant | Layers | Dimension | Paper | Source | Model Hub |
-| :--- | :--- | ---: | ---: | :---: | :---: |
+| :--- | :--- | ---: | ---: | :---: | :---: | :---: |
 | `contentvec` | `hubert-100` | 12 | 768 | [arXiv](https://arxiv.org/abs/2204.09224) | [GitHub](https://github.com/auspicious3000/contentvec) | |
 | | `hubert-500` | 12 | 768 | | | |
 | `hubert` | `base` | 12 | 768 | [arXiv](https://arxiv.org/abs/2106.07447) | [GitHub](https://github.com/facebookresearch/fairseq/tree/main/examples/hubert) | [🤗](https://huggingface.co/facebook/hubert-base-ls960) |
@@ -59,7 +59,7 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | `wav2vec2` | `base` | 12 | 768 | [arXiv](https://arxiv.org/abs/2006.11477) | [GitHub](https://github.com/facebookresearch/fairseq/tree/main/examples/wav2vec) | |
 | | `large` | 24 | 1024 | | | |
 | | `xlsr-v1` | 24 | 1024 | [arXiv](https://arxiv.org/abs/2006.13979) | | |
-| | `xlsr-v2` | 24 | 1024 | [arXiv](https://arxiv.org/abs/2111.09296) | | |
+| | `xlsr-v2` | 24 | 1024 | [arXiv](https://arxiv.org/abs/2111.09296) | [GitHub](https://github.com/facebookresearch/fairseq/tree/main/examples/wav2vec/xlsr) | |
 | `wavlm` | `base` | 12 | 768 | [arXiv](https://arxiv.org/abs/2110.13900) | [GitHub](https://github.com/microsoft/unilm/tree/master/wavlm) | [🤗](https://huggingface.co/microsoft/wavlm-base) |
 | | `base-plus` | 12 | 768 | | | [🤗](https://huggingface.co/microsoft/wavlm-base-plus) |
 | | `large` | 24 | 1024 | | | [🤗](https://huggingface.co/microsoft/wavlm-large) |
