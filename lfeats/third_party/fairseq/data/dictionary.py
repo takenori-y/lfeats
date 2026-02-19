@@ -12,7 +12,7 @@ import torch
 # from fairseq.data import data_utils
 # from fairseq.file_chunker_utils import Chunker, find_offsets
 # from fairseq.file_io import PathManager
-from ..tokenizer import tokenize_line
+from fairseq.tokenizer import tokenize_line
 
 
 class Dictionary:

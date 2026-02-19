@@ -19,14 +19,14 @@ from typing import Any, Dict, Optional, Union
 # import numpy as np
 import torch
 # from fairseq.data import data_utils
-from .dataclass.configs import CheckpointConfig
-# from fairseq.dataclass.utils import (
-#     convert_namespace_to_omegaconf,
-#     overwrite_args_by_name,
-# )
+from fairseq.dataclass.configs import CheckpointConfig
+from fairseq.dataclass.utils import (
+    convert_namespace_to_omegaconf,
+    # overwrite_args_by_name,
+)
 # from fairseq.distributed.fully_sharded_data_parallel import FSDP, has_FSDP
-from .file_io import PathManager
-from .models import FairseqDecoder, FairseqEncoder
+from fairseq.file_io import PathManager
+from fairseq.models import FairseqDecoder, FairseqEncoder
 from omegaconf import DictConfig, OmegaConf, open_dict
 
 logger = logging.getLogger(__name__)
@@ -427,7 +427,7 @@ def load_model_ensemble_and_task(
 ):
     assert state is None or len(filenames) == 1
 
-    from . import tasks
+    from fairseq import tasks
 
     assert not (
         strict and num_shards > 1

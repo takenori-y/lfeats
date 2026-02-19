@@ -12,20 +12,20 @@ import torch
 import torch.nn as nn
 from omegaconf import II
 
-from ... import utils
+from fairseq import utils
 # from fairseq.data.data_utils import compute_mask_indices
-from ...data.dictionary import Dictionary
-from ...dataclass import ChoiceEnum, FairseqDataclass
-from ...models import BaseFairseqModel, register_model
-from ..wav2vec.wav2vec2 import (
+from fairseq.data.dictionary import Dictionary
+from fairseq.dataclass import ChoiceEnum, FairseqDataclass
+from fairseq.models import BaseFairseqModel, register_model
+from fairseq.models.wav2vec.wav2vec2 import (
     EXTRACTOR_MODE_CHOICES,
     MASKING_DISTRIBUTION_CHOICES,
     LAYER_TYPE_CHOICES,
     ConvFeatureExtractionModel,
     TransformerEncoder,
 )
-from ...modules import LayerNorm #, GradMultiply
-from ...tasks.hubert_pretraining import (
+from fairseq.modules import LayerNorm #, GradMultiply
+from fairseq.tasks.hubert_pretraining import (
     HubertPretrainingConfig,
     HubertPretrainingTask,
 )
@@ -394,10 +394,10 @@ class HubertModel(BaseFairseqModel):
         return logits
 
     def forward_features(self, source: torch.Tensor) -> torch.Tensor:
-        if self.feature_grad_mult > 0:
+        if self.feature_grad_mult > 0 and self.training:
             features = self.feature_extractor(source)
-            # if self.feature_grad_mult != 1.0:
-            #     features = GradMultiply.apply(features, self.feature_grad_mult)
+            if self.feature_grad_mult != 1.0:
+                features = GradMultiply.apply(features, self.feature_grad_mult)
         else:
             with torch.no_grad():
                 features = self.feature_extractor(source)

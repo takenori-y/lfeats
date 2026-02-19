@@ -11,7 +11,7 @@ from typing import Any, List, Optional
 import torch
 from omegaconf import II, MISSING
 
-from .constants import (
+from fairseq.dataclass.constants import (
     DATASET_IMPL_CHOICES,
     DDP_BACKEND_CHOICES,
     DDP_COMM_HOOK_CHOICES,

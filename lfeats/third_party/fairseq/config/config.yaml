@@ -1,0 +1,20 @@
+# @package _global_
+
+hydra:
+  run:
+    dir: .
+
+defaults:
+    - /fairseq_schema@_group_
+    - _self_
+    - task: null
+    - model: null
+    - criterion: null
+    - optimizer: null
+    - lr_scheduler: null
+    - bpe: null
+    - tokenizer: null
+    - scoring: null
+    - generation: null
+    - common_eval: null
+    - eval_lm: null

@@ -1,6 +1,7 @@
 # lfeats
 
 *lfeats* provides a unified interface to extract hidden representations from various speech foundation models such as HuBERT and Whisper.
+While these extracted features are task-independent, the package is primarily designed for speech generation tasks including text-to-speech and voice conversion.
 
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
@@ -29,39 +30,43 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 
 ## Supported Models
 
-| Model Name | Model Variant | Layers | Dimension | Source | Model Hub |
+| Model Name | Model Variant | Layers | Dimension | Paper | Source | Model Hub |
 | :--- | :--- | ---: | ---: | :---: | :---: |
-| `contentvec` | `hubert-100` | 12 | 768 | [GitHub](https://github.com/auspicious3000/contentvec) | |
-| | `hubert-500` | 12 | 768 | | |
-| `hubert` | `base` | 12 | 768 | [GitHub](https://github.com/facebookresearch/fairseq/tree/main/examples/hubert) | [🤗](https://huggingface.co/facebook/hubert-base-ls960) |
-| | `large` | 24 | 1024 | | [🤗](https://huggingface.co/facebook/hubert-large-ll60k) |
-| `rspin` | `wavlm-32` | 12 | 768 | [GitHub](https://github.com/vectominist/rspin) | |
-| | `wavlm-64` | 12 | 768 | | |
-| | `wavlm-128` | 12 | 768 | | |
-| | `wavlm-256` | 12 | 768 | | |
-| | `wavlm-512` | 12 | 768 | | |
-| | `wavlm-1024` | 12 | 768 | | |
-| | `wavlm-2048` | 12 | 768 | | |
-| `spidr` | `base` | 12 | 768 | [GitHub](https://github.com/facebookresearch/spidr) | |
-| `spin` | `hubert-128` | 12 | 768 | [GitHub](https://github.com/vectominist/spin) | |
-| | `hubert-256` | 12 | 768 | | |
-| | `hubert-512` | 12 | 768 | | |
-| | `hubert-1024` | 12 | 768 | | |
-| | `hubert-2048` | 12 | 768 | | |
-| | `wavlm-128` | 12 | 768 | | |
-| | `wavlm-256` | 12 | 768 | | |
-| | `wavlm-512` | 12 | 768 | | |
-| | `wavlm-1024` | 12 | 768 | | |
-| | `wavlm-2048` | 12 | 768 | | |
-| `sslzip` | `tiny` | 0 | 16 | [GitHub](https://github.com/sp-nitech/SSLZip) | [🤗](https://huggingface.co/takenori-y/SSLZip-16) |
-| | `base` | 0 | 256 | | [🤗](https://huggingface.co/takenori-y/SSLZip-256) |
-| `wavlm` | `base` | 12 | 768 | [GitHub](https://github.com/microsoft/unilm/tree/master/wavlm) | [🤗](https://huggingface.co/microsoft/wavlm-base) |
-| | `base-plus` | 12 | 768 | | [🤗](https://huggingface.co/microsoft/wavlm-base-plus) |
-| | `large` | 24 | 1024 | | [🤗](https://huggingface.co/microsoft/wavlm-large) |
-| `whisper` | `tiny` | 4 | 384 | [GitHub](https://github.com/openai/whisper) | [🤗](https://huggingface.co/openai/whisper-tiny) |
-| | `base` | 6 | 512 | | [🤗](https://huggingface.co/openai/whisper-base) |
-| | `small` | 12 | 768 | | [🤗](https://huggingface.co/openai/whisper-small) |
-| | `medium` | 24 | 1024 | | [🤗](https://huggingface.co/openai/whisper-medium) |
+| `contentvec` | `hubert-100` | 12 | 768 | [arXiv](https://arxiv.org/abs/2204.09224) | [GitHub](https://github.com/auspicious3000/contentvec) | |
+| | `hubert-500` | 12 | 768 | | | |
+| `hubert` | `base` | 12 | 768 | [arXiv](https://arxiv.org/abs/2106.07447) | [GitHub](https://github.com/facebookresearch/fairseq/tree/main/examples/hubert) | [🤗](https://huggingface.co/facebook/hubert-base-ls960) |
+| | `large` | 24 | 1024 | | | [🤗](https://huggingface.co/facebook/hubert-large-ll60k) |
+| `rspin` | `wavlm-32` | 12 | 768 | [arXiv](https://arxiv.org/abs/2311.09117) | [GitHub](https://github.com/vectominist/rspin) | |
+| | `wavlm-64` | 12 | 768 | | | |
+| | `wavlm-128` | 12 | 768 | | | |
+| | `wavlm-256` | 12 | 768 | | | |
+| | `wavlm-512` | 12 | 768 | | | |
+| | `wavlm-1024` | 12 | 768 | | | |
+| | `wavlm-2048` | 12 | 768 | | | |
+| `spidr` | `base` | 12 | 768 | [arXiv](https://arxiv.org/abs/2512.20308) | [GitHub](https://github.com/facebookresearch/spidr) | |
+| `spin` | `hubert-128` | 12 | 768 | [arXiv](https://arxiv.org/abs/2305.11072) | [GitHub](https://github.com/vectominist/spin) | |
+| | `hubert-256` | 12 | 768 | | | |
+| | `hubert-512` | 12 | 768 | | | |
+| | `hubert-1024` | 12 | 768 | | | |
+| | `hubert-2048` | 12 | 768 | | | |
+| | `wavlm-128` | 12 | 768 | | | |
+| | `wavlm-256` | 12 | 768 | | | |
+| | `wavlm-512` | 12 | 768 | | | |
+| | `wavlm-1024` | 12 | 768 | | | |
+| | `wavlm-2048` | 12 | 768 | | | |
+| `sslzip` | `tiny` | 0 | 16 | [ISCA](https://www.isca-archive.org/ssw_2025/yoshimura25_ssw.html) | [GitHub](https://github.com/sp-nitech/SSLZip) | [🤗](https://huggingface.co/takenori-y/SSLZip-16) |
+| | `base` | 0 | 256 | | | [🤗](https://huggingface.co/takenori-y/SSLZip-256) |
+| `wav2vec2` | `base` | 12 | 768 | [arXiv](https://arxiv.org/abs/2006.11477) | [GitHub](https://github.com/facebookresearch/fairseq/tree/main/examples/wav2vec) | |
+| | `large` | 24 | 1024 | | | |
+| | `xlsr-v1` | 24 | 1024 | [arXiv](https://arxiv.org/abs/2006.13979) | | |
+| | `xlsr-v2` | 24 | 1024 | [arXiv](https://arxiv.org/abs/2111.09296) | | |
+| `wavlm` | `base` | 12 | 768 | [arXiv](https://arxiv.org/abs/2110.13900) | [GitHub](https://github.com/microsoft/unilm/tree/master/wavlm) | [🤗](https://huggingface.co/microsoft/wavlm-base) |
+| | `base-plus` | 12 | 768 | | | [🤗](https://huggingface.co/microsoft/wavlm-base-plus) |
+| | `large` | 24 | 1024 | | | [🤗](https://huggingface.co/microsoft/wavlm-large) |
+| `whisper` | `tiny` | 4 | 384 | [arXiv](https://arxiv.org/abs/2212.04356) | [GitHub](https://github.com/openai/whisper) | [🤗](https://huggingface.co/openai/whisper-tiny) |
+| | `base` | 6 | 512 | | | [🤗](https://huggingface.co/openai/whisper-base) |
+| | `small` | 12 | 768 | | | [🤗](https://huggingface.co/openai/whisper-small) |
+| | `medium` | 24 | 1024 | | | [🤗](https://huggingface.co/openai/whisper-medium) |
 
 > [!IMPORTANT]
 > Users must comply with the respective licenses of the models.

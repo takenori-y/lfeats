@@ -21,10 +21,10 @@ from .fp32_group_norm import Fp32GroupNorm
 # from .fp32_instance_norm import Fp32InstanceNorm
 from .gelu import gelu #, gelu_accurate
 # from .grad_multiply import GradMultiply
-# from .gumbel_vector_quantizer import GumbelVectorQuantizer
+from .gumbel_vector_quantizer import GumbelVectorQuantizer
 # from .kmeans_vector_quantizer import KmeansVectorQuantizer
 # from .layer_drop import LayerDropModuleList
-from .layer_norm import LayerNorm #, Fp32LayerNorm
+from .layer_norm import Fp32LayerNorm, LayerNorm
 # from .learned_positional_embedding import LearnedPositionalEmbedding
 # from .lightweight_convolution import LightweightConv, LightweightConv1dTBC
 # from .linearized_convolution import LinearizedConvolution
@@ -37,7 +37,7 @@ from .same_pad import SamePad #, SamePad2d
 # from .sinusoidal_positional_embedding import SinusoidalPositionalEmbedding
 # from .transformer_sentence_encoder_layer import TransformerSentenceEncoderLayer
 # from .transformer_sentence_encoder import TransformerSentenceEncoder
-# from .transpose_last import TransposeLast
+from .transpose_last import TransposeLast
 # from .unfold import unfold1d
 # from .transformer_layer import TransformerDecoderLayer, TransformerEncoderLayer
 # from .vggblock import VGGBlock
@@ -74,7 +74,7 @@ __all__ = [
     "gelu",
     # "gelu_accurate",
     # "GradMultiply",
-    # "GumbelVectorQuantizer",
+    "GumbelVectorQuantizer",
     # "KmeansVectorQuantizer",
     # "LayerDropModuleList",
     "LayerNorm",
@@ -94,7 +94,7 @@ __all__ = [
     # "TransformerSentenceEncoder",
     # "TransformerDecoderLayer",
     # "TransformerEncoderLayer",
-    # "TransposeLast",
+    "TransposeLast",
     # "VGGBlock",
     # "unfold1d",
     # "ESPNETMultiheadedAttention",

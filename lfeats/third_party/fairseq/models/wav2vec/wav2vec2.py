@@ -12,22 +12,22 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from ... import utils
+from fairseq import utils
 # from fairseq.data.data_utils import compute_mask_indices
-from ...dataclass import ChoiceEnum, FairseqDataclass
+from fairseq.dataclass import ChoiceEnum, FairseqDataclass
 # from fairseq.distributed import fsdp_wrap
-from ...models import BaseFairseqModel, register_model
+from fairseq.models import BaseFairseqModel, register_model
 # from fairseq.distributed.fully_sharded_data_parallel import FullyShardedDataParallel
-from ...modules import (
+from fairseq.modules import (
     Fp32GroupNorm,
-    # Fp32LayerNorm,
+    Fp32LayerNorm,
     # GradMultiply,
-    # GumbelVectorQuantizer,
+    GumbelVectorQuantizer,
     LayerNorm,
     MultiheadAttention,
     # RelPositionalEncoding,
     SamePad,
-    # TransposeLast,
+    TransposeLast,
 )
 # from fairseq.modules.checkpoint_activations import checkpoint_wrapper
 # from fairseq.modules.conformer_layer import ConformerWav2Vec2EncoderLayer
@@ -606,7 +606,7 @@ class Wav2Vec2Model(BaseFairseqModel):
         corpus_key=None,
     ):
 
-        if self.feature_grad_mult > 0:
+        if self.feature_grad_mult > 0 and self.training:
             features = self.feature_extractor(source)
             if self.feature_grad_mult != 1.0:
                 features = GradMultiply.apply(features, self.feature_grad_mult)
@@ -693,12 +693,9 @@ class Wav2Vec2Model(BaseFairseqModel):
         )
 
         if features_only:
-            return {
-                "x": x,
-                "padding_mask": padding_mask,
-                "features": unmasked_features,
-                "layer_results": layer_results,
-            }
+            features = [features]
+            features += [lr[0].transpose(0, 1) for lr in layer_results]
+            return {"x": x, "padding_mask": padding_mask, "features": features}
 
         if self.quantizer:
             if self.negatives_from_everywhere:

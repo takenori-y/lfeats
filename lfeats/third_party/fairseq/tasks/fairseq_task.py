@@ -13,10 +13,11 @@ import torch
 # from fairseq import search, tokenizer, utils
 # from fairseq.logging import metrics
 # from fairseq.data import Dictionary, FairseqDataset, data_utils, encoders, iterators
-from ..dataclass import FairseqDataclass
-from ..dataclass.utils import gen_parser_from_dataclass
+from fairseq.dataclass import FairseqDataclass
+from fairseq.dataclass.utils import gen_parser_from_dataclass
 # from fairseq.optim.amp_optimizer import AMPOptimizer
 from omegaconf import DictConfig
+
 
 logger = logging.getLogger(__name__)
 
@@ -349,7 +350,7 @@ class FairseqTask(object):
         Returns:
             a :class:`~fairseq.models.BaseFairseqModel` instance
         """
-        from .. import models, quantization_utils
+        from fairseq import models, quantization_utils
 
         model = models.build_model(cfg, self, from_checkpoint)
         model = quantization_utils.quantize_model_scalar(model, cfg)

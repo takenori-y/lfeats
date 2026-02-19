@@ -14,8 +14,8 @@ import torch
 import torch.nn as nn
 # import torch.nn.functional as F
 # from fairseq import utils
-from ..data import Dictionary
-from ..dataclass.utils import (
+from fairseq.data import Dictionary
+from fairseq.dataclass.utils import (
     # convert_namespace_to_omegaconf,
     gen_parser_from_dataclass,
 )

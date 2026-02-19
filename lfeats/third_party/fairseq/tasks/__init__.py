@@ -8,8 +8,8 @@ import argparse
 import importlib
 import os
 
-from ..dataclass import FairseqDataclass
-from ..dataclass.utils import merge_with_parent
+from fairseq.dataclass import FairseqDataclass
+from fairseq.dataclass.utils import merge_with_parent
 from hydra.core.config_store import ConfigStore
 
 from .fairseq_task import FairseqTask, LegacyFairseqTask  # noqa
@@ -135,4 +135,4 @@ def import_tasks(tasks_dir, namespace):
 
 # automatically import any Python files in the tasks/ directory
 tasks_dir = os.path.dirname(__file__)
-import_tasks(tasks_dir, "lfeats.third_party.fairseq.tasks")
+import_tasks(tasks_dir, "fairseq.tasks")

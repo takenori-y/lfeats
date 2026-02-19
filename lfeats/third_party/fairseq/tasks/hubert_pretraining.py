@@ -13,10 +13,10 @@ from typing import Dict, List, Optional, Tuple
 import numpy as np
 
 from dataclasses import dataclass, field
-from ..data import Dictionary #, HubertDataset
-from ..dataclass.configs import FairseqDataclass
-from . import register_task
-from .fairseq_task import FairseqTask
+from fairseq.data import Dictionary #, HubertDataset
+from fairseq.dataclass.configs import FairseqDataclass
+from fairseq.tasks import register_task
+from fairseq.tasks.fairseq_task import FairseqTask
 from omegaconf import MISSING
 
 logger = logging.getLogger(__name__)

@@ -3,20 +3,20 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-# import ast
+import ast
 import inspect
 import logging
-# import os
+import os
 import re
 from argparse import ArgumentError, ArgumentParser, Namespace
 from dataclasses import _MISSING_TYPE, MISSING, is_dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple, Type
 
-from . import FairseqDataclass
-# from fairseq.dataclass.configs import FairseqConfig
-# from hydra.core.global_hydra import GlobalHydra
-# from hydra.experimental import compose, initialize
+from fairseq.dataclass import FairseqDataclass
+from fairseq.dataclass.configs import FairseqConfig
+from hydra.core.global_hydra import GlobalHydra
+from hydra import compose, initialize
 from omegaconf import DictConfig, OmegaConf, open_dict, _utils
 
 logger = logging.getLogger(__name__)
@@ -394,9 +394,9 @@ def convert_namespace_to_omegaconf(args: Namespace) -> DictConfig:
 
     GlobalHydra.instance().clear()
 
-    with initialize(config_path=config_path):
+    with initialize(config_path=config_path, version_base="1.1"):
         try:
-            composed_cfg = compose("config", overrides=overrides, strict=False)
+            composed_cfg = compose("config", overrides=overrides)
         except:
             logger.error("Error when composing. Overrides: " + str(overrides))
             raise
@@ -425,6 +425,7 @@ def convert_namespace_to_omegaconf(args: Namespace) -> DictConfig:
 
             _set_legacy_defaults(cfg.model, ARCH_MODEL_REGISTRY[args.arch])
             cfg.model._name = args.arch
+        """
         if cfg.optimizer is None and getattr(args, "optimizer", None):
             cfg.optimizer = Namespace(**vars(args))
             from fairseq.optim import OPTIMIZER_REGISTRY
@@ -445,6 +446,7 @@ def convert_namespace_to_omegaconf(args: Namespace) -> DictConfig:
 
             _set_legacy_defaults(cfg.criterion, CRITERION_REGISTRY[args.criterion])
             cfg.criterion._name = args.criterion
+        """
 
     OmegaConf.set_struct(cfg, True)
     return cfg
