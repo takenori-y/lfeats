@@ -108,7 +108,7 @@ class BaseModel(ABC):
             The number of layers.
 
         """
-        raise 12
+        return 12
 
     @property
     def frame_shift(self) -> int:
