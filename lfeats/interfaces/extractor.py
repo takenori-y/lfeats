@@ -89,6 +89,7 @@ class Extractor:
         sample_rate: int | None = None,
         *,
         layers: int | Sequence[int] | Literal["all", "last"] = "last",
+        center: bool = True,
         chunk_length_sec: int = 30,
         overlap_length_sec: int = 5,
         upsample_factor: int = 1,
@@ -106,6 +107,10 @@ class Extractor:
 
         layers : int | list[int] | Literal["all", "last"], optional
             The layer(s) from which to extract features.
+
+        center : bool, optional
+            If True, the input audio will be padded to compensate for the delay caused
+            by the model's convolutional layers.
 
         chunk_length_sec : int, optional
             The chunk length in seconds for processing long audio.
@@ -150,9 +155,10 @@ class Extractor:
             return self._extract(
                 source,
                 sample_rate,
-                layers,
-                chunk_length_sec,
-                overlap_length_sec,
+                layers=layers,
+                center=center,
+                chunk_length_sec=chunk_length_sec,
+                overlap_length_sec=overlap_length_sec,
             )
 
         # Prepare the audio data and validate the upsample factor.
@@ -177,9 +183,10 @@ class Extractor:
         features = self._extract(
             shifted_waveforms,
             audio.sample_rate,
-            layers,
-            chunk_length_sec,
-            overlap_length_sec,
+            layers=layers,
+            center=center,
+            chunk_length_sec=chunk_length_sec,
+            overlap_length_sec=overlap_length_sec,
         )
 
         # Interleave the features from the shifted waveforms.
@@ -199,6 +206,7 @@ class Extractor:
         source: np.ndarray | torch.Tensor | Audio,
         sample_rate: int | None = None,
         layers: int | Sequence[int] | Literal["all", "last"] = "last",
+        center: bool = True,
         chunk_length_sec: int = 30,
         overlap_length_sec: int = 5,
     ) -> Features:
@@ -215,6 +223,10 @@ class Extractor:
 
         layers : int | list[int] | Literal["all", "last"], optional
             The layer(s) from which to extract features.
+
+        center : bool, optional
+            If True, the input audio will be padded to compensate for the delay caused
+            by the model's convolutional layers.
 
         chunk_length_sec : int, optional
             The chunk length in seconds for processing long audio.
@@ -262,8 +274,10 @@ class Extractor:
         expected_num_frames = self._get_num_frames(audio.length, model.frame_shift)
 
         # Pad the audio if needed.
-        padding = (model.center_offset, max(model.center_offset - 1, 0))
-        if model.center_offset > 0:
+        total_padding = max(2 * model.center_offset - 1, 0)
+        left_padding = model.center_offset if center else 0
+        padding = (left_padding, total_padding - left_padding)
+        if total_padding > 0:
             audio = audio.pad(padding)
 
         # Calculate chunk start and end indices considering padding and overlap.

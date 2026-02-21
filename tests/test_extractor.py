@@ -48,15 +48,22 @@ def test_running(model_name: str, variant: str, device: str) -> None:
         ("hubert", "base"),
     ],
 )
-def test_chunking(model_name: str, variant: str, verbose: bool = False) -> None:
+@pytest.mark.parametrize("center", [True, False])
+def test_chunking(
+    model_name: str, variant: str, center: bool, verbose: bool = False
+) -> None:
     """Test for the effect of chunking on the extracted features."""
     extractor = Extractor(model_name, variant)
 
     audio, sr = generate_dummy_waveform(10.01)
     org_features = extractor(audio, sr)
 
-    features1 = extractor(audio, sr, chunk_length_sec=5, overlap_length_sec=4)
-    features2 = extractor(audio, sr, chunk_length_sec=5, overlap_length_sec=0)
+    features1 = extractor(
+        audio, sr, center=center, chunk_length_sec=5, overlap_length_sec=4
+    )
+    features2 = extractor(
+        audio, sr, center=center, chunk_length_sec=5, overlap_length_sec=0
+    )
 
     error1 = np.abs(features1.array - org_features.array)[0]
     error2 = np.abs(features2.array - org_features.array)[0]

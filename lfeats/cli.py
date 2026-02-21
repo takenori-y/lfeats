@@ -75,7 +75,16 @@ def get_arguments() -> argparse.Namespace:
         "--layers",
         type=str,
         default="last",
-        help="The layer(s) from which to extract features.",
+        help=(
+            "The layer(s) from which to extract features. Can be 'all', 'last', "
+            "a comma-separated list of layer indices, or a single layer index."
+        ),
+    )
+    parser.add_argument(
+        "--center",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Enable or disable center padding for input audio.",
     )
     parser.add_argument(
         "--chunk_length_sec",
@@ -189,6 +198,7 @@ def main() -> None:
                 source=audio,
                 sample_rate=sample_rate,
                 layers=layers,
+                center=args.center,
                 chunk_length_sec=args.chunk_length_sec,
                 overlap_length_sec=args.overlap_length_sec,
                 upsample_factor=args.upsample_factor,
