@@ -248,7 +248,7 @@ class Extractor:
         model.load(self.cache_dir)
         if model.chunk_length_sec is not None:
             chunk_length_sec = model.chunk_length_sec
-        normalized_layers = self._normalize_layers(layers, model.num_layers)
+        normalized_layers = self._normalize_layers(layers, model.num_layers + 1)
 
         # Prepare the audio data.
         audio = create_audio_object(source, sample_rate)

@@ -149,7 +149,7 @@ class Wav2Vec2Model(BaseModel):
 
     @property
     def num_layers(self) -> int:
-        """Get the number of available layers in the model.
+        """Get the number of layers in the model.
 
         Returns
         -------
@@ -158,10 +158,10 @@ class Wav2Vec2Model(BaseModel):
 
         """
         variant_map = {
-            Wav2Vec2Variant.BASE: 13,
-            Wav2Vec2Variant.LARGE: 25,
-            Wav2Vec2Variant.XLSR_V1: 25,
-            Wav2Vec2Variant.XLSR_V2: 25,
+            Wav2Vec2Variant.BASE: 12,
+            Wav2Vec2Variant.LARGE: 24,
+            Wav2Vec2Variant.XLSR_V1: 24,
+            Wav2Vec2Variant.XLSR_V2: 24,
         }
         return variant_map.get(self.variant, 0)
 

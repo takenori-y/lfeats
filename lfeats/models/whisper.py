@@ -129,7 +129,7 @@ class WhisperModel(BaseModel):
 
     @property
     def num_layers(self) -> int:
-        """Get the number of available layers in the model.
+        """Get the number of layers in the model.
 
         Returns
         -------
@@ -138,10 +138,10 @@ class WhisperModel(BaseModel):
 
         """
         variant_map = {
-            WhisperVariant.TINY: 5,
-            WhisperVariant.BASE: 7,
-            WhisperVariant.SMALL: 13,
-            WhisperVariant.MEDIUM: 25,
+            WhisperVariant.TINY: 4,
+            WhisperVariant.BASE: 6,
+            WhisperVariant.SMALL: 12,
+            WhisperVariant.MEDIUM: 24,
         }
         return variant_map.get(self.variant, 0)
 

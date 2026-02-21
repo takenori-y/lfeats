@@ -14,7 +14,7 @@
 # from .downsampled_multihead_attention import DownsampledMultiHeadAttention
 # from .dynamic_convolution import DynamicConv, DynamicConv1dTBC, DynamicConv_scripatable
 # from .dynamic_crf_layer import DynamicCRF
-# from .ema_module import EMAModuleConfig, EMAModule
+from .ema_module import EMAModuleConfig, EMAModule
 # from .fairseq_dropout import FairseqDropout
 # from .fp32_batch_norm import Fp32BatchNorm
 from .fp32_group_norm import Fp32GroupNorm
@@ -64,12 +64,12 @@ __all__ = [
     # "DynamicConv",
     # "DynamicConv_scripatable",
     # "DynamicCRF",
-    # "EMAModule",
-    # "EMAModuleConfig",
+    "EMAModule",
+    "EMAModuleConfig",
     # "FairseqDropout",
     # "Fp32BatchNorm",
     "Fp32GroupNorm",
-    # "Fp32LayerNorm",
+    "Fp32LayerNorm",
     # "Fp32InstanceNorm",
     "gelu",
     # "gelu_accurate",

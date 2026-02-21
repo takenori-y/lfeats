@@ -34,6 +34,8 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | :--- | :--- | ---: | ---: | :---: | :---: | :---: |
 | `contentvec` | `hubert-100` | 12 | 768 | [arXiv](https://arxiv.org/abs/2204.09224) | [GitHub](https://github.com/auspicious3000/contentvec) | |
 | | `hubert-500` | 12 | 768 | | | |
+| `data2vec2` | `base` | 8 | 768 | [arXiv](https://arxiv.org/abs/2212.07525) | [GitHub](https://github.com/facebookresearch/fairseq/tree/main/examples/data2vec) | |
+| | `large` | 16 | 1024 | | | |
 | `hubert` | `base` | 12 | 768 | [arXiv](https://arxiv.org/abs/2106.07447) | [GitHub](https://github.com/facebookresearch/fairseq/tree/main/examples/hubert) | [🤗](https://huggingface.co/facebook/hubert-base-ls960) |
 | | `large` | 24 | 1024 | | | [🤗](https://huggingface.co/facebook/hubert-large-ll60k) |
 | `rspin` | `wavlm-32` | 12 | 768 | [arXiv](https://arxiv.org/abs/2311.09117) | [GitHub](https://github.com/vectominist/rspin) | |
@@ -214,3 +216,4 @@ This project is released under the MIT License.
 | [R-Spin](https://github.com/vectominist/rspin) | MIT License |
 | [S3PRL](https://github.com/s3prl/s3prl) | Apache License 2.0 |
 | [Spin](https://github.com/vectominist/spin) | MIT License |
+| [timm](https://github.com/huggingface/pytorch-image-models | Apache License 2.0 |

@@ -99,9 +99,8 @@ class BaseModel(ABC):
         return 16000
 
     @property
-    @abstractmethod
     def num_layers(self) -> int:
-        """Get the number of available layers in the model.
+        """Get the number of layers in the model.
 
         Returns
         -------
@@ -109,7 +108,7 @@ class BaseModel(ABC):
             The number of layers.
 
         """
-        raise NotImplementedError
+        raise 12
 
     @property
     def frame_shift(self) -> int:

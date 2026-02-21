@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Takenori Yoshimura
 # Released under the MIT License.
 
-"""A module for the ContentVec model."""
+"""A module for the Whisper model."""
 
 import os
 import sys
@@ -15,42 +15,34 @@ from ..utils.validation import validate_enum
 from .base import BaseModel
 
 
-class ContentVecVariant(str, Enum):
-    """Enumeration of supported ContetVec model variants.
+class Data2Vec2Variant(str, Enum):
+    """Enumeration of supported data2vec 2.0 model variants."""
 
-    The number in the variant name indicates the number of classes used in the model.
-
-    """
-
-    HUBERT_100 = "hubert-100"
-    HUBERT_500 = "hubert-500"
+    BASE = "base"
+    LARGE = "large"
 
     @property
-    def token_and_checkpoint_filename(self) -> tuple[str, str]:
+    def checkpoint_filename(self) -> str:
         """Returns the corresponding checkpoint filename for the variant.
 
         Returns
         -------
-        out : tuple[str, str]
-            The token and checkpoint filename corresponding to the variant.
+        out : str
+            The checkpoint filename.
 
         """
-        _, num_classes = self.value.split("-")
-        filename = f"checkpoint_best_legacy_{num_classes}.pt"
-        if self.value == "hubert-100":
-            token = "t76fff0dciyjqt1db03y48323qp99bg9"
-        elif self.value == "hubert-500":
-            token = "z1wgl1stco8ffooyatzdwsqn2psd9lrr"
-        else:
-            raise ValueError(f"Unsupported ContentVec variant: {self.value}")
-        return token, filename
+        if self.value == "base":
+            return "base_libri.pt"
+        elif self.value == "large":
+            return "large_vox.pt"
+        raise ValueError(f"Unsupported data2vec 2.0 variant: {self.value}")
 
 
-class ContentVecModel(BaseModel):
-    """A class for the ContetVec model."""
+class Data2Vec2Model(BaseModel):
+    """A class for the data2vec 2.0 model."""
 
     def __init__(self, variant: str | None = None, device: str = "cpu") -> None:
-        """Initialize the ContentVec model.
+        """Initialize the data2vec 2.0 model.
 
         Parameters
         ----------
@@ -63,10 +55,9 @@ class ContentVecModel(BaseModel):
         """
         super().__init__(variant, device)
 
-        self.variant = validate_enum(
-            variant, ContentVecVariant, ContentVecVariant.HUBERT_100
-        )
+        self.variant = validate_enum(variant, Data2Vec2Variant, Data2Vec2Variant.BASE)
 
+        self.processor = None
         self.model = None
 
     def load(self, model_dir: str) -> None:
@@ -75,23 +66,24 @@ class ContentVecModel(BaseModel):
         Parameters
         ----------
         model_dir : str
-            The directory where the model checkpoint will be stored.
+            The directory where the model files will be stored.
 
         """
         if self.model is not None:
             return
 
-        token, checkpoint_filename = self.variant.token_and_checkpoint_filename
+        checkpoint_filename = self.variant.checkpoint_filename
         checkpoint = os.path.join(model_dir, checkpoint_filename)
 
         if not os.path.exists(checkpoint):
             if (
                 download_file(
-                    f"https://ibm.ent.box.com/shared/static/{token}", model_dir
+                    f"https://dl.fbaipublicfiles.com/fairseq/data2vec2/{checkpoint_filename}",
+                    model_dir,
                 )
                 != checkpoint
             ):
-                raise RuntimeError("Failed to download the model checkpoint.")
+                raise RuntimeError("Failed to download model checkpoint.")
 
         third_party_dir = os.path.abspath(
             os.path.join(os.path.dirname(__file__), "..", "third_party")
@@ -103,10 +95,12 @@ class ContentVecModel(BaseModel):
             load_model_ensemble_and_task,
         )
 
-        models, _, _ = load_model_ensemble_and_task([checkpoint])
+        models, cfg, _ = load_model_ensemble_and_task([checkpoint])
         self.model = models[0]
         self.model.eval()
         self.model.to(self.device)
+
+        self.normalize = cfg.task.normalize  # type: ignore
 
     def extract_features_impl(self, audio: Audio, layers: list[int]) -> Features:
         """Extract features from the input audio using the model.
@@ -133,16 +127,35 @@ class ContentVecModel(BaseModel):
         if self.model is None:
             raise RuntimeError("Model is not loaded. Call 'load' method first.")
 
+        if self.normalize:
+            audio = audio.normalize()
+
         with torch.inference_mode():
             features = self.model(
                 source=audio.tensor.to(self.device),
                 mask=False,
                 features_only=True,
-            )["features"]
+            )["layer_results"]
 
             vectors = torch.concat([features[i] for i in layers], dim=-1)
 
         return Features(data=vectors, source=self.model_id, layers=layers)
+
+    @property
+    def num_layers(self) -> int:
+        """Get the number of available layers in the model.
+
+        Returns
+        -------
+        out : int
+            The number of layers.
+
+        """
+        variant_map = {
+            Data2Vec2Variant.BASE: 8,
+            Data2Vec2Variant.LARGE: 16,
+        }
+        return variant_map.get(self.variant, 0)
 
     @property
     def model_id(self) -> str:
@@ -154,4 +167,4 @@ class ContentVecModel(BaseModel):
             The model identifier.
 
         """
-        return f"rspin-{self.variant.value}"
+        return f"data2vec2-{self.variant.value}"

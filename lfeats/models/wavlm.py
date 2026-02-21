@@ -112,7 +112,7 @@ class WavLMModel(BaseModel):
 
     @property
     def num_layers(self) -> int:
-        """Get the number of available layers in the model.
+        """Get the number of layers in the model.
 
         Returns
         -------
@@ -121,9 +121,9 @@ class WavLMModel(BaseModel):
 
         """
         variant_map = {
-            WavLMVariant.BASE: 13,
-            WavLMVariant.BASE_PLUS: 13,
-            WavLMVariant.LARGE: 25,
+            WavLMVariant.BASE: 12,
+            WavLMVariant.BASE_PLUS: 12,
+            WavLMVariant.LARGE: 24,
         }
         return variant_map.get(self.variant, 0)
 

@@ -104,18 +104,6 @@ class SpidRModel(BaseModel):
         return Features(data=vectors, source=self.model_id, layers=layers)
 
     @property
-    def num_layers(self) -> int:
-        """Get the number of available layers in the model.
-
-        Returns
-        -------
-        out : int
-            The number of layers.
-
-        """
-        return 13
-
-    @property
     def model_id(self) -> str:
         """Get the model identifier.
 

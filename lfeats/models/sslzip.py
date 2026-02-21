@@ -126,7 +126,7 @@ class SSLZipModel(BaseModel):
 
     @property
     def num_layers(self) -> int:
-        """Get the number of available layers in the model.
+        """Get the number of layers in the model.
 
         Returns
         -------
@@ -134,7 +134,7 @@ class SSLZipModel(BaseModel):
             The number of layers.
 
         """
-        return 1
+        return 0
 
     @property
     def model_id(self) -> str:

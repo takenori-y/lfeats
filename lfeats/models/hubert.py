@@ -116,7 +116,7 @@ class HubertModel(BaseModel):
 
     @property
     def num_layers(self) -> int:
-        """Get the number of available layers in the model.
+        """Get the number of layers in the model.
 
         Returns
         -------
@@ -125,8 +125,8 @@ class HubertModel(BaseModel):
 
         """
         variant_map = {
-            HubertVariant.BASE: 13,
-            HubertVariant.LARGE: 25,
+            HubertVariant.BASE: 12,
+            HubertVariant.LARGE: 24,
         }
         return variant_map.get(self.variant, 0)
 
