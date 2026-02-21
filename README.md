@@ -34,6 +34,8 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | :--- | :--- | ---: | ---: | :---: | :---: | :---: |
 | `contentvec` | `hubert-100` | 12 | 768 | [arXiv](https://arxiv.org/abs/2204.09224) | [GitHub](https://github.com/auspicious3000/contentvec) | |
 | | `hubert-500` | 12 | 768 | | | |
+| `data2vec` | `base` | 12 | 768 | [arXiv](https://arxiv.org/abs/2202.03555) | [GitHub](https://github.com/facebookresearch/fairseq/tree/main/examples/data2vec) | |
+| | `large` | 24 | 1024 | | | |
 | `data2vec2` | `base` | 8 | 768 | [arXiv](https://arxiv.org/abs/2212.07525) | [GitHub](https://github.com/facebookresearch/fairseq/tree/main/examples/data2vec) | |
 | | `large` | 16 | 1024 | | | |
 | `hubert` | `base` | 12 | 768 | [arXiv](https://arxiv.org/abs/2106.07447) | [GitHub](https://github.com/facebookresearch/fairseq/tree/main/examples/hubert) | [🤗](https://huggingface.co/facebook/hubert-base-ls960) |
@@ -208,7 +210,7 @@ This project is released under the MIT License.
 
 ### Third-Party Licenses
 
-`lfeats` incorporates the following repositories:
+`lfeats` partially incorporates the following repositories:
 
 | Repository | License |
 | :--- | :--- |

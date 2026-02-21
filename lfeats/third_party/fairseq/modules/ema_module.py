@@ -5,7 +5,7 @@ Used for EMA tracking a given pytorch module. The user is responsible for callin
 and setting the appropriate decay
 """
 
-# import copy
+import copy
 from dataclasses import dataclass, field
 import logging
 
