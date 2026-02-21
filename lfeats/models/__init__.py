@@ -12,6 +12,7 @@ from .rspin import RSpinModel
 from .spidr import SpidRModel
 from .spin import SpinModel
 from .sslzip import SSLZipModel
+from .unispeech_sat import UniSpeechSatModel
 from .wav2vec2 import Wav2Vec2Model
 from .wavlm import WavLMModel
 from .whisper import WhisperModel
@@ -25,6 +26,7 @@ MODEL_MAP = {
     "spidr": SpidRModel,
     "spin": SpinModel,
     "sslzip": SSLZipModel,
+    "unispeech-sat": UniSpeechSatModel,
     "wav2vec2": Wav2Vec2Model,
     "wavlm": WavLMModel,
     "whisper": WhisperModel,

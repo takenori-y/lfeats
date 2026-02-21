@@ -24,6 +24,7 @@ from tests.utils import generate_dummy_waveform
         ("spin", "hubert-128"),
         ("spin", "wavlm-128"),
         ("sslzip", "tiny"),
+        ("unispeech-sat", "base"),
         ("wav2vec2", "base"),
         ("wavlm", "base"),
         ("whisper", "tiny"),

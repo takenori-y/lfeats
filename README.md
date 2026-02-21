@@ -60,6 +60,9 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | | `wavlm-2048` | 12 | 768 | | | |
 | `sslzip` | `tiny` | 0 | 16 | [ISCA](https://www.isca-archive.org/ssw_2025/yoshimura25_ssw.html) | [GitHub](https://github.com/sp-nitech/SSLZip) | [🤗](https://huggingface.co/takenori-y/SSLZip-16) |
 | | `base` | 0 | 256 | | | [🤗](https://huggingface.co/takenori-y/SSLZip-256) |
+| `unispeech-sat` | `base` | 12 | 768 | [arXiv](https://arxiv.org/abs/2110.05752) | [GitHub](https://github.com/microsoft/UniSpeech) | [🤗](https://huggingface.co/microsoft/unispeech-sat-base) |
+| | `base-plus` | 12 | 768 | | | [🤗](https://huggingface.co/microsoft/unispeech-sat-base-plus) |
+| | `large` | 24 | 1024 | | | [🤗](https://huggingface.co/microsoft/unispeech-sat-large) |
 | `wav2vec2` | `base` | 12 | 768 | [arXiv](https://arxiv.org/abs/2006.11477) | [GitHub](https://github.com/facebookresearch/fairseq/tree/main/examples/wav2vec) | |
 | | `large` | 24 | 1024 | | | |
 | | `xlsr-v1` | 24 | 1024 | [arXiv](https://arxiv.org/abs/2006.13979) | | |
