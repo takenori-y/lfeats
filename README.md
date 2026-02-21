@@ -216,4 +216,4 @@ This project is released under the MIT License.
 | [R-Spin](https://github.com/vectominist/rspin) | MIT License |
 | [S3PRL](https://github.com/s3prl/s3prl) | Apache License 2.0 |
 | [Spin](https://github.com/vectominist/spin) | MIT License |
-| [timm](https://github.com/huggingface/pytorch-image-models | Apache License 2.0 |
+| [timm](https://github.com/huggingface/pytorch-image-models) | Apache License 2.0 |
