@@ -8,7 +8,7 @@ While these extracted features are task-independent, the package is primarily de
 ## Requirements
 
 - Python 3.10+
-- PyTorch 2.4.0+
+- PyTorch 2.6.0+
 
 ## Documentation
 
