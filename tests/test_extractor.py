@@ -19,7 +19,7 @@ from tests.utils import generate_dummy_waveform
         ("data2vec", "base"),
         ("data2vec2", "base"),
         ("hubert", "base"),
-        ("rspin", "wavlm-32"),
+        ("r-spin", "wavlm-32"),
         ("spidr", "base"),
         ("spin", "hubert-128"),
         ("spin", "wavlm-128"),
@@ -36,6 +36,7 @@ from tests.utils import generate_dummy_waveform
 def test_running(model_name: str, variant: str, device: str) -> None:
     """Test if the model can run without errors."""
     extractor = Extractor(model_name, variant, device=device)
+    extractor.load(quiet=True)
 
     audio, sr = generate_dummy_waveform(1)
     features = extractor(audio, sr)
@@ -54,6 +55,7 @@ def test_chunking(
 ) -> None:
     """Test for the effect of chunking on the extracted features."""
     extractor = Extractor(model_name, variant)
+    extractor.load(quiet=True)
 
     audio, sr = generate_dummy_waveform(10.01)
     org_features = extractor(audio, sr)
@@ -82,6 +84,7 @@ def test_chunking(
 def test_upsampling(model_name: str, variant: str) -> None:
     """Test if the upsampling of features works correctly."""
     extractor = Extractor(model_name, variant)
+    extractor.load(quiet=True)
 
     audio1, sr = generate_dummy_waveform(5)
     audio2 = np.pad(audio1[160:], (0, 160))
@@ -105,6 +108,7 @@ def test_upsampling(model_name: str, variant: str) -> None:
 def test_long_audio(model_name: str, variant: str) -> None:
     """Test if the model can process long audio without errors."""
     extractor = Extractor(model_name, variant)
+    extractor.load(quiet=True)
 
     audio, sr = generate_dummy_waveform(60.01)
     features = extractor(audio, sr, overlap_length_sec=0)

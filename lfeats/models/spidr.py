@@ -9,7 +9,7 @@ from typing import Any
 import torch
 
 from ..interfaces.types import Audio, Features
-from ..utils.io import temporary_hub_dir
+from ..utils.io import set_torch_hub_dir
 from ..utils.validation import validate_enum
 from .base import BaseModel
 
@@ -41,7 +41,7 @@ class SpidRModel(BaseModel):
 
         self.model = None
 
-    def load(self, model_dir: str) -> None:
+    def load(self, model_dir: str, quiet: bool = False) -> None:
         """Load the model from the specified directory.
 
         Parameters
@@ -49,12 +49,17 @@ class SpidRModel(BaseModel):
         model_dir : str
             The directory where the model checkpoint will be stored.
 
+        quiet : bool, optional
+            Whether to suppress output during the loading process.
+
         """
         if self.model is not None:
             return
 
-        with temporary_hub_dir(model_dir):
-            self.model: Any = torch.hub.load("facebookresearch/spidr", "spidr_base")
+        with set_torch_hub_dir(model_dir):
+            self.model: Any = torch.hub.load(
+                "facebookresearch/spidr", "spidr_base", verbose=not quiet
+            )
         self.model.eval()
         self.model.to(self.device)
 

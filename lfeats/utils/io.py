@@ -11,7 +11,7 @@ import torchaudio
 
 
 @contextmanager
-def temporary_hub_dir(path: str) -> Generator[None, None, None]:
+def set_torch_hub_dir(path: str) -> Generator[None, None, None]:
     """Context manager to temporarily set the PyTorch Hub directory.
 
     Parameters
@@ -28,26 +28,48 @@ def temporary_hub_dir(path: str) -> Generator[None, None, None]:
         torch.hub.set_dir(org_dir)
 
 
-def download_hf_file(**kwargs) -> str:
-    """Download a file from Hugging Face Hub silently.
+@contextmanager
+def silence_transformers(enabled: bool = True) -> Generator[None, None, None]:
+    """Context manager to silence the progress bar from Transformers.
 
     Parameters
     ----------
-    **kwargs
-        Keyword arguments to pass to `hf_hub_download`.
-
-    Returns
-    -------
-    out : str
-        The path to the downloaded file.
+    enabled : bool, optional
+        Whether to silence the progress bar. Default is True.
 
     """
-    from huggingface_hub import hf_hub_download
+    from transformers.utils.logging import disable_progress_bar, enable_progress_bar
 
-    return hf_hub_download(**kwargs)
+    if enabled:
+        disable_progress_bar()
+    try:
+        yield
+    finally:
+        if enabled:
+            enable_progress_bar()
 
 
-def download_file(url: str, download_dir: str) -> str:
+@contextmanager
+def silence_hf_hub(enabled: bool = True) -> Generator[None, None, None]:
+    """Context manager to silence Hugging Face Hub logging.
+
+    Parameters
+    ----------
+    enabled : bool, optional
+        Whether to silence Hugging Face Hub logging.
+
+    """
+    from huggingface_hub.utils import logging
+
+    previous_verbosity = logging.get_verbosity()
+    logging.set_verbosity_error()
+    try:
+        yield
+    finally:
+        logging.set_verbosity(previous_verbosity)
+
+
+def download_file(url: str, download_dir: str, quiet: bool = False) -> str:
     """Download a file from a URL.
 
     Parameters
@@ -57,6 +79,9 @@ def download_file(url: str, download_dir: str) -> str:
 
     download_dir : str
         The directory to download the file to.
+
+    quiet : bool, optional
+        Whether to suppress the download progress output.
 
     Returns
     -------
@@ -73,7 +98,7 @@ def download_file(url: str, download_dir: str) -> str:
 
     dl = Downloader()
 
-    dl.enqueue_file(url, path=download_dir)
+    dl.enqueue_file(url, path=download_dir, progress=not quiet)
 
     files = dl.download()
     if len(files) == 0:

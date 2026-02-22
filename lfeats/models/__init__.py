@@ -8,7 +8,7 @@ from .data2vec import Data2VecModel
 from .data2vec2 import Data2Vec2Model
 from .hubert import HubertModel
 from .manager import ModelManager
-from .rspin import RSpinModel
+from .r_spin import RSpinModel
 from .spidr import SpidRModel
 from .spin import SpinModel
 from .sslzip import SSLZipModel
@@ -22,7 +22,7 @@ MODEL_MAP = {
     "data2vec": Data2VecModel,
     "data2vec2": Data2Vec2Model,
     "hubert": HubertModel,
-    "rspin": RSpinModel,
+    "r-spin": RSpinModel,
     "spidr": SpidRModel,
     "spin": SpinModel,
     "sslzip": SSLZipModel,

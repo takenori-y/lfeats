@@ -8,6 +8,7 @@ from enum import Enum
 import torch
 
 from ..interfaces.types import Audio, Features
+from ..utils.io import silence_transformers
 from ..utils.validation import validate_enum
 from .base import BaseModel
 
@@ -19,6 +20,9 @@ class WhisperVariant(str, Enum):
     BASE = "base"
     SMALL = "small"
     MEDIUM = "medium"
+    LARGE = "large"
+    LARGE_V2 = "large-v2"
+    LARGE_V3 = "large-v3"
 
     @property
     def model_name(self) -> str:
@@ -55,7 +59,7 @@ class WhisperModel(BaseModel):
         self.processor = None
         self.model = None
 
-    def load(self, model_dir: str) -> None:
+    def load(self, model_dir: str, quiet: bool = False) -> None:
         """Load the model from the specified directory.
 
         Parameters
@@ -63,18 +67,22 @@ class WhisperModel(BaseModel):
         model_dir : str
             The directory where the model files will be stored.
 
+        quiet : bool, optional
+            Whether to suppress output during the loading process.
+
         """
         if self.processor is not None and self.model is not None:
             return
 
         from transformers import WhisperModel, WhisperProcessor
 
-        self.processor = WhisperProcessor.from_pretrained(
-            self.variant.model_name, cache_dir=model_dir
-        )
-        self.model = WhisperModel.from_pretrained(
-            self.variant.model_name, cache_dir=model_dir
-        )
+        with silence_transformers(quiet):
+            self.processor = WhisperProcessor.from_pretrained(
+                self.variant.model_name, cache_dir=model_dir
+            )
+            self.model = WhisperModel.from_pretrained(
+                self.variant.model_name, cache_dir=model_dir
+            )
         self.model.eval()
         self.model.to(self.device)  # type: ignore
 
@@ -142,6 +150,9 @@ class WhisperModel(BaseModel):
             WhisperVariant.BASE: 6,
             WhisperVariant.SMALL: 12,
             WhisperVariant.MEDIUM: 24,
+            WhisperVariant.LARGE: 32,
+            WhisperVariant.LARGE_V2: 32,
+            WhisperVariant.LARGE_V3: 32,
         }
         return variant_map.get(self.variant, 0)
 

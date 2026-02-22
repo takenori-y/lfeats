@@ -26,6 +26,7 @@ def test_running(monkeypatch) -> None:
             output_dir,
             "--output_format",
             "npz",
+            "--quiet",
         ],
     )
     cli()
@@ -44,6 +45,7 @@ def test_running(monkeypatch) -> None:
             output_dir,
             "--output_format",
             "pt",
+            "--quiet",
         ],
     )
     cli()
@@ -62,6 +64,7 @@ def test_running(monkeypatch) -> None:
             output_dir,
             "--output_format",
             "float",
+            "--quiet",
         ],
     )
     cli()

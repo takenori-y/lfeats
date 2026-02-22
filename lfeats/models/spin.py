@@ -11,9 +11,10 @@ from types import ModuleType
 from typing import cast
 
 import torch
+from huggingface_hub import hf_hub_download
 
 from ..interfaces.types import Audio, Features
-from ..utils.io import download_hf_file
+from ..utils.io import silence_hf_hub
 from ..utils.validation import validate_enum
 from .base import BaseModel
 
@@ -117,7 +118,7 @@ class SpinModel(BaseModel):
 
         self.model = None
 
-    def load(self, model_dir: str) -> None:
+    def load(self, model_dir: str, quiet: bool = False) -> None:
         """Load the model from the specified directory.
 
         Parameters
@@ -125,16 +126,20 @@ class SpinModel(BaseModel):
         model_dir : str
             The directory where the model checkpoint will be stored.
 
+        quiet : bool, optional
+            Whether to suppress output during the loading process.
+
         """
         if self.model is not None:
             return
 
-        model_path = download_hf_file(
-            repo_id="vectominist/spin_ckpt",
-            filename=self.variant.checkpoint_filename,
-            repo_type="dataset",
-            local_dir=model_dir,
-        )
+        with silence_hf_hub(quiet):
+            model_path = hf_hub_download(
+                repo_id="vectominist/spin_ckpt",
+                filename=self.variant.checkpoint_filename,
+                repo_type="dataset",
+                local_dir=model_dir,
+            )
 
         with lightning_mock_context():
             checkpoint = torch.load(

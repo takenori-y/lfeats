@@ -8,9 +8,10 @@ from typing import cast
 
 import numpy as np
 import torch
+from huggingface_hub import hf_hub_download
 
 from ..interfaces.types import Audio, Features
-from ..utils.io import download_hf_file
+from ..utils.io import silence_hf_hub
 from ..utils.validation import validate_enum
 from .base import BaseModel
 from .hubert import HubertModel, HubertVariant
@@ -61,7 +62,7 @@ class SSLZipModel(BaseModel):
         self.upstream = HubertModel(variant=HubertVariant.BASE.value, device=device)
         self.model = None
 
-    def load(self, model_dir: str) -> None:
+    def load(self, model_dir: str, quiet: bool = False) -> None:
         """Load the model from the specified directory.
 
         Parameters
@@ -69,19 +70,23 @@ class SSLZipModel(BaseModel):
         model_dir : str
             The directory where the model checkpoint will be stored.
 
+        quiet : bool, optional
+            Whether to suppress output during the loading process.
+
         """
         if self.model is not None:
             return
 
-        self.upstream.load(model_dir)
+        self.upstream.load(model_dir, quiet=quiet)
 
-        repo_id, filename = self.variant.repo_and_filename
-        model_path = download_hf_file(
-            repo_id=repo_id,
-            filename=filename,
-            repo_type="model",
-            local_dir=model_dir,
-        )
+        with silence_hf_hub(quiet):
+            repo_id, filename = self.variant.repo_and_filename
+            model_path = hf_hub_download(
+                repo_id=repo_id,
+                filename=filename,
+                repo_type="model",
+                local_dir=model_dir,
+            )
 
         import onnxruntime as ort
 

@@ -8,6 +8,7 @@ from enum import Enum
 import torch
 
 from ..interfaces.types import Audio, Features
+from ..utils.io import silence_transformers
 from ..utils.validation import validate_enum
 from .base import BaseModel
 
@@ -17,6 +18,7 @@ class HubertVariant(str, Enum):
 
     BASE = "base"
     LARGE = "large"
+    XLARGE = "xlarge"
 
     @property
     def model_name(self) -> str:
@@ -32,6 +34,8 @@ class HubertVariant(str, Enum):
         if self.value == "base":
             return f"{base}-ls960"
         elif self.value == "large":
+            return f"{base}-ll60k"
+        elif self.value == "xlarge":
             return f"{base}-ll60k"
         return base
 
@@ -57,7 +61,7 @@ class HubertModel(BaseModel):
 
         self.model = None
 
-    def load(self, model_dir: str) -> None:
+    def load(self, model_dir: str, quiet: bool = False) -> None:
         """Load the model from the specified directory.
 
         Parameters
@@ -65,15 +69,19 @@ class HubertModel(BaseModel):
         model_dir : str
             The directory where the model checkpoint will be stored.
 
+        quiet : bool, optional
+            Whether to suppress output during the loading process.
+
         """
         if self.model is not None:
             return
 
         from transformers import HubertModel
 
-        self.model = HubertModel.from_pretrained(
-            self.variant.model_name, cache_dir=model_dir
-        )
+        with silence_transformers(quiet):
+            self.model = HubertModel.from_pretrained(
+                self.variant.model_name, cache_dir=model_dir
+            )
         self.model.eval()
         self.model.to(self.device)  # type: ignore
 
@@ -102,7 +110,7 @@ class HubertModel(BaseModel):
         if self.model is None:
             raise RuntimeError("Model not loaded. Call 'load' method first.")
 
-        if self.variant == HubertVariant.LARGE:
+        if self.variant != HubertVariant.BASE:
             audio = audio.normalize()
 
         with torch.inference_mode():
@@ -127,6 +135,7 @@ class HubertModel(BaseModel):
         variant_map = {
             HubertVariant.BASE: 12,
             HubertVariant.LARGE: 24,
+            HubertVariant.XLARGE: 48,
         }
         return variant_map.get(self.variant, 0)
 

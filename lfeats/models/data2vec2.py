@@ -60,13 +60,16 @@ class Data2Vec2Model(BaseModel):
         self.processor = None
         self.model = None
 
-    def load(self, model_dir: str) -> None:
+    def load(self, model_dir: str, quiet: bool = False) -> None:
         """Load the model from the specified directory.
 
         Parameters
         ----------
         model_dir : str
             The directory where the model files will be stored.
+
+        quiet : bool, optional
+            Whether to suppress output during the loading process.
 
         """
         if self.model is not None:
@@ -79,7 +82,8 @@ class Data2Vec2Model(BaseModel):
             if (
                 download_file(
                     f"https://dl.fbaipublicfiles.com/fairseq/data2vec2/{checkpoint_filename}",
-                    model_dir,
+                    download_dir=model_dir,
+                    quiet=quiet,
                 )
                 != checkpoint
             ):

@@ -176,7 +176,7 @@ def main() -> None:
         device=args.device,
         cache_dir=args.cache_dir,
     )
-    extractor.load()
+    extractor.load(quiet=args.quiet)
 
     # Process each input file and extract features.
     for input_file in input_files:

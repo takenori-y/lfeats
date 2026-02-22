@@ -69,13 +69,16 @@ class ContentVecModel(BaseModel):
 
         self.model = None
 
-    def load(self, model_dir: str) -> None:
+    def load(self, model_dir: str, quiet: bool = False) -> None:
         """Load the model from the specified directory.
 
         Parameters
         ----------
         model_dir : str
             The directory where the model checkpoint will be stored.
+
+        quiet : bool, optional
+            Whether to suppress output during the loading process.
 
         """
         if self.model is not None:
@@ -87,7 +90,9 @@ class ContentVecModel(BaseModel):
         if not os.path.exists(checkpoint):
             if (
                 download_file(
-                    f"https://ibm.ent.box.com/shared/static/{token}", model_dir
+                    f"https://ibm.ent.box.com/shared/static/{token}",
+                    download_dir=model_dir,
+                    quiet=quiet,
                 )
                 != checkpoint
             ):

@@ -26,13 +26,16 @@ class BaseModel(ABC):
         self.device = device
 
     @abstractmethod
-    def load(self, model_dir: str) -> None:
+    def load(self, model_dir: str, quiet: bool) -> None:
         """Load the model from the specified directory.
 
         Parameters
         ----------
         model_dir : str
             The directory where the model files are stored.
+
+        quiet : bool
+            Whether to suppress output during the loading process.
 
         """
         raise NotImplementedError

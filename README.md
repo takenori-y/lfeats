@@ -40,7 +40,8 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | | `large` | 16 | 1024 | | | |
 | `hubert` | `base` | 12 | 768 | [arXiv](https://arxiv.org/abs/2106.07447) | [GitHub](https://github.com/facebookresearch/fairseq/tree/main/examples/hubert) | [🤗](https://huggingface.co/facebook/hubert-base-ls960) |
 | | `large` | 24 | 1024 | | | [🤗](https://huggingface.co/facebook/hubert-large-ll60k) |
-| `rspin` | `wavlm-32` | 12 | 768 | [arXiv](https://arxiv.org/abs/2311.09117) | [GitHub](https://github.com/vectominist/rspin) | |
+| | `xlarge` | 48 | 1280 | | | [🤗](https://huggingface.co/facebook/hubert-xlarge-ll60k) |
+| `r-spin` | `wavlm-32` | 12 | 768 | [arXiv](https://arxiv.org/abs/2311.09117) | [GitHub](https://github.com/vectominist/rspin) | |
 | | `wavlm-64` | 12 | 768 | | | |
 | | `wavlm-128` | 12 | 768 | | | |
 | | `wavlm-256` | 12 | 768 | | | |
@@ -74,6 +75,9 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | | `base` | 6 | 512 | | | [🤗](https://huggingface.co/openai/whisper-base) |
 | | `small` | 12 | 768 | | | [🤗](https://huggingface.co/openai/whisper-small) |
 | | `medium` | 24 | 1024 | | | [🤗](https://huggingface.co/openai/whisper-medium) |
+| | `large` | 32 | 1280 | | | [🤗](https://huggingface.co/openai/whisper-large) |
+| | `large-v2` | 32 | 1280 | | | [🤗](https://huggingface.co/openai/whisper-large-v2) |
+| | `large-v3` | 32 | 1280 | | | [🤗](https://huggingface.co/openai/whisper-large-v3) |
 
 > [!IMPORTANT]
 > Users must comply with the respective licenses of the models.

@@ -8,6 +8,7 @@ from enum import Enum
 import torch
 
 from ..interfaces.types import Audio, Features
+from ..utils.io import silence_transformers
 from ..utils.validation import validate_enum
 from .base import BaseModel
 
@@ -55,7 +56,7 @@ class UniSpeechSatModel(BaseModel):
 
         self.model = None
 
-    def load(self, model_dir: str) -> None:
+    def load(self, model_dir: str, quiet: bool = False) -> None:
         """Load the model from the specified directory.
 
         Parameters
@@ -63,15 +64,19 @@ class UniSpeechSatModel(BaseModel):
         model_dir : str
             The directory where the model checkpoint will be stored.
 
+        quiet : bool, optional
+            Whether to suppress output during the loading process.
+
         """
         if self.model is not None:
             return
 
         from transformers import UniSpeechSatForPreTraining as _UniSpeechSatModel
 
-        self.model = _UniSpeechSatModel.from_pretrained(
-            self.variant.model_name, cache_dir=model_dir
-        )
+        with silence_transformers(quiet):
+            self.model = _UniSpeechSatModel.from_pretrained(
+                self.variant.model_name, cache_dir=model_dir
+            )
         self.model.eval()
         self.model.to(self.device)  # type: ignore
 

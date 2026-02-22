@@ -79,9 +79,16 @@ class Extractor:
         else:
             self.cache_dir = cache_dir
 
-    def load(self) -> None:
-        """Download and load the model if it is not already loaded."""
-        self.model_manager.get_model().load(self.cache_dir)
+    def load(self, quiet: bool = False) -> None:
+        """Download and load the model if it is not already loaded.
+
+        Parameters
+        ----------
+        quiet : bool, optional
+            If True, suppress the output during model loading.
+
+        """
+        self.model_manager.get_model().load(self.cache_dir, quiet)
 
     def __call__(
         self,
@@ -257,7 +264,7 @@ class Extractor:
 
         # Load the model.
         model = self.model_manager.get_model()
-        model.load(self.cache_dir)
+        model.load(self.cache_dir, quiet=False)
         if model.chunk_length_sec is not None:
             chunk_length_sec = model.chunk_length_sec
         normalized_layers = self._normalize_layers(layers, model.num_layers + 1)
@@ -279,6 +286,11 @@ class Extractor:
         padding = (left_padding, total_padding - left_padding)
         if total_padding > 0:
             audio = audio.pad(padding)
+        elif not center:
+            raise ValueError(
+                "The selected model does not support 'center=False' "
+                "because it already compensates for the delay internally."
+            )
 
         # Calculate chunk start and end indices considering padding and overlap.
         chunks = self._create_chunks(

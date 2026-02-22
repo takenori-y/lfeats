@@ -9,6 +9,7 @@ from enum import Enum
 import torch
 
 from ..interfaces.types import Audio, Features
+from ..utils.io import download_file
 from ..utils.validation import validate_enum
 from .base import BaseModel
 
@@ -63,13 +64,16 @@ class RSpinModel(BaseModel):
 
         self.model = None
 
-    def load(self, model_dir: str) -> None:
+    def load(self, model_dir: str, quiet: bool = False) -> None:
         """Load the model from the specified directory.
 
         Parameters
         ----------
         model_dir : str
             The directory where the model checkpoint will be stored.
+
+        quiet : bool, optional
+            Whether to suppress output during the loading process.
 
         """
         if self.model is not None:
@@ -78,19 +82,17 @@ class RSpinModel(BaseModel):
         checkpoint = os.path.join(model_dir, self.variant.checkpoint_filename)
 
         if not os.path.exists(checkpoint):
-            from parfive import Downloader
-
-            dl = Downloader()
-
-            dl.enqueue_file(
-                (
-                    "https://data.csail.mit.edu/public-release-sls/rspin/"
-                    + self.variant.checkpoint_filename
-                ),
-                path=model_dir,
-            )
-            files = dl.download()
-            if len(files) == 0 or files[0] != checkpoint:
+            if (
+                download_file(
+                    (
+                        "https://data.csail.mit.edu/public-release-sls/rspin/"
+                        + self.variant.checkpoint_filename
+                    ),
+                    download_dir=model_dir,
+                    quiet=quiet,
+                )
+                != checkpoint
+            ):
                 raise RuntimeError("Failed to download the model checkpoint.")
 
         from lfeats.third_party.rspin import RSpinWavlm
@@ -141,4 +143,4 @@ class RSpinModel(BaseModel):
             The model identifier.
 
         """
-        return f"rspin-{self.variant.value}"
+        return f"r-spin-{self.variant.value}"
