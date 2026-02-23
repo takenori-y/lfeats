@@ -68,7 +68,7 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | | `large` | 24 | 1024 | | | [🤗](https://huggingface.co/microsoft/unispeech-sat-large) |
 | `wav2vec2` | `base` | 12 | 768 | [arXiv](https://arxiv.org/abs/2006.11477) | [GitHub](https://github.com/facebookresearch/fairseq/tree/main/examples/wav2vec) | |
 | | `large` | 24 | 1024 | | | |
-| | `xlsr-v1` | 24 | 1024 | [arXiv](https://arxiv.org/abs/2006.13979) | | |
+| | `xlsr` | 24 | 1024 | [arXiv](https://arxiv.org/abs/2006.13979) | | |
 | | `xlsr-v2` | 24 | 1024 | [arXiv](https://arxiv.org/abs/2111.09296) | [GitHub](https://github.com/facebookresearch/fairseq/tree/main/examples/wav2vec/xlsr) | |
 | `wavlm` | `base` | 12 | 768 | [arXiv](https://arxiv.org/abs/2110.13900) | [GitHub](https://github.com/microsoft/unilm/tree/master/wavlm) | [🤗](https://huggingface.co/microsoft/wavlm-base) |
 | | `base-plus` | 12 | 768 | | | [🤗](https://huggingface.co/microsoft/wavlm-base-plus) |
@@ -83,12 +83,12 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 
 ### Utterance-level Features
 
-| Model Name | Model Variant | Dimension | Paper | Source | Model Hub |
-| :--- | :--- | ---: | :---: | :---: | :---: |
-| `ecapa-tdnn` | `base` | 192 | [arXiv](https://arxiv.org/abs/2005.07143) | [GitHub](https://github.com/speechbrain/speechbrain) | [🤗](https://huggingface.co/speechbrain/spkrec-ecapa-voxceleb) |
-| `next-tdnn` | `light` | 192 | [arXiv](https://arxiv.org/abs/2312.08603) | [GitHub](https://github.com/dmlguq456/NeXt_TDNN_ASV) | |
-| | `base` | 192 | | | |
-| | `base-v2` | 192 | | | |
+| Model Name | Model Variant | Layers | Dimension | Paper | Source | Model Hub |
+| :--- | :--- | ---: | ---: | :---: | :---: | :---: |
+| `ecapa-tdnn` | `base` | 0 | 192 | [arXiv](https://arxiv.org/abs/2005.07143) | [GitHub](https://github.com/speechbrain/speechbrain) | [🤗](https://huggingface.co/speechbrain/spkrec-ecapa-voxceleb) |
+| `next-tdnn` | `light` | 0 | 192 | [arXiv](https://arxiv.org/abs/2312.08603) | [GitHub](https://github.com/dmlguq456/NeXt_TDNN_ASV) | |
+| | `base` | 0 | 192 | | | |
+| | `base-v2` | 0 | 192 | | | |
 
 > [!IMPORTANT]
 > Users must comply with the respective licenses of the models.
@@ -97,7 +97,7 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 ## Supported Resamplers
 
 | Resampler Type | Quality Preset | Source | License |
-| :--- | :--- | :---: | :---: |
+| :--- | :--- | :---: | :--- |
 | `lilfilter` | `base` | [GitHub](https://github.com/danpovey/filtering) | MIT |
 | `soxr` | `quick` | [GitHub](https://github.com/dofuuz/python-soxr) | LGPL v2.1+ |
 | | `low` | | |
