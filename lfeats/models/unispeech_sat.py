@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Takenori Yoshimura
 # Released under the MIT License.
 
-"""A module for the WavLM model."""
+"""A module for the UniSpeech-SAT model."""
 
 from enum import Enum
 
@@ -10,7 +10,7 @@ import torch
 from ..interfaces.types import Audio, Features
 from ..utils.io import silence_transformers
 from ..utils.validation import validate_enum
-from .base import BaseModel
+from .base import FrameLevelFeatureModel
 
 
 class UniSpeechSATVariant(str, Enum):
@@ -33,7 +33,7 @@ class UniSpeechSATVariant(str, Enum):
         return f"microsoft/unispeech-sat-{self.value}"
 
 
-class UniSpeechSATModel(BaseModel):
+class UniSpeechSATModel(FrameLevelFeatureModel):
     """A class for the UniSpeech-SAT model."""
 
     def __init__(self, variant: str | None = None, device: str = "cpu") -> None:
@@ -53,6 +53,7 @@ class UniSpeechSATModel(BaseModel):
         self.variant = validate_enum(
             variant, UniSpeechSATVariant, UniSpeechSATVariant.BASE_PLUS
         )
+        self._model_id = f"unispeech-sat-{self.variant.value}"
 
         self.model = None
 
@@ -77,8 +78,8 @@ class UniSpeechSATModel(BaseModel):
             self.model = _UniSpeechSATModel.from_pretrained(
                 self.variant.model_name, cache_dir=model_dir
             )
-        self.model.eval()
-        self.model.to(self.device)  # type: ignore
+            self.model.eval()
+            self.model.to(self.device)  # type: ignore
 
     def extract_features_impl(self, audio: Audio, layers: list[int]) -> Features:
         """Extract features from the input audio using the model.
@@ -132,15 +133,3 @@ class UniSpeechSATModel(BaseModel):
             UniSpeechSATVariant.LARGE: 24,
         }
         return variant_map.get(self.variant, 0)
-
-    @property
-    def model_id(self) -> str:
-        """Get the model identifier.
-
-        Returns
-        -------
-        out : str
-            The model identifier.
-
-        """
-        return f"unispeech-sat-{self.variant.value}"

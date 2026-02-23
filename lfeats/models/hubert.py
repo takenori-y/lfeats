@@ -10,7 +10,7 @@ import torch
 from ..interfaces.types import Audio, Features
 from ..utils.io import silence_transformers
 from ..utils.validation import validate_enum
-from .base import BaseModel
+from .base import FrameLevelFeatureModel
 
 
 class HuBERTVariant(str, Enum):
@@ -40,7 +40,7 @@ class HuBERTVariant(str, Enum):
         return base
 
 
-class HuBERTModel(BaseModel):
+class HuBERTModel(FrameLevelFeatureModel):
     """A class for the HuBERT model."""
 
     def __init__(self, variant: str | None = None, device: str = "cpu") -> None:
@@ -58,6 +58,7 @@ class HuBERTModel(BaseModel):
         super().__init__(variant, device)
 
         self.variant = validate_enum(variant, HuBERTVariant, HuBERTVariant.BASE)
+        self._model_id = f"hubert-{self.variant.value}"
 
         self.model = None
 
@@ -82,8 +83,8 @@ class HuBERTModel(BaseModel):
             self.model = HubertModel.from_pretrained(
                 self.variant.model_name, cache_dir=model_dir
             )
-        self.model.eval()
-        self.model.to(self.device)  # type: ignore
+            self.model.eval()
+            self.model.to(self.device)  # type: ignore
 
     def extract_features_impl(self, audio: Audio, layers: list[int]) -> Features:
         """Extract features from the input audio using the model.
@@ -138,15 +139,3 @@ class HuBERTModel(BaseModel):
             HuBERTVariant.XLARGE: 48,
         }
         return variant_map.get(self.variant, 0)
-
-    @property
-    def model_id(self) -> str:
-        """Get the model identifier.
-
-        Returns
-        -------
-        out : str
-            The model identifier.
-
-        """
-        return f"hubert-{self.variant.value}"

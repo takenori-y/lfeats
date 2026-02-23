@@ -6,6 +6,7 @@
 from .contentvec import ContentVecModel
 from .data2vec import Data2VecModel
 from .data2vec2 import Data2Vec2Model
+from .ecapa_tdnn import EcapaTDNNModel
 from .hubert import HuBERTModel
 from .manager import ModelManager
 from .next_tdnn import NeXtTDNNModel
@@ -22,6 +23,7 @@ MODEL_MAP = {
     "contentvec": ContentVecModel,
     "data2vec": Data2VecModel,
     "data2vec2": Data2Vec2Model,
+    "ecapa-tdnn": EcapaTDNNModel,
     "hubert": HuBERTModel,
     "next-tdnn": NeXtTDNNModel,
     "r-spin": RSpinModel,

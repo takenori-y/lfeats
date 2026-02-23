@@ -1,30 +1,30 @@
 # Copyright (c) 2026 Takenori Yoshimura
 # Released under the MIT License.
 
-"""A module for the SpidR model."""
+"""A module for the ECAPA-TDNN model."""
 
 from enum import Enum
-from typing import Any
 
 import torch
 
 from ..interfaces.types import Audio, Features
-from ..utils.io import set_torch_hub_dir
+from ..utils.io import silence_hf_hub
+from ..utils.paths import setup_third_party_path
 from ..utils.validation import validate_enum
-from .base import FrameLevelFeatureModel
+from .base import UtteranceLevelFeatureModel
 
 
-class SpidRVariant(str, Enum):
-    """Enumeration of supported SpindR model variants."""
+class EcapaTDNNVariant(str, Enum):
+    """Enumeration of supported ECAPA-TDNN model variants."""
 
     BASE = "base"
 
 
-class SpidRModel(FrameLevelFeatureModel):
-    """A class for the SpidR model."""
+class EcapaTDNNModel(UtteranceLevelFeatureModel):
+    """A class for the ECAPA-TDNN model."""
 
     def __init__(self, variant: str | None = None, device: str = "cpu") -> None:
-        """Initialize the SpidR model.
+        """Initialize the ECAPA-TDNN model.
 
         Parameters
         ----------
@@ -37,8 +37,8 @@ class SpidRModel(FrameLevelFeatureModel):
         """
         super().__init__(variant, device)
 
-        self.variant = validate_enum(variant, SpidRVariant, SpidRVariant.BASE)
-        self._model_id = f"spidr-{self.variant.value}"
+        self.variant = validate_enum(variant, EcapaTDNNVariant, EcapaTDNNVariant.BASE)
+        self._model_id = f"ecapa-tdnn-{self.variant.value}"
 
         self.model = None
 
@@ -57,12 +57,20 @@ class SpidRModel(FrameLevelFeatureModel):
         if self.model is not None:
             return
 
-        with set_torch_hub_dir(model_dir):
-            self.model: Any = torch.hub.load(
-                "facebookresearch/spidr", "spidr_base", verbose=not quiet
+        setup_third_party_path()
+
+        from lfeats.third_party.speechbrain.inference.classifiers import (
+            EncoderClassifier,
+        )
+
+        with silence_hf_hub(quiet):
+            self.model = EncoderClassifier.from_hparams(
+                source="speechbrain/spkrec-ecapa-voxceleb"
             )
-        self.model.eval()
-        self.model.to(self.device)
+            if self.model is None:
+                raise RuntimeError("Failed to load the model.")
+            self.model.eval()
+            self.model.to(self.device)
 
     def extract_features_impl(self, audio: Audio, layers: list[int]) -> Features:
         """Extract features from the input audio using the model.
@@ -89,22 +97,7 @@ class SpidRModel(FrameLevelFeatureModel):
         if self.model is None:
             raise RuntimeError("Model is not loaded. Call 'load' method first.")
 
-        # The model expects standardized audio.
-        audio = audio.normalize()
-
         with torch.inference_mode():
-            features = []
+            vectors = self.model.encode_batch(audio.tensor.to(self.device))
 
-            x = self.model.feature_extractor(audio.tensor.to(self.device))
-            x = self.model.feature_projection(x)
-            features.append(x)
-
-            x = x + self.model.student.pos_conv_embed(x)
-            x = self.model.student.layer_norm(x)
-            for layer in self.model.student.layers:
-                x, layer_result = layer(x)
-                features.append(layer_result)
-
-            vectors = torch.concat([features[i] for i in layers], dim=-1)
-
-        return Features(data=vectors, source=self.model_id, layers=layers)
+        return Features(data=vectors, source=self.model_id)

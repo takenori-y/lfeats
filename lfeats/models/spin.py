@@ -16,7 +16,7 @@ from huggingface_hub import hf_hub_download
 from ..interfaces.types import Audio, Features
 from ..utils.io import silence_hf_hub
 from ..utils.validation import validate_enum
-from .base import BaseModel
+from .base import FrameLevelFeatureModel
 
 
 @contextmanager
@@ -97,7 +97,7 @@ class SpinVariant(str, Enum):
         return f"spin_{self.value.replace('-', '_')}.ckpt"
 
 
-class SpinModel(BaseModel):
+class SpinModel(FrameLevelFeatureModel):
     """A class for the Spin model."""
 
     def __init__(self, variant: str | None = None, device: str = "cpu") -> None:
@@ -115,6 +115,7 @@ class SpinModel(BaseModel):
         super().__init__(variant, device)
 
         self.variant = validate_enum(variant, SpinVariant, SpinVariant.HUBERT_256)
+        self._model_id = f"spin-{self.variant.value}"
 
         self.model = None
 
@@ -193,15 +194,3 @@ class SpinModel(BaseModel):
             vectors = torch.concat([outputs["feat_list"][i] for i in layers], dim=-1)
 
         return Features(data=vectors, source=self.model_id, layers=layers)
-
-    @property
-    def model_id(self) -> str:
-        """Get the model identifier.
-
-        Returns
-        -------
-        out : str
-            The model identifier.
-
-        """
-        return f"spin-{self.variant.value}"

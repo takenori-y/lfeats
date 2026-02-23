@@ -10,7 +10,7 @@ import torch
 from ..interfaces.types import Audio, Features
 from ..utils.io import silence_transformers
 from ..utils.validation import validate_enum
-from .base import BaseModel
+from .base import FrameLevelFeatureModel
 
 
 class WhisperVariant(str, Enum):
@@ -37,7 +37,7 @@ class WhisperVariant(str, Enum):
         return f"openai/whisper-{self.value}"
 
 
-class WhisperModel(BaseModel):
+class WhisperModel(FrameLevelFeatureModel):
     """A class for the Whisper model."""
 
     def __init__(self, variant: str | None = None, device: str = "cpu") -> None:
@@ -55,6 +55,7 @@ class WhisperModel(BaseModel):
         super().__init__(variant, device)
 
         self.variant = validate_enum(variant, WhisperVariant, WhisperVariant.SMALL)
+        self._model_id = f"whisper-{self.variant.value}"
 
         self.processor = None
         self.model = None
@@ -83,8 +84,8 @@ class WhisperModel(BaseModel):
             self.model = WhisperModel.from_pretrained(
                 self.variant.model_name, cache_dir=model_dir
             )
-        self.model.eval()
-        self.model.to(self.device)  # type: ignore
+            self.model.eval()
+            self.model.to(self.device)  # type: ignore
 
     def extract_features_impl(self, audio: Audio, layers: list[int]) -> Features:
         """Extract features from the input audio using the model.
@@ -179,15 +180,3 @@ class WhisperModel(BaseModel):
 
         """
         return 30
-
-    @property
-    def model_id(self) -> str:
-        """Get the model identifier.
-
-        Returns
-        -------
-        out : str
-            The model identifier.
-
-        """
-        return f"whisper-{self.variant.value}"

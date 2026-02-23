@@ -25,6 +25,8 @@ class BaseModel(ABC):
         """
         self.device = device
 
+        self._model_id = None  # To be defined in subclasses
+
     @abstractmethod
     def load(self, model_dir: str, quiet: bool) -> None:
         """Load the model from the specified directory.
@@ -102,6 +104,88 @@ class BaseModel(ABC):
         return 16000
 
     @property
+    @abstractmethod
+    def num_layers(self) -> int:
+        """Get the number of layers in the model.
+
+        Returns
+        -------
+        out : int
+            The number of layers.
+
+        """
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def frame_shift(self) -> int:
+        """Get the frame shift of the model.
+
+        Returns
+        -------
+        out : int
+            The frame shift in samples.
+
+        """
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def center_offset(self) -> int:
+        """Get the center offset of the model.
+
+        Returns
+        -------
+        out : int
+            The center offset in samples.
+
+        """
+        raise NotImplementedError
+
+    @property
+    def chunk_length_sec(self) -> int | None:
+        """Get the chunk length in seconds of the model, if applicable.
+
+        Returns
+        -------
+        out : int | None
+            The chunk length in seconds, or None if not applicable.
+
+        """
+        return None
+
+    @property
+    @abstractmethod
+    def granularity(self) -> Granularity:
+        """Get the granularity of the features extracted by the model.
+
+        Returns
+        -------
+        out : str
+            The granularity of the features.
+
+        """
+        raise NotImplementedError
+
+    @property
+    def model_id(self) -> str:
+        """Get the model identifier.
+
+        Returns
+        -------
+        out : str
+            The model identifier.
+
+        """
+        if self._model_id is None:
+            raise NotImplementedError("Model ID is not defined.")
+        return self._model_id
+
+
+class FrameLevelFeatureModel(BaseModel):
+    """An abstract base class for frame-level feature extraction models."""
+
+    @property
     def num_layers(self) -> int:
         """Get the number of layers in the model.
 
@@ -141,18 +225,6 @@ class BaseModel(ABC):
         return int(12.5 * self.sample_rate / 1000)
 
     @property
-    def chunk_length_sec(self) -> int | None:
-        """Get the chunk length in seconds of the model, if applicable.
-
-        Returns
-        -------
-        out : int | None
-            The chunk length in seconds, or None if not applicable.
-
-        """
-        return None
-
-    @property
     def granularity(self) -> Granularity:
         """Get the granularity of the features extracted by the model.
 
@@ -164,15 +236,54 @@ class BaseModel(ABC):
         """
         return Granularity.FRAME
 
+
+class UtteranceLevelFeatureModel(BaseModel):
+    """An abstract base class for utterance-level feature extraction models."""
+
     @property
-    @abstractmethod
-    def model_id(self) -> str:
-        """Get the model identifier.
+    def num_layers(self) -> int:
+        """Get the number of layers in the model.
+
+        Returns
+        -------
+        out : int
+            The number of layers.
+
+        """
+        return 0
+
+    @property
+    def frame_shift(self) -> int:
+        """Get the frame shift of the model.
+
+        Returns
+        -------
+        out : int
+            The frame shift in samples.
+
+        """
+        return int(20.0 * self.sample_rate / 1000)
+
+    @property
+    def center_offset(self) -> int:
+        """Get the center offset of the model.
+
+        Returns
+        -------
+        out : int
+            The center offset in samples.
+
+        """
+        return 0
+
+    @property
+    def granularity(self) -> Granularity:
+        """Get the granularity of the features extracted by the model.
 
         Returns
         -------
         out : str
-            The model identifier.
+            The granularity of the features.
 
         """
-        raise NotImplementedError
+        return Granularity.UTTERANCE

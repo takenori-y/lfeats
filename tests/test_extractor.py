@@ -18,6 +18,7 @@ from tests.utils import generate_dummy_waveform
         ("contentvec", "hubert-100"),
         ("data2vec", "base"),
         ("data2vec2", "base"),
+        ("ecapa-tdnn", "base"),
         ("hubert", "base"),
         ("next-tdnn", "light"),
         ("r-spin", "wavlm-32"),

@@ -1,18 +1,18 @@
 # Copyright (c) 2026 Takenori Yoshimura
 # Released under the MIT License.
 
-"""A module for the Whisper model."""
+"""A module for the wav2vec 2.0 model."""
 
 import os
-import sys
 from enum import Enum
 
 import torch
 
 from ..interfaces.types import Audio, Features
 from ..utils.io import download_file
+from ..utils.paths import setup_third_party_path
 from ..utils.validation import validate_enum
-from .base import BaseModel
+from .base import FrameLevelFeatureModel
 
 
 class Wav2Vec2Variant(str, Enum):
@@ -44,7 +44,7 @@ class Wav2Vec2Variant(str, Enum):
         raise ValueError(f"Unsupported wav2vec 2.0 variant: {self.value}")
 
 
-class Wav2Vec2Model(BaseModel):
+class Wav2Vec2Model(FrameLevelFeatureModel):
     """A class for the wav2vec 2.0 model."""
 
     def __init__(self, variant: str | None = None, device: str = "cpu") -> None:
@@ -62,6 +62,7 @@ class Wav2Vec2Model(BaseModel):
         super().__init__(variant, device)
 
         self.variant = validate_enum(variant, Wav2Vec2Variant, Wav2Vec2Variant.BASE)
+        self._model_id = f"wav2vec2-{self.variant.value}"
 
         self.processor = None
         self.model = None
@@ -95,11 +96,7 @@ class Wav2Vec2Model(BaseModel):
             ):
                 raise RuntimeError("Failed to download model checkpoint.")
 
-        third_party_dir = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "..", "third_party")
-        )
-        if third_party_dir not in sys.path:
-            sys.path.append(third_party_dir)
+        setup_third_party_path()
 
         from lfeats.third_party.fairseq.checkpoint_utils import (
             load_model_ensemble_and_task,
@@ -168,15 +165,3 @@ class Wav2Vec2Model(BaseModel):
             Wav2Vec2Variant.XLSR_V2: 24,
         }
         return variant_map.get(self.variant, 0)
-
-    @property
-    def model_id(self) -> str:
-        """Get the model identifier.
-
-        Returns
-        -------
-        out : str
-            The model identifier.
-
-        """
-        return f"wav2vec2-{self.variant.value}"

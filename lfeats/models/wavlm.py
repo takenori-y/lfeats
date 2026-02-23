@@ -10,7 +10,7 @@ import torch
 from ..interfaces.types import Audio, Features
 from ..utils.io import silence_transformers
 from ..utils.validation import validate_enum
-from .base import BaseModel
+from .base import FrameLevelFeatureModel
 
 
 class WavLMVariant(str, Enum):
@@ -33,7 +33,7 @@ class WavLMVariant(str, Enum):
         return f"microsoft/wavlm-{self.value}"
 
 
-class WavLMModel(BaseModel):
+class WavLMModel(FrameLevelFeatureModel):
     """A class for the WavLM model."""
 
     def __init__(self, variant: str | None = None, device: str = "cpu") -> None:
@@ -51,6 +51,7 @@ class WavLMModel(BaseModel):
         super().__init__(variant, device)
 
         self.variant = validate_enum(variant, WavLMVariant, WavLMVariant.BASE_PLUS)
+        self._model_id = f"wavlm-{self.variant.value}"
 
         self.model = None
 
@@ -75,8 +76,8 @@ class WavLMModel(BaseModel):
             self.model = _WavLMModel.from_pretrained(
                 self.variant.model_name, cache_dir=model_dir
             )
-        self.model.eval()
-        self.model.to(self.device)  # type: ignore
+            self.model.eval()
+            self.model.to(self.device)  # type: ignore
 
     def extract_features_impl(self, audio: Audio, layers: list[int]) -> Features:
         """Extract features from the input audio using the model.
@@ -131,15 +132,3 @@ class WavLMModel(BaseModel):
             WavLMVariant.LARGE: 24,
         }
         return variant_map.get(self.variant, 0)
-
-    @property
-    def model_id(self) -> str:
-        """Get the model identifier.
-
-        Returns
-        -------
-        out : str
-            The model identifier.
-
-        """
-        return f"wavlm-{self.variant.value}"

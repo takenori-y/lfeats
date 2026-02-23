@@ -85,6 +85,7 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 
 | Model Name | Model Variant | Dimension | Paper | Source | Model Hub |
 | :--- | :--- | ---: | :---: | :---: | :---: |
+| `ecapa-tdnn` | `base` | 192 | [arXiv](https://arxiv.org/abs/2005.07143) | [GitHub](https://github.com/speechbrain/speechbrain) | [🤗](https://huggingface.co/speechbrain/spkrec-ecapa-voxceleb) |
 | `next-tdnn` | `light` | 192 | [arXiv](https://arxiv.org/abs/2312.08603) | [GitHub](https://github.com/dmlguq456/NeXt_TDNN_ASV) | |
 | | `base` | 192 | | | |
 | | `base-v2` | 192 | | | |
@@ -232,5 +233,6 @@ This project is released under the MIT License.
 | [fairseq](https://github.com/facebookresearch/fairseq) | MIT |
 | [NeXt_TDNN_ASV](https://github.com/dmlguq456/NeXt_TDNN_ASV) | Apache-2.0 | [R-Spin](https://github.com/vectominist/rspin) | MIT |
 | [S3PRL](https://github.com/s3prl/s3prl) | Apache-2.0 |
+| [SpeechBrain](https://github.com/speechbrain/speechbrain) | Apache-2.0 |
 | [Spin](https://github.com/vectominist/spin) | MIT |
 | [timm](https://github.com/huggingface/pytorch-image-models) | Apache-2.0 |

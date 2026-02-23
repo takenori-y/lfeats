@@ -13,7 +13,7 @@ from huggingface_hub import hf_hub_download
 from ..interfaces.types import Audio, Features
 from ..utils.io import silence_hf_hub
 from ..utils.validation import validate_enum
-from .base import BaseModel
+from .base import FrameLevelFeatureModel
 from .hubert import HuBERTModel, HuBERTVariant
 
 
@@ -40,7 +40,7 @@ class SSLZipVariant(str, Enum):
         raise ValueError(f"Unsupported SSLZip variant: {self.value}")
 
 
-class SSLZipModel(BaseModel):
+class SSLZipModel(FrameLevelFeatureModel):
     """A class for the SSLZip model."""
 
     def __init__(self, variant: str | None = None, device: str = "cpu") -> None:
@@ -58,6 +58,7 @@ class SSLZipModel(BaseModel):
         super().__init__(variant, device)
 
         self.variant = validate_enum(variant, SSLZipVariant, SSLZipVariant.BASE)
+        self._model_id = f"sslzip-{self.variant.value}"
 
         self.upstream = HuBERTModel(variant=HuBERTVariant.BASE.value, device=device)
         self.model = None
@@ -140,15 +141,3 @@ class SSLZipModel(BaseModel):
 
         """
         return 0
-
-    @property
-    def model_id(self) -> str:
-        """Get the model identifier.
-
-        Returns
-        -------
-        out : str
-            The model identifier.
-
-        """
-        return f"sslzip-{self.variant.value}"

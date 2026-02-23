@@ -4,15 +4,15 @@
 """A module for the NeXt-TDNN model."""
 
 import os
-import sys
 from enum import Enum
 
 import torch
 
-from ..interfaces.types import Audio, Features, Granularity
+from ..interfaces.types import Audio, Features
 from ..utils.io import download_file
+from ..utils.paths import setup_third_party_path
 from ..utils.validation import validate_enum
-from .base import BaseModel
+from .base import UtteranceLevelFeatureModel
 
 
 class NeXtTDNNVariant(str, Enum):
@@ -46,7 +46,7 @@ class NeXtTDNNVariant(str, Enum):
         return directory, filename
 
 
-class NeXtTDNNModel(BaseModel):
+class NeXtTDNNModel(UtteranceLevelFeatureModel):
     """A class for the NeXt-TDNN model."""
 
     def __init__(self, variant: str | None = None, device: str = "cpu") -> None:
@@ -64,6 +64,7 @@ class NeXtTDNNModel(BaseModel):
         super().__init__(variant, device)
 
         self.variant = validate_enum(variant, NeXtTDNNVariant, NeXtTDNNVariant.BASE_V2)
+        self._model_id = f"next-tdnn-{self.variant.value}"
 
         self.model = None
 
@@ -99,13 +100,7 @@ class NeXtTDNNModel(BaseModel):
             ):
                 raise RuntimeError("Failed to download the model checkpoint.")
 
-        third_party_dir = os.path.abspath(
-            os.path.join(
-                os.path.dirname(__file__), "..", "third_party", "next_tdnn_asv"
-            )
-        )
-        if third_party_dir not in sys.path:
-            sys.path.append(third_party_dir)
+        setup_third_party_path("next_tdnn_asv")
 
         from lfeats.third_party.next_tdnn_asv.main import NeXtTDNNModel
 
@@ -151,51 +146,3 @@ class NeXtTDNNModel(BaseModel):
             vectors = vectors.unsqueeze(1)
 
         return Features(data=vectors, source=self.model_id)
-
-    @property
-    def num_layers(self) -> int:
-        """Get the number of layers in the model.
-
-        Returns
-        -------
-        out : int
-            The number of layers.
-
-        """
-        return 0
-
-    @property
-    def center_offset(self) -> int:
-        """Get the center offset of the model.
-
-        Returns
-        -------
-        out : int
-            The center offset in samples.
-
-        """
-        return 0
-
-    @property
-    def granularity(self) -> Granularity:
-        """Get the granularity of the features extracted by the model.
-
-        Returns
-        -------
-        out : str
-            The granularity of the features.
-
-        """
-        return Granularity.UTTERANCE
-
-    @property
-    def model_id(self) -> str:
-        """Get the model identifier.
-
-        Returns
-        -------
-        out : str
-            The model identifier.
-
-        """
-        return f"next-tdnn-{self.variant.value}"

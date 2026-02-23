@@ -1,18 +1,18 @@
 # Copyright (c) 2026 Takenori Yoshimura
 # Released under the MIT License.
 
-"""A module for the Whisper model."""
+"""A module for the data2vec model."""
 
 import os
-import sys
 from enum import Enum
 
 import torch
 
 from ..interfaces.types import Audio, Features
 from ..utils.io import download_file
+from ..utils.paths import setup_third_party_path
 from ..utils.validation import validate_enum
-from .base import BaseModel
+from .base import FrameLevelFeatureModel
 
 
 class Data2VecVariant(str, Enum):
@@ -38,7 +38,7 @@ class Data2VecVariant(str, Enum):
         raise ValueError(f"Unsupported data2vec variant: {self.value}")
 
 
-class Data2VecModel(BaseModel):
+class Data2VecModel(FrameLevelFeatureModel):
     """A class for the data2vec model."""
 
     def __init__(self, variant: str | None = None, device: str = "cpu") -> None:
@@ -56,6 +56,7 @@ class Data2VecModel(BaseModel):
         super().__init__(variant, device)
 
         self.variant = validate_enum(variant, Data2VecVariant, Data2VecVariant.BASE)
+        self._model_id = f"data2vec-{self.variant.value}"
 
         self.processor = None
         self.model = None
@@ -89,11 +90,7 @@ class Data2VecModel(BaseModel):
             ):
                 raise RuntimeError("Failed to download model checkpoint.")
 
-        third_party_dir = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "..", "third_party")
-        )
-        if third_party_dir not in sys.path:
-            sys.path.append(third_party_dir)
+        setup_third_party_path()
 
         from lfeats.third_party.fairseq.checkpoint_utils import (
             load_model_ensemble_and_task,
@@ -160,15 +157,3 @@ class Data2VecModel(BaseModel):
             Data2VecVariant.LARGE: 24,
         }
         return variant_map.get(self.variant, 0)
-
-    @property
-    def model_id(self) -> str:
-        """Get the model identifier.
-
-        Returns
-        -------
-        out : str
-            The model identifier.
-
-        """
-        return f"data2vec-{self.variant.value}"

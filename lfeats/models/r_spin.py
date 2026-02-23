@@ -11,7 +11,7 @@ import torch
 from ..interfaces.types import Audio, Features
 from ..utils.io import download_file
 from ..utils.validation import validate_enum
-from .base import BaseModel
+from .base import FrameLevelFeatureModel
 
 
 class RSpinVariant(str, Enum):
@@ -43,7 +43,7 @@ class RSpinVariant(str, Enum):
         return f"{base}_rspin_{codebook_size}-40k.pt"
 
 
-class RSpinModel(BaseModel):
+class RSpinModel(FrameLevelFeatureModel):
     """A class for the R-Spin model."""
 
     def __init__(self, variant: str | None = None, device: str = "cpu") -> None:
@@ -61,6 +61,7 @@ class RSpinModel(BaseModel):
         super().__init__(variant, device)
 
         self.variant = validate_enum(variant, RSpinVariant, RSpinVariant.WAVLM_256)
+        self._model_id = f"r-spin-{self.variant.value}"
 
         self.model = None
 
@@ -132,15 +133,3 @@ class RSpinModel(BaseModel):
             vectors = torch.concat([feat_list[i] for i in layers], dim=-1)
 
         return Features(data=vectors, source=self.model_id, layers=layers)
-
-    @property
-    def model_id(self) -> str:
-        """Get the model identifier.
-
-        Returns
-        -------
-        out : str
-            The model identifier.
-
-        """
-        return f"r-spin-{self.variant.value}"

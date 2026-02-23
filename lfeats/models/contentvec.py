@@ -4,15 +4,15 @@
 """A module for the ContentVec model."""
 
 import os
-import sys
 from enum import Enum
 
 import torch
 
 from ..interfaces.types import Audio, Features
 from ..utils.io import download_file
+from ..utils.paths import setup_third_party_path
 from ..utils.validation import validate_enum
-from .base import BaseModel
+from .base import FrameLevelFeatureModel
 
 
 class ContentVecVariant(str, Enum):
@@ -46,8 +46,8 @@ class ContentVecVariant(str, Enum):
         return token, filename
 
 
-class ContentVecModel(BaseModel):
-    """A class for the ContetVec model."""
+class ContentVecModel(FrameLevelFeatureModel):
+    """A class for the ContentVec model."""
 
     def __init__(self, variant: str | None = None, device: str = "cpu") -> None:
         """Initialize the ContentVec model.
@@ -66,6 +66,7 @@ class ContentVecModel(BaseModel):
         self.variant = validate_enum(
             variant, ContentVecVariant, ContentVecVariant.HUBERT_100
         )
+        self._model_id = f"contentvec-{self.variant.value}"
 
         self.model = None
 
@@ -98,11 +99,7 @@ class ContentVecModel(BaseModel):
             ):
                 raise RuntimeError("Failed to download the model checkpoint.")
 
-        third_party_dir = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "..", "third_party")
-        )
-        if third_party_dir not in sys.path:
-            sys.path.append(third_party_dir)
+        setup_third_party_path()
 
         from lfeats.third_party.fairseq.checkpoint_utils import (
             load_model_ensemble_and_task,
@@ -148,15 +145,3 @@ class ContentVecModel(BaseModel):
             vectors = torch.concat([features[i] for i in layers], dim=-1)
 
         return Features(data=vectors, source=self.model_id, layers=layers)
-
-    @property
-    def model_id(self) -> str:
-        """Get the model identifier.
-
-        Returns
-        -------
-        out : str
-            The model identifier.
-
-        """
-        return f"contentvec-{self.variant.value}"
