@@ -95,18 +95,16 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 
 ## Supported Resamplers
 
-| Resampler Type | Quality Preset | Source |
-| :--- | :--- | :---: |
-| `lilfilter` | `base` | [GitHub](https://github.com/danpovey/filtering) |
-| `soxr` | `quick` | [GitHub](https://github.com/dofuuz/python-soxr) |
-| | `low` | |
-| | `medium` | |
-| | `high` | |
-| | `very-high` | |
-| `torchaudio` | `kaiser-fast` | [GitHub](https://github.com/pytorch/audio) |
-| | `kaiser-best` | |
-
-Note that Python-SoXR is licensed under LGPL v2.1+.
+| Resampler Type | Quality Preset | Source | License |
+| :--- | :--- | :---: | :--- |
+| `lilfilter` | `base` | [GitHub](https://github.com/danpovey/filtering) | MIT |
+| `soxr` | `quick` | [GitHub](https://github.com/dofuuz/python-soxr) | LGPL v2.1+ |
+| | `low` | | |
+| | `medium` | | |
+| | `high` | | |
+| | `very-high` | | |
+| `torchaudio` | `kaiser-fast` | [GitHub](https://github.com/pytorch/audio) | BSD 2-Clause |
+| | `kaiser-best` | | |
 
 ## Examples
 
