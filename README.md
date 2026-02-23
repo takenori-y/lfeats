@@ -96,7 +96,7 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 ## Supported Resamplers
 
 | Resampler Type | Quality Preset | Source | License |
-| :--- | :--- | :---: | :--- |
+| :--- | :--- | :---: | :---: |
 | `lilfilter` | `base` | [GitHub](https://github.com/danpovey/filtering) | MIT |
 | `soxr` | `quick` | [GitHub](https://github.com/dofuuz/python-soxr) | LGPL v2.1+ |
 | | `low` | | |
