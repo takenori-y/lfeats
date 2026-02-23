@@ -13,7 +13,7 @@ from ..utils.validation import validate_enum
 from .base import BaseModel
 
 
-class UniSpeechSatVariant(str, Enum):
+class UniSpeechSATVariant(str, Enum):
     """Enumeration of supported UniSpeech-SAT model variants."""
 
     BASE = "base"
@@ -33,7 +33,7 @@ class UniSpeechSatVariant(str, Enum):
         return f"microsoft/unispeech-sat-{self.value}"
 
 
-class UniSpeechSatModel(BaseModel):
+class UniSpeechSATModel(BaseModel):
     """A class for the UniSpeech-SAT model."""
 
     def __init__(self, variant: str | None = None, device: str = "cpu") -> None:
@@ -51,7 +51,7 @@ class UniSpeechSatModel(BaseModel):
         super().__init__(variant, device)
 
         self.variant = validate_enum(
-            variant, UniSpeechSatVariant, UniSpeechSatVariant.BASE_PLUS
+            variant, UniSpeechSATVariant, UniSpeechSATVariant.BASE_PLUS
         )
 
         self.model = None
@@ -71,10 +71,10 @@ class UniSpeechSatModel(BaseModel):
         if self.model is not None:
             return
 
-        from transformers import UniSpeechSatForPreTraining as _UniSpeechSatModel
+        from transformers import UniSpeechSatForPreTraining as _UniSpeechSATModel
 
         with silence_transformers(quiet):
-            self.model = _UniSpeechSatModel.from_pretrained(
+            self.model = _UniSpeechSATModel.from_pretrained(
                 self.variant.model_name, cache_dir=model_dir
             )
         self.model.eval()
@@ -127,9 +127,9 @@ class UniSpeechSatModel(BaseModel):
 
         """
         variant_map = {
-            UniSpeechSatVariant.BASE: 12,
-            UniSpeechSatVariant.BASE_PLUS: 12,
-            UniSpeechSatVariant.LARGE: 24,
+            UniSpeechSATVariant.BASE: 12,
+            UniSpeechSATVariant.BASE_PLUS: 12,
+            UniSpeechSATVariant.LARGE: 24,
         }
         return variant_map.get(self.variant, 0)
 

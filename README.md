@@ -30,6 +30,8 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 
 ## Supported Models
 
+### Frame-level Features
+
 | Model Name | Model Variant | Layers | Dimension | Paper | Source | Model Hub |
 | :--- | :--- | ---: | ---: | :---: | :---: | :---: |
 | `contentvec` | `hubert-100` | 12 | 768 | [arXiv](https://arxiv.org/abs/2204.09224) | [GitHub](https://github.com/auspicious3000/contentvec) | |
@@ -78,6 +80,14 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | | `large` | 32 | 1280 | | | [🤗](https://huggingface.co/openai/whisper-large) |
 | | `large-v2` | 32 | 1280 | | | [🤗](https://huggingface.co/openai/whisper-large-v2) |
 | | `large-v3` | 32 | 1280 | | | [🤗](https://huggingface.co/openai/whisper-large-v3) |
+
+### Utterance-level Features
+
+| Model Name | Model Variant | Dimension | Paper | Source | Model Hub |
+| :--- | :--- | ---: | ---: | :---: | :---: | :---: |
+| `next-tdnn` | `light` | 192 | [arXiv](https://arxiv.org/abs/2312.08603) | [GitHub](https://github.com/dmlguq456/NeXt_TDNN_ASV) | |
+| | `base` | 192 | | | |
+| | `base-v2` | 192 | | | |
 
 > [!IMPORTANT]
 > Users must comply with the respective licenses of the models.

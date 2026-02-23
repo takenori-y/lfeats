@@ -6,10 +6,18 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import Enum
 
 import numpy as np
 import torch
 import torch.nn.functional as F
+
+
+class Granularity(str, Enum):
+    """Enumeration of feature extraction granularities."""
+
+    FRAME = "frame"
+    UTTERANCE = "utterance"
 
 
 @dataclass
@@ -206,7 +214,9 @@ class Features(Container):
     """Dataclass to hold latent features."""
 
     source: str  # The source of the features.
-    layers: list[int]  # The layer(s) from which the features were extracted.
+    layers: list[int] | None = (
+        None  # The layers from which the features were extracted (optional).
+    )
 
     def __post_init__(self):
         """Validate the input data."""
@@ -262,6 +272,64 @@ class Features(Container):
             trimmed_data = self.tensor[:, start:end]
         return Features(data=trimmed_data, source=self.source, layers=self.layers)
 
+    def reduce(self, method: str = "mean") -> Features:
+        """Reduce the features along the time dimension to get a single representation.
+
+        Parameters
+        ----------
+        method : str, optional
+            The reduction method to use.
+
+        Returns
+        -------
+        out : Features
+            A new Features instance with concatenated data.
+
+        Raises
+        ------
+        ValueError
+            If the reduction method is not supported.
+
+        """
+        if method == "mean":
+            if isinstance(self.data, np.ndarray):
+                reduced_data = np.mean(self.array, axis=1)
+            else:
+                reduced_data = torch.mean(self.tensor, dim=1)
+        else:
+            raise ValueError(f"Unsupported reduction method: {method}")
+
+        return Features(data=reduced_data, source=self.source, layers=self.layers)
+
+    def concat(self, other: Features) -> Features:
+        """Concatenate this Features instance with another one along the time dimension.
+
+        Parameters
+        ----------
+        other : Features
+            The other Features instance to concatenate with.
+
+        Returns
+        -------
+        out : Features
+            A new Features instance with concatenated data.
+
+        Raises
+        ------
+        ValueError
+            If the sources are not the same.
+
+        """
+        if self.source != other.source:
+            raise ValueError("Both Features instances must have the same source.")
+
+        if isinstance(self.data, np.ndarray):
+            concatenated_data = np.concatenate([self.array, other.array], axis=1)
+        else:
+            concatenated_data = torch.cat([self.tensor, other.tensor], dim=1)
+
+        return Features(data=concatenated_data, source=self.source, layers=self.layers)
+
     def merge(self, other: Features, overlap_length: int = 0) -> Features:
         """Merge this Features instance with another one along the time dimension.
 
@@ -295,42 +363,38 @@ class Features(Container):
                 f"Invalid parameters: overlap_length={overlap_length}, "
                 f"length1={self.length}, length2={other.length}"
             )
+        if overlap_length == 0:
+            return self.concat(other)
 
-        if overlap_length > 0:
-            if isinstance(self.data, np.ndarray):
-                fade_in = np.linspace(0, 1, overlap_length)[..., None]
-                fade_out = 1 - fade_in
-                merged_data = np.concatenate(
-                    [
-                        self.array[:, :-overlap_length],
-                        (
-                            self.array[:, -overlap_length:] * fade_out
-                            + other.array[:, :overlap_length] * fade_in
-                        ),
-                        other.array[:, overlap_length:],
-                    ],
-                    axis=1,
-                )
-            else:
-                fade_in = torch.linspace(
-                    0, 1, overlap_length, device=self.tensor.device
-                )[..., None]
-                fade_out = 1 - fade_in
-                merged_data = torch.cat(
-                    [
-                        self.tensor[:, :-overlap_length],
-                        (
-                            self.tensor[:, -overlap_length:] * fade_out
-                            + other.tensor[:, :overlap_length] * fade_in
-                        ),
-                        other.tensor[:, overlap_length:],
-                    ],
-                    dim=1,
-                )
+        if isinstance(self.data, np.ndarray):
+            fade_in = np.linspace(0, 1, overlap_length)[..., None]
+            fade_out = 1 - fade_in
+            merged_data = np.concatenate(
+                [
+                    self.array[:, :-overlap_length],
+                    (
+                        self.array[:, -overlap_length:] * fade_out
+                        + other.array[:, :overlap_length] * fade_in
+                    ),
+                    other.array[:, overlap_length:],
+                ],
+                axis=1,
+            )
         else:
-            if isinstance(self.data, np.ndarray):
-                merged_data = np.concatenate([self.array, other.array], axis=1)
-            else:
-                merged_data = torch.cat([self.tensor, other.tensor], dim=1)
+            fade_in = torch.linspace(0, 1, overlap_length, device=self.tensor.device)[
+                ..., None
+            ]
+            fade_out = 1 - fade_in
+            merged_data = torch.cat(
+                [
+                    self.tensor[:, :-overlap_length],
+                    (
+                        self.tensor[:, -overlap_length:] * fade_out
+                        + other.tensor[:, :overlap_length] * fade_in
+                    ),
+                    other.tensor[:, overlap_length:],
+                ],
+                dim=1,
+            )
 
         return Features(data=merged_data, source=self.source, layers=self.layers)

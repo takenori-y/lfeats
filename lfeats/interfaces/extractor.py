@@ -13,7 +13,7 @@ from platformdirs import user_cache_dir
 
 from ..models import MODEL_MAP, ModelManager
 from ..resamplers import RESAMPLER_MAP, ResamplerManager
-from .types import Audio, Features
+from .types import Audio, Features, Granularity
 from .utils import create_audio_object
 
 Chunk = namedtuple("Chunk", ["start", "end", "overlap"])
@@ -100,6 +100,7 @@ class Extractor:
         chunk_length_sec: int = 30,
         overlap_length_sec: int = 5,
         upsample_factor: int = 1,
+        reduction: Literal["none", "mean"] | None = None,
     ) -> Features:
         """Extract features from the input waveform.
 
@@ -127,6 +128,13 @@ class Extractor:
 
         upsample_factor : int, optional
             The factor by which to upsample the features in the time dimension.
+
+        reduction : Literal["none", "mean"] | None, optional
+            The reduction method to apply to the features across time frames. If "mean",
+            the features will be averaged across the time dimension. If "none", no
+            reduction will be applied. If None, the reduction method will be determined
+            based on the feature granularity (`none` for frame-level features and `mean`
+            for utterance-level features).
 
         Returns
         -------
@@ -166,12 +174,17 @@ class Extractor:
                 center=center,
                 chunk_length_sec=chunk_length_sec,
                 overlap_length_sec=overlap_length_sec,
+                reduction=reduction,
             )
+
+        model = self.model_manager.get_model()
+        if model.granularity != Granularity.FRAME or reduction == "mean":
+            raise ValueError("Upsampling is only supported for frame-level features.")
 
         # Prepare the audio data and validate the upsample factor.
         audio = create_audio_object(source, sample_rate)
         B, T = audio.data.shape
-        frame_shift = self.model_manager.get_model().frame_shift
+        frame_shift = model.frame_shift
         if frame_shift % upsample_factor != 0:
             raise ValueError(
                 f"Upsample factor {upsample_factor} must be a divisor of "
@@ -216,6 +229,7 @@ class Extractor:
         center: bool = True,
         chunk_length_sec: int = 30,
         overlap_length_sec: int = 5,
+        reduction: Literal["none", "mean"] | None = None,
     ) -> Features:
         """Extract features from the input waveform.
 
@@ -240,6 +254,13 @@ class Extractor:
 
         overlap_length_sec : int, optional
             The overlap length in seconds between chunks.
+
+        reduction : Literal["none", "mean"] | None, optional
+            The reduction method to apply to the features across time frames. If "mean",
+            the features will be averaged across the time dimension. If "none", no
+            reduction will be applied. If None, the reduction method will be determined
+            based on the feature granularity (`none` for frame-level features and `mean`
+            for utterance-level features).
 
         Returns
         -------
@@ -319,7 +340,7 @@ class Extractor:
                 features = chunk_features
             else:
                 # Merge the chunk features with the previously extracted features.
-                overlap = chunk.overlap
+                overlap = chunk.overlap if model.granularity == Granularity.FRAME else 0
                 if overlap is None:
                     remaining_frames = expected_num_frames - features.length
                     overlap = chunk_features.length - remaining_frames
@@ -329,12 +350,19 @@ class Extractor:
             raise RuntimeError("No features extracted from the audio.")
 
         # Validate the number of frames in the extracted features.
-        actual_num_frames = features.length
-        if expected_num_frames != actual_num_frames:
-            raise RuntimeError(
-                f"Unexpected number of frames: expected {expected_num_frames}, "
-                f"got {actual_num_frames}."
-            )
+        if model.granularity == Granularity.FRAME:
+            actual_num_frames = features.length
+            if expected_num_frames != actual_num_frames:
+                raise RuntimeError(
+                    f"Unexpected number of frames: expected {expected_num_frames}, "
+                    f"got {actual_num_frames}."
+                )
+
+        # Apply reduction if specified.
+        if reduction == "mean" or (
+            reduction is None and model.granularity == Granularity.UTTERANCE
+        ):
+            features = features.reduce("mean")
 
         return features
 

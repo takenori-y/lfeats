@@ -19,6 +19,7 @@ from tests.utils import generate_dummy_waveform
         ("data2vec", "base"),
         ("data2vec2", "base"),
         ("hubert", "base"),
+        ("next-tdnn", "light"),
         ("r-spin", "wavlm-32"),
         ("spidr", "base"),
         ("spin", "hubert-128"),

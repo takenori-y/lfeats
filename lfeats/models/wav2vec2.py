@@ -20,7 +20,7 @@ class Wav2Vec2Variant(str, Enum):
 
     BASE = "base"
     LARGE = "large"
-    XLSR_V1 = "xlsr-v1"
+    XLSR = "xlsr"
     XLSR_V2 = "xlsr-v2"
 
     @property
@@ -37,7 +37,7 @@ class Wav2Vec2Variant(str, Enum):
             return "wav2vec_small.pt"
         elif self.value == "large":
             return "libri960_big.pt"
-        elif self.value == "xlsr-v1":
+        elif self.value == "xlsr":
             return "xlsr_53_56k.pt"
         elif self.value == "xlsr-v2":
             return "xlsr2_300m.pt"
@@ -164,7 +164,7 @@ class Wav2Vec2Model(BaseModel):
         variant_map = {
             Wav2Vec2Variant.BASE: 12,
             Wav2Vec2Variant.LARGE: 24,
-            Wav2Vec2Variant.XLSR_V1: 24,
+            Wav2Vec2Variant.XLSR: 24,
             Wav2Vec2Variant.XLSR_V2: 24,
         }
         return variant_map.get(self.variant, 0)

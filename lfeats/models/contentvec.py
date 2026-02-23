@@ -159,4 +159,4 @@ class ContentVecModel(BaseModel):
             The model identifier.
 
         """
-        return f"rspin-{self.variant.value}"
+        return f"contentvec-{self.variant.value}"

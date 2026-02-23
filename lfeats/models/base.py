@@ -5,7 +5,7 @@
 
 from abc import ABC, abstractmethod
 
-from ..interfaces.types import Audio, Features
+from ..interfaces.types import Audio, Features, Granularity
 
 
 class BaseModel(ABC):
@@ -151,6 +151,18 @@ class BaseModel(ABC):
 
         """
         return None
+
+    @property
+    def granularity(self) -> Granularity:
+        """Get the granularity of the features extracted by the model.
+
+        Returns
+        -------
+        out : str
+            The granularity of the features.
+
+        """
+        return Granularity.FRAME
 
     @property
     @abstractmethod

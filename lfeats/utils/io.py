@@ -96,14 +96,14 @@ def download_file(url: str, download_dir: str, quiet: bool = False) -> str:
     """
     from parfive import Downloader
 
-    dl = Downloader()
+    dl = Downloader(progress=not quiet)
 
-    dl.enqueue_file(url, path=download_dir, progress=not quiet)
+    dl.enqueue_file(url, path=download_dir)
 
-    files = dl.download()
-    if len(files) == 0:
-        raise RuntimeError("Failed to download file.")
-    return files[0]
+    results = dl.download()
+    if len(results) == 0:
+        raise RuntimeError(f"Failed to download file: {results.errors}")
+    return results[0]
 
 
 def load_audio(path: str) -> tuple[torch.Tensor, int]:

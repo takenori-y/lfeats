@@ -14,7 +14,7 @@ from ..interfaces.types import Audio, Features
 from ..utils.io import silence_hf_hub
 from ..utils.validation import validate_enum
 from .base import BaseModel
-from .hubert import HubertModel, HubertVariant
+from .hubert import HuBERTModel, HuBERTVariant
 
 
 class SSLZipVariant(str, Enum):
@@ -59,7 +59,7 @@ class SSLZipModel(BaseModel):
 
         self.variant = validate_enum(variant, SSLZipVariant, SSLZipVariant.BASE)
 
-        self.upstream = HubertModel(variant=HubertVariant.BASE.value, device=device)
+        self.upstream = HuBERTModel(variant=HuBERTVariant.BASE.value, device=device)
         self.model = None
 
     def load(self, model_dir: str, quiet: bool = False) -> None:

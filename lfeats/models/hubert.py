@@ -13,7 +13,7 @@ from ..utils.validation import validate_enum
 from .base import BaseModel
 
 
-class HubertVariant(str, Enum):
+class HuBERTVariant(str, Enum):
     """Enumeration of supported HuBERT model variants."""
 
     BASE = "base"
@@ -40,7 +40,7 @@ class HubertVariant(str, Enum):
         return base
 
 
-class HubertModel(BaseModel):
+class HuBERTModel(BaseModel):
     """A class for the HuBERT model."""
 
     def __init__(self, variant: str | None = None, device: str = "cpu") -> None:
@@ -57,7 +57,7 @@ class HubertModel(BaseModel):
         """
         super().__init__(variant, device)
 
-        self.variant = validate_enum(variant, HubertVariant, HubertVariant.BASE)
+        self.variant = validate_enum(variant, HuBERTVariant, HuBERTVariant.BASE)
 
         self.model = None
 
@@ -110,7 +110,7 @@ class HubertModel(BaseModel):
         if self.model is None:
             raise RuntimeError("Model not loaded. Call 'load' method first.")
 
-        if self.variant != HubertVariant.BASE:
+        if self.variant != HuBERTVariant.BASE:
             audio = audio.normalize()
 
         with torch.inference_mode():
@@ -133,9 +133,9 @@ class HubertModel(BaseModel):
 
         """
         variant_map = {
-            HubertVariant.BASE: 12,
-            HubertVariant.LARGE: 24,
-            HubertVariant.XLARGE: 48,
+            HuBERTVariant.BASE: 12,
+            HuBERTVariant.LARGE: 24,
+            HuBERTVariant.XLARGE: 48,
         }
         return variant_map.get(self.variant, 0)
 
