@@ -114,6 +114,7 @@ def get_arguments() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "-q",
         "--quiet",
         action="store_true",
         help="If set, suppresses non-error output during processing.",
@@ -127,7 +128,8 @@ def main() -> None:
 
     logging.basicConfig(
         level=logging.ERROR if args.quiet else logging.INFO,
-        format="%(message)s",
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
     )
 
     import numpy as np
@@ -187,10 +189,13 @@ def main() -> None:
     )
     extractor.load(quiet=args.quiet)
 
+    num_errors = 0
+
     # Process each input file and extract features.
     for input_file in input_files:
         if not os.path.isfile(input_file):
             logger.error(f"Could not find file: {input_file}. Skipping.")
+            num_errors += 1
             continue
 
         base, _ = os.path.splitext(os.path.basename(input_file))
@@ -215,6 +220,7 @@ def main() -> None:
             )
         except Exception as e:
             logger.error(f"Error processing file {input_file}: {e}. Skipping.")
+            num_errors += 1
             continue
 
         if args.output_format == "npz":
@@ -238,7 +244,10 @@ def main() -> None:
         else:
             raise ValueError(f"Unsupported output format: {args.output_format}")
 
-    logger.info("All files processed successfully.")
+    if num_errors == 0:
+        logger.info("All files processed successfully.")
+    else:
+        logger.error(f"{num_errors} files were skipped due to errors.")
 
 
 if __name__ == "__main__":

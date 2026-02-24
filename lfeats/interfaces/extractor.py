@@ -158,6 +158,7 @@ class Extractor:
         >>> waveform = np.random.randn(sample_rate)
         >>>
         >>> extractor = lfeats.Extractor(model_name="hubert")
+        >>> extractor.load(quiet=True)
         >>> features = extractor(waveform, sample_rate)
         >>> features.shape
         (1, 50, 768)
