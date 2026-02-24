@@ -59,13 +59,25 @@ class RVectorModel(UtteranceLevelFeatureModel):
 
         setup_third_party_path()
 
+        from speechbrain.utils.fetching import FetchConfig  # type: ignore
+
         from lfeats.third_party.speechbrain.inference.classifiers import (
             EncoderClassifier,
         )
 
+        fetch_config = FetchConfig(
+            overwrite=False,
+            allow_updates=False,
+            allow_network=True,
+            token=False,
+            revision=None,
+            huggingface_cache_dir=model_dir,
+        )
+
         with silence_hf_hub(quiet):
             self.model = EncoderClassifier.from_hparams(
-                source="speechbrain/spkrec-resnet-voxceleb"
+                source="speechbrain/spkrec-resnet-voxceleb",
+                fetch_config=fetch_config,
             )
             if self.model is None:
                 raise RuntimeError("Failed to load the model.")
