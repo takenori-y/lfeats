@@ -8,6 +8,7 @@
 import argparse
 import logging
 import os
+import sys
 
 logger = logging.getLogger("lfeats")
 
@@ -244,10 +245,11 @@ def main() -> None:
         else:
             raise ValueError(f"Unsupported output format: {args.output_format}")
 
-    if num_errors == 0:
-        logger.info("All files processed successfully.")
-    else:
+    if num_errors > 0:
         logger.error(f"{num_errors} files were skipped due to errors.")
+        sys.exit(1)
+
+    logger.info("All files processed successfully.")
 
 
 if __name__ == "__main__":
