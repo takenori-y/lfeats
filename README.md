@@ -176,6 +176,25 @@ features = extractor(waveform, sample_rate, layers="all")
 print(f"Shape: {features.shape}")  # (1, 50, 9984)
 ```
 
+### Audio Chuking
+
+To be computationally efficient and prevent mismatches between training and inference,
+long audio files can be processed by splitting them into chunks.
+
+```python
+import lfeats
+import numpy as np
+
+sample_rate = 16000
+waveform = np.random.uniform(-1, 1, 10 * sample_rate)
+
+extractor = lfeats.Extractor(model_name="hubert")
+
+# Processing a 10-second waveform with a 5-second chunk and 1-second overlap.
+features = extractor(waveform, sample_rate, chunk_length_sec=5, overlap_length_sec=1)
+print(f"Shape: {features.shape}")  # (1, 200, 768)
+```
+
 ### Sliding-Window Upsampling
 
 Since the frame rate of speech foundation models is typically 20ms,
