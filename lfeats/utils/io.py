@@ -59,14 +59,15 @@ def silence_hf_hub(enabled: bool = True) -> Generator[None, None, None]:
         Whether to silence Hugging Face Hub logging.
 
     """
-    from huggingface_hub.utils import logging
+    from huggingface_hub.utils.tqdm import disable_progress_bars, enable_progress_bars
 
-    previous_verbosity = logging.get_verbosity()
-    logging.set_verbosity_error()
+    if enabled:
+        disable_progress_bars()
     try:
         yield
     finally:
-        logging.set_verbosity(previous_verbosity)
+        if enabled:
+            enable_progress_bars()
 
 
 def download_file(url: str, download_dir: str, quiet: bool = False) -> str:

@@ -254,7 +254,6 @@ class FetchConfig:
     token: bool = False
     revision: str = None
     huggingface_cache_dir: str = None
-    progress_bar: bool = True
 
 
 @main_process_only
@@ -425,13 +424,6 @@ def fetch(
         )
     else:
         hf_kwargs["cache_dir"] = fetch_config.huggingface_cache_dir
-
-    from huggingface_hub.utils import logging
-
-    if fetch_config.progress_bar:
-        logging.set_verbosity_info()
-    else:
-        logging.set_verbosity_error()
 
     # Download is done on the main process only
     download_file_hf(hf_kwargs, destination, local_strategy)
