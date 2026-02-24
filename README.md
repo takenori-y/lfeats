@@ -270,7 +270,8 @@ This project is released under the MIT License.
 | Repository | License |
 | :--- | :--- |
 | [fairseq](https://github.com/facebookresearch/fairseq) | MIT |
-| [NeXt_TDNN_ASV](https://github.com/dmlguq456/NeXt_TDNN_ASV) | Apache-2.0 | [R-Spin](https://github.com/vectominist/rspin) | MIT |
+| [NeXt_TDNN_ASV](https://github.com/dmlguq456/NeXt_TDNN_ASV) | Apache-2.0 |
+| [R-Spin](https://github.com/vectominist/rspin) | MIT |
 | [S3PRL](https://github.com/s3prl/s3prl) | Apache-2.0 |
 | [SpeechBrain](https://github.com/speechbrain/speechbrain) | Apache-2.0 |
 | [Spin](https://github.com/vectominist/spin) | MIT |
