@@ -5,7 +5,9 @@
 
 from collections.abc import Generator
 from contextlib import contextmanager
+from importlib.metadata import PackageNotFoundError, version
 
+import soundfile as sf
 import torch
 import torchaudio
 
@@ -121,4 +123,10 @@ def load_audio(path: str) -> tuple[torch.Tensor, int]:
         A tuple containing the audio tensor and the sample rate.
 
     """
-    return torchaudio.load(path, channels_first=True)
+    try:
+        version("torchcodec")
+        x, sr = torchaudio.load(path, channels_first=True)
+    except PackageNotFoundError:
+        x, sr = sf.read(path)
+        x = torch.tensor(x.T, dtype=torch.float32)
+    return x, sr

@@ -1,0 +1,50 @@
+name: package
+
+on:
+  push:
+    branches:
+      - master
+
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      max-parallel: 4
+      matrix:
+        include:
+          - python: "3.10"
+            torch: 2.6.0
+            torchaudio: 2.6.0
+
+          - python: "3.14"
+            torch: 2.10.0
+            torchaudio: 2.10.0
+
+    steps:
+      - name: Clone
+        uses: actions/checkout@v6
+
+      - name: Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+          architecture: x64
+
+      - name: Dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -qq -y libsndfile1
+
+      - name: Install
+        run: make PYTHON_VERSION=${{ matrix.python }} TORCH_VERSION=${{ matrix.torch }} TORCHAUDIO_VERSION=${{ matrix.torchaudio }} PLATFORM=cpu venv tool
+
+      - name: Check
+        run: make check
+
+      - name: Test
+        run: make test MODULE=cli
