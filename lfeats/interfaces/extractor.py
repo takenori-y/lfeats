@@ -130,16 +130,16 @@ class Extractor:
             The factor by which to upsample the features in the time dimension.
 
         reduction : Literal["none", "mean", "auto"], optional
-            The reduction method to apply to the features across time frames. If `mean`,
-            the features will be averaged across the time dimension. If `none`, no
-            reduction will be applied. If `auto`, the reduction method will be
-            determined based on the feature granularity (`none` for frame-level features
-            and `mean` for utterance-level features).
+            The reduction method to apply to the features across time frames. If 'mean',
+            the features will be averaged across the time dimension. If 'none', no
+            reduction will be applied. If 'auto', the reduction method will be
+            determined based on the feature granularity ('none' for frame-level features
+            and 'mean' for utterance-level features).
 
         Returns
         -------
         out : Features
-            The extracted features.
+            The extracted features with shape (B, N, D).
 
         Raises
         ------
@@ -256,16 +256,16 @@ class Extractor:
             The overlap length in seconds between chunks.
 
         reduction : Literal["none", "mean", "auto"], optional
-            The reduction method to apply to the features across time frames. If `mean`,
-            the features will be averaged across the time dimension. If `none`, no
-            reduction will be applied. If `auto`, the reduction method will be
-            determined based on the feature granularity (`none` for frame-level features
-            and `mean` for utterance-level features).
+            The reduction method to apply to the features across time frames. If 'mean',
+            the features will be averaged across the time dimension. If 'none', no
+            reduction will be applied. If 'auto', the reduction method will be
+            determined based on the feature granularity ('none' for frame-level features
+            and 'mean' for utterance-level features).
 
         Returns
         -------
         out : Features
-            The extracted features.
+            The extracted features with shape (B, N, D).
 
         Raises
         ------

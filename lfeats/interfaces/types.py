@@ -223,7 +223,7 @@ class Features(Container):
         super().__post_init__()
 
         if self.ndim != 3:
-            raise ValueError("data must be 3D array/tensor.")
+            raise ValueError(f"data must be 3D array/tensor, got shape {self.shape}.")
 
     @property
     def length(self) -> int:

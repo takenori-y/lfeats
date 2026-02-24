@@ -11,4 +11,4 @@ Types
 
 .. autoclass:: lfeats.Features
     :members:
-    :exclude-members: merge, trim
+    :exclude-members: concat, merge, reduce, trim

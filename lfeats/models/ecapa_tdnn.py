@@ -8,7 +8,6 @@ from enum import Enum
 import torch
 
 from ..interfaces.types import Audio, Features
-from ..utils.io import silence_hf_hub
 from ..utils.paths import setup_third_party_path
 from ..utils.validation import validate_enum
 from .base import UtteranceLevelFeatureModel
@@ -59,7 +58,7 @@ class EcapaTDNNModel(UtteranceLevelFeatureModel):
 
         setup_third_party_path()
 
-        from speechbrain.utils.fetching import FetchConfig
+        from speechbrain.utils.fetching import FetchConfig  # type: ignore
 
         from lfeats.third_party.speechbrain.inference.classifiers import (
             EncoderClassifier,
@@ -75,14 +74,14 @@ class EcapaTDNNModel(UtteranceLevelFeatureModel):
             progress_bar=not quiet,
         )
 
-        with silence_hf_hub(quiet):
-            self.model = EncoderClassifier.from_hparams(
-                source="speechbrain/spkrec-ecapa-voxceleb"
-            )
-            if self.model is None:
-                raise RuntimeError("Failed to load the model.")
-            self.model.eval()
-            self.model.to(self.device)
+        self.model = EncoderClassifier.from_hparams(
+            source="speechbrain/spkrec-ecapa-voxceleb",
+            fetch_config=fetch_config,
+        )
+        if self.model is None:
+            raise RuntimeError("Failed to load the model.")
+        self.model.eval()
+        self.model.to(self.device)
 
     def extract_features_impl(self, audio: Audio, layers: list[int]) -> Features:
         """Extract features from the input audio using the model.

@@ -68,7 +68,7 @@ class Resampler:
         Returns
         -------
         out : Audio
-            The resampled audio.
+            The resampled audio with shape (B, T').
 
         Examples
         --------
