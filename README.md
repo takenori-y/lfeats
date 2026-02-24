@@ -12,7 +12,7 @@ While these extracted features are task-independent, the package is primarily de
 
 ## Documentation
 
-- [**Reference Manual**](https://takenori-y.github.io/lfeats/0.1.0/)
+- [**Reference Manual**](https://takenori-y.github.io/lfeats/0.1.1/)
 
 ## Installation
 
