@@ -118,10 +118,10 @@ You don't need to worry about differences between model types or input/output da
 import lfeats
 import numpy as np
 
-# Prepare an audio waveform (1 second of random noise for this example).
+# Prepare an audio waveform without zero-mean and unit-variance normalization.
 # Either a NumPy array or a Torch tensor are accepted as the input of the extractor.
 sample_rate = 16000
-waveform = np.random.randn(sample_rate)
+waveform = np.random.uniform(-1, 1, sample_rate)
 
 # Initialize the extractor.
 extractor = lfeats.Extractor(
@@ -157,7 +157,7 @@ import lfeats
 import numpy as np
 
 sample_rate = 16000
-waveform = np.random.randn(sample_rate)
+waveform = np.random.uniform(-1, 1, sample_rate)
 
 extractor = lfeats.Extractor(model_name="hubert")
 
@@ -186,7 +186,7 @@ import lfeats
 import numpy as np
 
 sample_rate = 16000
-waveform = np.random.randn(sample_rate)
+waveform = np.random.uniform(-1, 1, sample_rate)
 
 extractor = lfeats.Extractor(model_name="hubert")
 
@@ -197,14 +197,14 @@ print(f"Shape: {features.shape}")  # (1, 200, 768)
 
 ### Utterance-Level Feature Extraction
 
-`lfeats` can extract utterance-level feature, e.g., speaker embeddings, as well as frame-level features.
+`lfeats` can extract utterance-level features, e.g., speaker embeddings, as well as frame-level features.
 
 ```python
 import lfeats
 import numpy as np
 
 sample_rate = 16000
-waveform = np.random.randn(sample_rate)
+waveform = np.random.uniform(-1, 1, sample_rate)
 
 extractor = lfeats.Extractor(model_name="ecapa-tdnn")
 
