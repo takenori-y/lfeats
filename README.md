@@ -89,6 +89,7 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | `next-tdnn` | `light` | 0 | 192 | [arXiv](https://arxiv.org/abs/2312.08603) | [GitHub](https://github.com/dmlguq456/NeXt_TDNN_ASV) | |
 | | `base` | 0 | 192 | | | |
 | | `base-v2` | 0 | 192 | | | |
+| `r-vector` | `base` | 0 | 256 | [arXiv](https://arxiv.org/pdf/1910.12592) | [GitHub](https://github.com/speechbrain/speechbrain) | [🤗](https://huggingface.co/speechbrain/spkrec-resnet-voxceleb) |
 
 > [!IMPORTANT]
 > Users must comply with the respective licenses of the models.

@@ -11,6 +11,7 @@ from .hubert import HuBERTModel
 from .manager import ModelManager
 from .next_tdnn import NeXtTDNNModel
 from .r_spin import RSpinModel
+from .r_vector import RVectorModel
 from .spidr import SpidRModel
 from .spin import SpinModel
 from .sslzip import SSLZipModel
@@ -27,6 +28,7 @@ MODEL_MAP = {
     "hubert": HuBERTModel,
     "next-tdnn": NeXtTDNNModel,
     "r-spin": RSpinModel,
+    "r-vector": RVectorModel,
     "spidr": SpidRModel,
     "spin": SpinModel,
     "sslzip": SSLZipModel,
