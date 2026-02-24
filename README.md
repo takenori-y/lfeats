@@ -192,7 +192,7 @@ extractor = lfeats.Extractor(model_name="hubert")
 
 # Processing a 10-second waveform with a 5-second chunk and 1-second overlap.
 features = extractor(waveform, sample_rate, chunk_length_sec=5, overlap_length_sec=1)
-print(f"Shape: {features.shape}")  # (1, 200, 768)
+print(f"Shape: {features.shape}")  # (1, 500, 768)
 ```
 
 ### Sliding-Window Upsampling
@@ -213,7 +213,7 @@ extractor = lfeats.Extractor(model_name="hubert")
 
 # Extract features at a 5ms frame rate.
 features = extractor(waveform, sample_rate, upsample_factor=4)
-print(f"Shape: {features.shape}")  # (1, 500, 768)
+print(f"Shape: {features.shape}")  # (1, 200, 768)
 ```
 
 ### Utterance-Level Feature Extraction
