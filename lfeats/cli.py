@@ -105,6 +105,15 @@ def get_arguments() -> argparse.Namespace:
         help="The upsampling factor for the extracted features.",
     )
     parser.add_argument(
+        "--reduction",
+        type=str,
+        default="auto",
+        help=(
+            "The reduction method to apply to the extracted features. Can be 'none', "
+            "'mean', or 'auto'."
+        ),
+    )
+    parser.add_argument(
         "--quiet",
         action="store_true",
         help="If set, suppresses non-error output during processing.",
@@ -202,6 +211,7 @@ def main() -> None:
                 chunk_length_sec=args.chunk_length_sec,
                 overlap_length_sec=args.overlap_length_sec,
                 upsample_factor=args.upsample_factor,
+                reduction=args.reduction,
             )
         except Exception as e:
             logger.error(f"Error processing file {input_file}: {e}. Skipping.")

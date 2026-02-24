@@ -98,6 +98,6 @@ class EcapaTDNNModel(UtteranceLevelFeatureModel):
             raise RuntimeError("Model is not loaded. Call 'load' method first.")
 
         with torch.inference_mode():
-            vectors = self.model.encode_batch(audio.tensor.to(self.device))
+            vectors = self.model.encode_batch(audio.tensor.to(self.device))  # (B, N, D)
 
         return Features(data=vectors, source=self.model_id)

@@ -30,7 +30,7 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 
 ## Supported Models
 
-### Frame-level Features
+### Frame-Level Features
 
 | Model Name | Model Variant | Layers | Dimension | Paper | Source | Model Hub |
 | :--- | :--- | ---: | ---: | :---: | :---: | :---: |
@@ -81,7 +81,7 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | | `large-v2` | 32 | 1280 | | | [🤗](https://huggingface.co/openai/whisper-large-v2) |
 | | `large-v3` | 32 | 1280 | | | [🤗](https://huggingface.co/openai/whisper-large-v3) |
 
-### Utterance-level Features
+### Utterance-Level Features
 
 | Model Name | Model Variant | Layers | Dimension | Paper | Source | Model Hub |
 | :--- | :--- | ---: | ---: | :---: | :---: | :---: |
@@ -174,7 +174,7 @@ features = extractor(waveform, sample_rate, layers="all")
 print(f"Shape: {features.shape}")  # (1, 50, 9984)
 ```
 
-### Virtual Upsampling
+### Sliding-Window Upsampling
 
 Since the frame rate of speech foundation models is typically 20ms,
 it often doesn't match the 5ms requirement of speech generation tasks.
@@ -193,6 +193,23 @@ extractor = lfeats.Extractor(model_name="hubert")
 # Extract features at a 5ms frame rate.
 features = extractor(waveform, sample_rate, upsample_factor=4)
 print(f"Shape: {features.shape}")  # (1, 200, 768)
+```
+
+### Utterance-Level Feature Extraction
+
+`lfeats` can extract utterance-level feature, e.g., speaker embeddings, as well as frame-level features.
+
+```python
+import lfeats
+import numpy as np
+
+sample_rate = 16000
+waveform = np.random.randn(sample_rate)
+
+extractor = lfeats.Extractor(model_name="ecapa-tdnn")
+
+features = extractor(waveform, sample_rate, overlap_length_sec=0, reduction="mean")
+print(f"Shape: {features.shape}")  # (1, 1, 192)
 ```
 
 ### Command-line Interface

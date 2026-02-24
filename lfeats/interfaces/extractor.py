@@ -100,7 +100,7 @@ class Extractor:
         chunk_length_sec: int = 30,
         overlap_length_sec: int = 5,
         upsample_factor: int = 1,
-        reduction: Literal["none", "mean"] | None = None,
+        reduction: Literal["none", "mean", "auto"] = "auto",
     ) -> Features:
         """Extract features from the input waveform.
 
@@ -129,12 +129,12 @@ class Extractor:
         upsample_factor : int, optional
             The factor by which to upsample the features in the time dimension.
 
-        reduction : Literal["none", "mean"] | None, optional
-            The reduction method to apply to the features across time frames. If "mean",
-            the features will be averaged across the time dimension. If "none", no
-            reduction will be applied. If None, the reduction method will be determined
-            based on the feature granularity (`none` for frame-level features and `mean`
-            for utterance-level features).
+        reduction : Literal["none", "mean", "auto"], optional
+            The reduction method to apply to the features across time frames. If `mean`,
+            the features will be averaged across the time dimension. If `none`, no
+            reduction will be applied. If `auto`, the reduction method will be
+            determined based on the feature granularity (`none` for frame-level features
+            and `mean` for utterance-level features).
 
         Returns
         -------
@@ -229,7 +229,7 @@ class Extractor:
         center: bool = True,
         chunk_length_sec: int = 30,
         overlap_length_sec: int = 5,
-        reduction: Literal["none", "mean"] | None = None,
+        reduction: Literal["none", "mean", "auto"] = "auto",
     ) -> Features:
         """Extract features from the input waveform.
 
@@ -255,12 +255,12 @@ class Extractor:
         overlap_length_sec : int, optional
             The overlap length in seconds between chunks.
 
-        reduction : Literal["none", "mean"] | None, optional
-            The reduction method to apply to the features across time frames. If "mean",
-            the features will be averaged across the time dimension. If "none", no
-            reduction will be applied. If None, the reduction method will be determined
-            based on the feature granularity (`none` for frame-level features and `mean`
-            for utterance-level features).
+        reduction : Literal["none", "mean", "auto"], optional
+            The reduction method to apply to the features across time frames. If `mean`,
+            the features will be averaged across the time dimension. If `none`, no
+            reduction will be applied. If `auto`, the reduction method will be
+            determined based on the feature granularity (`none` for frame-level features
+            and `mean` for utterance-level features).
 
         Returns
         -------
@@ -360,7 +360,7 @@ class Extractor:
 
         # Apply reduction if specified.
         if reduction == "mean" or (
-            reduction is None and model.granularity == Granularity.UTTERANCE
+            reduction == "auto" and model.granularity == Granularity.UTTERANCE
         ):
             features = features.reduce("mean")
 

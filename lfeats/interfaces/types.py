@@ -293,9 +293,9 @@ class Features(Container):
         """
         if method == "mean":
             if isinstance(self.data, np.ndarray):
-                reduced_data = np.mean(self.array, axis=1)
+                reduced_data = np.mean(self.array, axis=1, keepdims=True)
             else:
-                reduced_data = torch.mean(self.tensor, dim=1)
+                reduced_data = torch.mean(self.tensor, dim=1, keepdim=True)
         else:
             raise ValueError(f"Unsupported reduction method: {method}")
 

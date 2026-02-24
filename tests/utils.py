@@ -9,6 +9,7 @@ import numpy as np
 def generate_dummy_waveform(
     duration_sec: float = 1.0,
     sample_rate: int = 16000,
+    num_channels: int = 1,
     seed: int = 12345,
 ) -> tuple[np.ndarray, int]:
     """Generate a dummy waveform for testing.
@@ -20,6 +21,9 @@ def generate_dummy_waveform(
 
     sample_rate : int
         Sample rate in Hz.
+
+    num_channels : int
+        Number of audio channels.
 
     seed : int
         Random seed for reproducibility.
@@ -35,5 +39,7 @@ def generate_dummy_waveform(
     """
     np.random.seed(seed)
     num_samples = int(duration_sec * sample_rate)
-    waveform = 0.1 * np.random.randn(num_samples)
+    waveform = 0.1 * np.random.randn(num_channels, num_samples)
+    if num_channels == 1:
+        waveform = waveform.squeeze(0)
     return waveform, sample_rate

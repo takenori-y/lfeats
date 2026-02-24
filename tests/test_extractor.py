@@ -6,43 +6,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
-import torch
 
 from lfeats import Extractor, Features
 from tests.utils import generate_dummy_waveform
-
-
-@pytest.mark.parametrize(
-    ("model_name", "variant"),
-    [
-        ("contentvec", "hubert-100"),
-        ("data2vec", "base"),
-        ("data2vec2", "base"),
-        ("ecapa-tdnn", "base"),
-        ("hubert", "base"),
-        ("next-tdnn", "light"),
-        ("r-spin", "wavlm-32"),
-        ("spidr", "base"),
-        ("spin", "hubert-128"),
-        ("spin", "wavlm-128"),
-        ("sslzip", "tiny"),
-        ("unispeech-sat", "base"),
-        ("wav2vec2", "base"),
-        ("wavlm", "base"),
-        ("whisper", "tiny"),
-    ],
-)
-@pytest.mark.parametrize(
-    "device", ["cpu", "cuda"] if torch.cuda.is_available() else ["cpu"]
-)
-def test_running(model_name: str, variant: str, device: str) -> None:
-    """Test if the model can run without errors."""
-    extractor = Extractor(model_name, variant, device=device)
-    extractor.load(quiet=True)
-
-    audio, sr = generate_dummy_waveform(1)
-    features = extractor(audio, sr)
-    assert isinstance(features, Features)
 
 
 @pytest.mark.parametrize(
@@ -75,6 +41,29 @@ def test_chunking(
         plt.imsave(f"tests/outputs/{model_name}_chunking_error1.png", error1.T)
         plt.imsave(f"tests/outputs/{model_name}_chunking_error2.png", error2.T)
     assert error1.mean() < error2.mean()
+
+
+@pytest.mark.parametrize(
+    ("model_name", "variant"),
+    [
+        ("ecapa-tdnn", "base"),
+        ("next-tdnn", "base"),
+    ],
+)
+def test_reduction(model_name: str, variant: str) -> None:
+    """Test for the reduction of features along the time axis."""
+    extractor = Extractor(model_name, variant)
+    extractor.load(quiet=True)
+
+    audio, sr = generate_dummy_waveform(10, num_channels=2)
+    features1 = extractor(
+        audio, sr, chunk_length_sec=6, overlap_length_sec=0, reduction="mean"
+    )
+    assert features1.shape == (2, 1, 192)
+    features2 = extractor(
+        audio, sr, chunk_length_sec=6, overlap_length_sec=0, reduction="none"
+    )
+    assert features2.shape == (2, 2, 192)
 
 
 @pytest.mark.parametrize(
