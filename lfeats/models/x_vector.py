@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Takenori Yoshimura
 # Released under the MIT License.
 
-"""A module for the r-vector model."""
+"""A module for the x-vector model."""
 
 from enum import Enum
 

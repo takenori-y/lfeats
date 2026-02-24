@@ -35,7 +35,7 @@ def silence_transformers(enabled: bool = True) -> Generator[None, None, None]:
     Parameters
     ----------
     enabled : bool, optional
-        Whether to silence the progress bar. Default is True.
+        Whether to silence the progress bar.
 
     """
     from transformers.utils.logging import disable_progress_bar, enable_progress_bar
@@ -51,12 +51,12 @@ def silence_transformers(enabled: bool = True) -> Generator[None, None, None]:
 
 @contextmanager
 def silence_hf_hub(enabled: bool = True) -> Generator[None, None, None]:
-    """Context manager to silence Hugging Face Hub logging.
+    """Context manager to silence the progress bars from Hugging Face Hub.
 
     Parameters
     ----------
     enabled : bool, optional
-        Whether to silence Hugging Face Hub logging.
+        Whether to silence the progress bars.
 
     """
     from huggingface_hub.utils.tqdm import disable_progress_bars, enable_progress_bars
