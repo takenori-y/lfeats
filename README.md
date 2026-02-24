@@ -213,7 +213,7 @@ extractor = lfeats.Extractor(model_name="hubert")
 
 # Extract features at a 5ms frame rate.
 features = extractor(waveform, sample_rate, upsample_factor=4)
-print(f"Shape: {features.shape}")  # (1, 200, 768)
+print(f"Shape: {features.shape}")  # (1, 500, 768)
 ```
 
 ### Utterance-Level Feature Extraction
@@ -229,6 +229,7 @@ waveform = np.random.uniform(-1, 1, sample_rate)
 
 extractor = lfeats.Extractor(model_name="ecapa-tdnn")
 
+# The default aggregation method for utterance-level features is averaging.
 features = extractor(waveform, sample_rate, overlap_length_sec=0, reduction="mean")
 print(f"Shape: {features.shape}")  # (1, 1, 192)
 ```
