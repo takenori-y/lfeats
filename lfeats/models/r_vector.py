@@ -59,8 +59,20 @@ class RVectorModel(UtteranceLevelFeatureModel):
 
         setup_third_party_path()
 
+        from speechbrain.utils.fetching import FetchConfig
+
         from lfeats.third_party.speechbrain.inference.classifiers import (
             EncoderClassifier,
+        )
+
+        fetch_config = FetchConfig(
+            overwrite=False,
+            allow_updates=False,
+            allow_network=True,
+            token=False,
+            revision=None,
+            huggingface_cache_dir=model_dir,
+            progress_bar=not quiet,
         )
 
         with silence_hf_hub(quiet):

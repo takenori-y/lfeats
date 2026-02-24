@@ -13,7 +13,6 @@ from tests.utils import generate_dummy_waveform
 @pytest.mark.parametrize(
     ("model_name", "variant"),
     [
-        ("r-vector", "base"),
         ("contentvec", "hubert-100"),
         ("data2vec", "base"),
         ("data2vec2", "base"),
@@ -21,6 +20,7 @@ from tests.utils import generate_dummy_waveform
         ("hubert", "base"),
         ("next-tdnn", "light"),
         ("r-spin", "wavlm-32"),
+        ("r-vector", "base"),
         ("spidr", "base"),
         ("spin", "hubert-128"),
         ("spin", "wavlm-128"),
@@ -29,6 +29,7 @@ from tests.utils import generate_dummy_waveform
         ("wav2vec2", "base"),
         ("wavlm", "base"),
         ("whisper", "tiny"),
+        ("x-vector", "base"),
     ],
 )
 @pytest.mark.parametrize(

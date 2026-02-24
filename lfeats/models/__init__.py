@@ -19,6 +19,7 @@ from .unispeech_sat import UniSpeechSATModel
 from .wav2vec2 import Wav2Vec2Model
 from .wavlm import WavLMModel
 from .whisper import WhisperModel
+from .x_vector import XVectorModel
 
 MODEL_MAP = {
     "contentvec": ContentVecModel,
@@ -36,6 +37,7 @@ MODEL_MAP = {
     "wav2vec2": Wav2Vec2Model,
     "wavlm": WavLMModel,
     "whisper": WhisperModel,
+    "x-vector": XVectorModel,
 }
 
 __all__ = [

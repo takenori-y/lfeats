@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Takenori Yoshimura
 # Released under the MIT License.
 
-"""A module for the ECAPA-TDNN model."""
+"""A module for the r-vector model."""
 
 from enum import Enum
 
@@ -14,17 +14,17 @@ from ..utils.validation import validate_enum
 from .base import UtteranceLevelFeatureModel
 
 
-class EcapaTDNNVariant(str, Enum):
-    """Enumeration of supported ECAPA-TDNN model variants."""
+class XVectorVariant(str, Enum):
+    """Enumeration of supported x-vector model variants."""
 
     BASE = "base"
 
 
-class EcapaTDNNModel(UtteranceLevelFeatureModel):
-    """A class for the ECAPA-TDNN model."""
+class XVectorModel(UtteranceLevelFeatureModel):
+    """A class for the x-vector model."""
 
     def __init__(self, variant: str | None = None, device: str = "cpu") -> None:
-        """Initialize the ECAPA-TDNN model.
+        """Initialize the x-vector model.
 
         Parameters
         ----------
@@ -37,8 +37,8 @@ class EcapaTDNNModel(UtteranceLevelFeatureModel):
         """
         super().__init__(variant, device)
 
-        self.variant = validate_enum(variant, EcapaTDNNVariant, EcapaTDNNVariant.BASE)
-        self._model_id = f"ecapa-tdnn-{self.variant.value}"
+        self.variant = validate_enum(variant, XVectorVariant, XVectorVariant.BASE)
+        self._model_id = f"x-vector-{self.variant.value}"
 
         self.model = None
 
@@ -77,7 +77,8 @@ class EcapaTDNNModel(UtteranceLevelFeatureModel):
 
         with silence_hf_hub(quiet):
             self.model = EncoderClassifier.from_hparams(
-                source="speechbrain/spkrec-ecapa-voxceleb"
+                source="speechbrain/spkrec-xvect-voxceleb",
+                fetch_config=fetch_config,
             )
             if self.model is None:
                 raise RuntimeError("Failed to load the model.")
@@ -110,6 +111,6 @@ class EcapaTDNNModel(UtteranceLevelFeatureModel):
             raise RuntimeError("Model is not loaded. Call 'load' method first.")
 
         with torch.inference_mode():
-            vectors = self.model.encode_batch(audio.tensor.to(self.device))  # (B, N, D)
+            vectors = self.model.encode_batch(audio.tensor.to(self.device))
 
         return Features(data=vectors, source=self.model_id)

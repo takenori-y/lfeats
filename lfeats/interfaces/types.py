@@ -222,10 +222,8 @@ class Features(Container):
         """Validate the input data."""
         super().__post_init__()
 
-        if self.ndim == 2:
-            self.data = self.data[None, ...]
         if self.ndim != 3:
-            raise ValueError("data must be 2D or 3D array/tensor.")
+            raise ValueError("data must be 3D array/tensor.")
 
     @property
     def length(self) -> int:
