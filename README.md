@@ -3,6 +3,14 @@
 *lfeats* provides a unified interface to extract hidden representations from various speech foundation models such as HuBERT and Whisper.
 While these extracted features are task-independent, the package is primarily designed for speech generation tasks including text-to-speech and voice conversion.
 
+[![Manual](https://img.shields.io/badge/docs-stable-blue.svg)](https://takenori-y.github.io/lfeats/stable/)
+[![Downloads](https://static.pepy.tech/badge/lfeats)](https://pepy.tech/project/lfeats)
+[![ClickPy](https://img.shields.io/badge/downloads-clickpy-yellow.svg)](https://clickpy.clickhouse.com/dashboard/lfeats)
+[![Python Version](https://img.shields.io/pypi/pyversions/lfeats.svg)](https://pypi.python.org/pypi/lfeats)
+[![PyPI Version](https://img.shields.io/pypi/v/lfeats.svg)](https://pypi.python.org/pypi/lfeats)
+[![PyTorch Version](https://img.shields.io/badge/pytorch-2.6.0-orange.svg)](https://pypi.python.org/pypi/lfeats)
+[![License](https://img.shields.io/github/license/takenori-y/lfeats.svg)](https://github.com/takenori-y/lfeats/blob/master/LICENSE)
+[![GitHub Actions](https://github.com/takenori-y/lfeats/workflows/package/badge.svg)](https://github.com/takenori-y/lfeats/actions)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 ## Requirements
@@ -12,7 +20,7 @@ While these extracted features are task-independent, the package is primarily de
 
 ## Documentation
 
-- [**Reference Manual**](https://takenori-y.github.io/lfeats/0.1.2/)
+- [**Reference Manual**](https://takenori-y.github.io/lfeats/stable/)
 
 ## Installation
 
