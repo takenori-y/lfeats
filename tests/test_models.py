@@ -17,6 +17,8 @@ from tests.utils import generate_dummy_waveform
         ("data2vec", "base"),
         ("data2vec2", "base"),
         ("ecapa-tdnn", "base"),
+        ("emotion2vec", "base"),
+        ("emotion2vec+", "base"),
         ("hubert", "base"),
         ("next-tdnn", "light"),
         ("r-spin", "wavlm-32"),
@@ -43,3 +45,6 @@ def test_running(model_name: str, variant: str, device: str) -> None:
     audio, sr = generate_dummy_waveform(1)
     features = extractor(audio, sr)
     assert isinstance(features, Features)
+    B, T, D = features.shape
+    assert B == 1
+    assert T == 1 or T == 50

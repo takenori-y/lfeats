@@ -9,6 +9,7 @@ import torch
 
 from ..interfaces.types import Audio, Features
 from ..utils.io import silence_transformers
+from ..utils.paths import sanitize
 from ..utils.validation import validate_enum
 from .base import FrameLevelFeatureModel
 
@@ -17,7 +18,7 @@ class UniSpeechSATVariant(str, Enum):
     """Enumeration of supported UniSpeech-SAT model variants."""
 
     BASE = "base"
-    BASE_PLUS = "base-plus"
+    BASE_PLUS = "base+"
     LARGE = "large"
 
     @property
@@ -30,7 +31,7 @@ class UniSpeechSATVariant(str, Enum):
             The model name corresponding to the variant.
 
         """
-        return f"microsoft/unispeech-sat-{self.value}"
+        return f"microsoft/unispeech-sat-{sanitize(self.value)}"
 
 
 class UniSpeechSATModel(FrameLevelFeatureModel):
