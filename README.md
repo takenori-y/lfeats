@@ -8,7 +8,7 @@ While these extracted features are task-independent, the package is primarily de
 [![ClickPy](https://img.shields.io/badge/downloads-clickpy-yellow.svg)](https://clickpy.clickhouse.com/dashboard/lfeats)
 [![Python Version](https://img.shields.io/pypi/pyversions/lfeats.svg)](https://pypi.python.org/pypi/lfeats)
 [![PyPI Version](https://img.shields.io/pypi/v/lfeats.svg)](https://pypi.python.org/pypi/lfeats)
-[![PyTorch Version](https://img.shields.io/badge/pytorch-2.6.0-orange.svg)](https://pypi.python.org/pypi/lfeats)
+[![PyTorch Version](https://img.shields.io/badge/pytorch-2.6+-orange.svg)](https://pypi.python.org/pypi/lfeats)
 [![License](https://img.shields.io/github/license/takenori-y/lfeats.svg)](https://github.com/takenori-y/lfeats/blob/master/LICENSE)
 [![GitHub Actions](https://github.com/takenori-y/lfeats/workflows/package/badge.svg)](https://github.com/takenori-y/lfeats/actions)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
