@@ -463,8 +463,12 @@ def overwrite_args_by_name(cfg: DictConfig, overrides: Dict[str, any]):
             if k in cfg and isinstance(cfg[k], DictConfig):
                 if k in overrides and isinstance(overrides[k], dict):
                     for ok, ov in overrides[k].items():
-                        if isinstance(ov, dict) and cfg[k][ok] is not None:
-                            overwrite_args_by_name(cfg[k][ok], ov)
+                        if isinstance(ov, dict):
+                            val = cfg[k].get(ok)
+                            if val is None or not isinstance(val, dict):
+                                cfg[k][ok] = ov
+                            else:
+                                overwrite_args_by_name(cfg[k][ok], ov)
                         else:
                             cfg[k][ok] = ov
                 else:

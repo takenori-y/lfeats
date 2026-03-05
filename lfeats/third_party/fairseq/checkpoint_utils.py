@@ -22,7 +22,7 @@ import torch
 from fairseq.dataclass.configs import CheckpointConfig
 from fairseq.dataclass.utils import (
     convert_namespace_to_omegaconf,
-    # overwrite_args_by_name,
+    overwrite_args_by_name,
 )
 # from fairseq.distributed.fully_sharded_data_parallel import FSDP, has_FSDP
 from fairseq.file_io import PathManager
@@ -424,6 +424,8 @@ def load_model_ensemble_and_task(
     suffix="",
     num_shards=1,
     state=None,
+    remap=None,
+    remove_pretraining_modules=False,
 ):
     assert state is None or len(filenames) == 1
 
@@ -508,8 +510,12 @@ def load_model_ensemble_and_task(
                     and "num_updates" in state["optimizer_history"][-1]
                 ):
                     model.set_num_updates(state["optimizer_history"][-1]["num_updates"])
+                if remove_pretraining_modules:
+                    model.remove_pretraining_modules()
                 model.load_state_dict(
-                    state["model"], strict=strict, model_cfg=cfg.model
+                    state["model"] if remap is None else remap(state["model"]),
+                    strict=strict,
+                    model_cfg=cfg.model,
                 )
 
             # reset state so it gets loaded for the next model in ensemble

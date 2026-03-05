@@ -8,7 +8,7 @@ import math
 # import numpy as np
 import torch
 import torch.nn as nn
-# import torch.nn.functional as F
+import torch.nn.functional as F
 from collections import namedtuple
 from dataclasses import dataclass, field
 # from functools import partial

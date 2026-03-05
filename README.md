@@ -8,7 +8,7 @@ While these extracted features are task-independent, the package is primarily de
 [![ClickPy](https://img.shields.io/badge/downloads-clickpy-yellow.svg)](https://clickpy.clickhouse.com/dashboard/lfeats)
 [![Python Version](https://img.shields.io/pypi/pyversions/lfeats.svg)](https://pypi.python.org/pypi/lfeats)
 [![PyPI Version](https://img.shields.io/pypi/v/lfeats.svg)](https://pypi.python.org/pypi/lfeats)
-[![PyTorch Version](https://img.shields.io/badge/pytorch-2.6.0-orange.svg)](https://pypi.python.org/pypi/lfeats)
+[![PyTorch Version](https://img.shields.io/badge/pytorch-2.6+-orange.svg)](https://pypi.python.org/pypi/lfeats)
 [![License](https://img.shields.io/github/license/takenori-y/lfeats.svg)](https://github.com/takenori-y/lfeats/blob/master/LICENSE)
 [![GitHub Actions](https://github.com/takenori-y/lfeats/workflows/package/badge.svg)](https://github.com/takenori-y/lfeats/actions)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
@@ -48,6 +48,10 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | | `large` | 24 | 1024 | | | |
 | `data2vec2` | `base` | 8 | 768 | [arXiv](https://arxiv.org/abs/2212.07525) | [GitHub](https://github.com/facebookresearch/fairseq/tree/main/examples/data2vec) | |
 | | `large` | 16 | 1024 | | | |
+| `emotion2vec` | `base` | 8 | 768 | [arXiv](https://arxiv.org/abs/2312.15185) | [GitHub](https://github.com/ddlBoJack/emotion2vec) | [🤗](https://huggingface.co/emotion2vec/emotion2vec_base) |
+| `emotion2vec+` | `seed` | 8 | 768 | | | [🤗](https://huggingface.co/emotion2vec/emotion2vec_plus_seed) |
+| | `base` | 8 | 768 | | | [🤗](https://huggingface.co/emotion2vec/emotion2vec_plus_base) |
+| | `large` | 8 | 1024 | | | [🤗](https://huggingface.co/emotion2vec/emotion2vec_plus_large) |
 | `hubert` | `base` | 12 | 768 | [arXiv](https://arxiv.org/abs/2106.07447) | [GitHub](https://github.com/facebookresearch/fairseq/tree/main/examples/hubert) | [🤗](https://huggingface.co/facebook/hubert-base-ls960) |
 | | `large` | 24 | 1024 | | | [🤗](https://huggingface.co/facebook/hubert-large-ll60k) |
 | | `xlarge` | 48 | 1280 | | | [🤗](https://huggingface.co/facebook/hubert-xlarge-ll60k) |
@@ -72,14 +76,14 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | `sslzip` | `tiny` | 0 | 16 | [ISCA](https://www.isca-archive.org/ssw_2025/yoshimura25_ssw.html) | [GitHub](https://github.com/sp-nitech/SSLZip) | [🤗](https://huggingface.co/takenori-y/SSLZip-16) |
 | | `base` | 0 | 256 | | | [🤗](https://huggingface.co/takenori-y/SSLZip-256) |
 | `unispeech-sat` | `base` | 12 | 768 | [arXiv](https://arxiv.org/abs/2110.05752) | [GitHub](https://github.com/microsoft/UniSpeech) | [🤗](https://huggingface.co/microsoft/unispeech-sat-base) |
-| | `base-plus` | 12 | 768 | | | [🤗](https://huggingface.co/microsoft/unispeech-sat-base-plus) |
+| | `base+` | 12 | 768 | | | [🤗](https://huggingface.co/microsoft/unispeech-sat-base-plus) |
 | | `large` | 24 | 1024 | | | [🤗](https://huggingface.co/microsoft/unispeech-sat-large) |
 | `wav2vec2` | `base` | 12 | 768 | [arXiv](https://arxiv.org/abs/2006.11477) | [GitHub](https://github.com/facebookresearch/fairseq/tree/main/examples/wav2vec) | |
 | | `large` | 24 | 1024 | | | |
 | | `xlsr` | 24 | 1024 | [arXiv](https://arxiv.org/abs/2006.13979) | | |
 | | `xlsr-v2` | 24 | 1024 | [arXiv](https://arxiv.org/abs/2111.09296) | [GitHub](https://github.com/facebookresearch/fairseq/tree/main/examples/wav2vec/xlsr) | |
 | `wavlm` | `base` | 12 | 768 | [arXiv](https://arxiv.org/abs/2110.13900) | [GitHub](https://github.com/microsoft/unilm/tree/master/wavlm) | [🤗](https://huggingface.co/microsoft/wavlm-base) |
-| | `base-plus` | 12 | 768 | | | [🤗](https://huggingface.co/microsoft/wavlm-base-plus) |
+| | `base+` | 12 | 768 | | | [🤗](https://huggingface.co/microsoft/wavlm-base-plus) |
 | | `large` | 24 | 1024 | | | [🤗](https://huggingface.co/microsoft/wavlm-large) |
 | `whisper` | `tiny` | 4 | 384 | [arXiv](https://arxiv.org/abs/2212.04356) | [GitHub](https://github.com/openai/whisper) | [🤗](https://huggingface.co/openai/whisper-tiny) |
 | | `base` | 6 | 512 | | | [🤗](https://huggingface.co/openai/whisper-base) |

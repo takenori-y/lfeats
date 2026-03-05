@@ -40,11 +40,11 @@ from .modalities.audio import (
     D2vAudioConfig,
     AudioEncoder,
 )
-# from examples.data2vec.models.modalities.images import (
+# from .modalities.images import (
 #     D2vImageConfig,
 #     ImageEncoder,
 # )
-# from examples.data2vec.models.modalities.text import (
+# from .modalities.text import (
 #     D2vTextConfig,
 #     TextEncoder,
 # )
@@ -55,8 +55,8 @@ logger = logging.getLogger(__name__)
 @dataclass
 class D2vModalitiesConfig(FairseqDataclass):
     audio: D2vAudioConfig = field(default_factory=D2vAudioConfig)
-    # image: D2vImageConfig = D2vImageConfig()
-    # text: D2vTextConfig = D2vTextConfig()
+    # image: D2vImageConfig = field(default_factory=D2vImageConfig)
+    # text: D2vTextConfig = field(default_factory=D2vTextConfig)
 
 
 @dataclass
@@ -183,7 +183,7 @@ class Data2VecMultiModel(BaseFairseqModel):
     def __init__(self, cfg: Data2VecMultiConfig, modalities, skip_ema=False, task=None):
         super().__init__()
         self.cfg = cfg
-        self.modalities = modalities
+        self.modalities = set(modalities) & {Modality.AUDIO}
         self.task = task
 
         make_layer_norm = partial(
@@ -473,6 +473,10 @@ class Data2VecMultiModel(BaseFairseqModel):
                     masked_padding_mask = masked_padding_mask[
                         :, feature_extractor.modality_cfg.num_extra_tokens :
                     ]
+                layer_results = [
+                    lr[:, feature_extractor.modality_cfg.num_extra_tokens :]
+                    for lr in layer_results
+                ]
 
             return {
                 "x": x,
