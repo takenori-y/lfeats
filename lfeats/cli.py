@@ -7,6 +7,7 @@
 
 import argparse
 import logging
+import mimetypes
 import os
 import sys
 
@@ -21,13 +22,23 @@ def get_arguments() -> argparse.Namespace:
     parser.add_argument(
         "source",
         type=str,
-        help="The source audio file, directory, or .scp file containing file paths.",
+        help="The source audio file, directory, or scp file containing file paths.",
     )
     parser.add_argument(
         "--output_dir",
         type=str,
-        default=None,
+        default=".",
         help="The directory where the extracted features will be saved.",
+    )
+    parser.add_argument(
+        "--subdir_levels",
+        type=int,
+        default=0,
+        help=(
+            "The number of subdirectory levels to preserve in the output path. "
+            "For example, if set to 2, the output path will include the last two "
+            "subdirectories from the input file's path."
+        ),
     )
     parser.add_argument(
         "--output_format",
@@ -141,11 +152,12 @@ def main() -> None:
 
     # Get the list of input files from the source argument.
     if os.path.isfile(args.source):
-        if args.source.endswith(".scp"):
+        mime_type, _ = mimetypes.guess_type(args.source)
+        if mime_type is not None and mime_type.startswith("audio/"):
+            input_files = [args.source]
+        else:
             with open(args.source) as f:
                 input_files = [line.strip() for line in f if line.strip()]
-        else:
-            input_files = [args.source]
     elif os.path.isdir(args.source):
         input_files = []
         for root, _, files in os.walk(args.source):
@@ -167,10 +179,6 @@ def main() -> None:
         layers = int(args.layers)
     else:
         raise ValueError(f"Invalid layers argument: {args.layers}")
-
-    # Prepare the output directory if specified.
-    if args.output_dir is not None:
-        os.makedirs(args.output_dir, exist_ok=True)
 
     output_ext = {
         "npz": "npz",
@@ -201,8 +209,20 @@ def main() -> None:
 
         base, _ = os.path.splitext(os.path.basename(input_file))
         output_file = f"{base}.{output_ext}"
-        if args.output_dir is not None:
-            output_file = os.path.join(args.output_dir, output_file)
+        output_dir = args.output_dir
+        if args.subdir_levels > 0:
+            dirname = os.path.dirname(os.path.abspath(input_file))
+            dirs = [d for d in dirname.split(os.sep) if d]
+            if args.subdir_levels > len(dirs):
+                logger.warning(
+                    f"Requested {args.subdir_levels} subdirectory levels, "
+                    f"but only {len(dirs)} are available for file {input_file}. "
+                    "Using all available subdirectories instead."
+                )
+            subdirs = dirs[-args.subdir_levels :]
+            output_dir = os.path.join(output_dir, *subdirs)
+        os.makedirs(output_dir, exist_ok=True)
+        output_file = os.path.join(output_dir, output_file)
 
         try:
             audio, sample_rate = load_audio(input_file)

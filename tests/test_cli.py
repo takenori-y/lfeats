@@ -70,3 +70,28 @@ def test_running(monkeypatch) -> None:
     cli()
 
     data = np.fromfile(f"{output_dir}/noise.feats", dtype=np.float32).reshape(-1, 768)
+
+
+def test_subdir_levels(monkeypatch) -> None:
+    """Test the subdir_levels option."""
+    output_dir = "tests/outputs"
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "lfeats",
+            "tests/data/wav",
+            "--output_dir",
+            output_dir,
+            "--output_format",
+            "npz",
+            "--subdir_levels",
+            "1",
+            "--quiet",
+        ],
+    )
+    cli()
+
+    with np.load(f"{output_dir}/wav/noise.npz") as data:
+        assert "features" in data
