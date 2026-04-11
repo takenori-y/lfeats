@@ -101,7 +101,14 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | `next-tdnn` | `light` | 0 | 192 | [arXiv](https://arxiv.org/abs/2312.08603) | [GitHub](https://github.com/dmlguq456/NeXt_TDNN_ASV) | |
 | | `base` | 0 | 192 | | | |
 | | `base-v2` | 0 | 192 | | | |
-| `r-vector` | `base` | 0 | 256 | [arXiv](https://arxiv.org/pdf/1910.12592) | [GitHub](https://github.com/speechbrain/speechbrain) | [🤗](https://huggingface.co/speechbrain/spkrec-resnet-voxceleb) |
+| `r-vector` | `base` | 0 | 256 | [arXiv](https://arxiv.org/abs/1910.12592) | [GitHub](https://github.com/speechbrain/speechbrain) | [🤗](https://huggingface.co/speechbrain/spkrec-resnet-voxceleb) |
+| `redimnet` | `b0` | 0 | 192 | [arXiv](https://arxiv.org/abs/2407.18223) | [GitHub](https://github.com/IDRnD/redimnet) | |
+| | `b1` | 0 | 192 | | | |
+| | `b2` | 0 | 192 | | | |
+| | `b3` | 0 | 192 | | | |
+| | `b4` | 0 | 192 | | | |
+| | `b5` | 0 | 192 | | | |
+| | `b6` | 0 | 192 | | | |
 | `x-vector` | `base` | 0 | 512 | [IEEE](https://ieeexplore.ieee.org/document/8461375) | [GitHub](https://github.com/speechbrain/speechbrain) | [🤗](https://huggingface.co/speechbrain/spkrec-xvect-voxceleb) |
 
 > [!IMPORTANT]

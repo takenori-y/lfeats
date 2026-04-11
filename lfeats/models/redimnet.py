@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Takenori Yoshimura
 # Released under the MIT License.
 
-"""A module for the SpidR model."""
+"""A module for the ReDimNet model."""
 
 from enum import Enum
 from typing import Any
@@ -11,20 +11,26 @@ import torch
 from ..interfaces.types import Audio, Features
 from ..utils.io import set_torch_hub_dir
 from ..utils.validation import validate_enum
-from .base import FrameLevelFeatureModel
+from .base import UtteranceLevelFeatureModel
 
 
-class SpidRVariant(str, Enum):
-    """Enumeration of supported SpindR model variants."""
+class ReDimNetVariant(str, Enum):
+    """Enumeration of supported ReDimNet model variants."""
 
-    BASE = "base"
+    B0 = "b0"
+    B1 = "b1"
+    B2 = "b2"
+    B3 = "b3"
+    B4 = "b4"
+    B5 = "b5"
+    B6 = "b6"
 
 
-class SpidRModel(FrameLevelFeatureModel):
-    """A class for the SpidR model."""
+class ReDimNetModel(UtteranceLevelFeatureModel):
+    """A class for the ReDimNet model."""
 
     def __init__(self, variant: str | None = None, device: str = "cpu") -> None:
-        """Initialize the SpidR model.
+        """Initialize the ReDimNet model.
 
         Parameters
         ----------
@@ -37,8 +43,8 @@ class SpidRModel(FrameLevelFeatureModel):
         """
         super().__init__(variant, device)
 
-        self.variant = validate_enum(variant, SpidRVariant, SpidRVariant.BASE)
-        self._model_id = f"spidr-{self.variant.value}"
+        self.variant = validate_enum(variant, ReDimNetVariant, ReDimNetVariant.B0)
+        self._model_id = f"redimnet-{self.variant.value}"
 
         self.model = None
 
@@ -59,7 +65,13 @@ class SpidRModel(FrameLevelFeatureModel):
 
         with set_torch_hub_dir(model_dir):
             self.model: Any = torch.hub.load(
-                "facebookresearch/spidr", "spidr_base", verbose=not quiet
+                "IDRnD/ReDimNet",
+                "ReDimNet",
+                model_name=self.variant.value,
+                train_type="ft_lm",
+                dataset="vox2",
+                trust_repo=True,
+                verbose=not quiet,
             )
             self.model.eval()
             self.model.to(self.device)
@@ -89,22 +101,8 @@ class SpidRModel(FrameLevelFeatureModel):
         if self.model is None:
             raise RuntimeError("Model is not loaded. Call 'load' method first.")
 
-        # The model expects standardized audio.
-        audio = audio.normalize()
-
         with torch.inference_mode():
-            features = []
+            vectors = self.model(audio.tensor.to(self.device))
+            vectors = vectors.unsqueeze(1)
 
-            x = self.model.feature_extractor(audio.tensor.to(self.device))
-            x = self.model.feature_projection(x)
-            features.append(x)
-
-            x = x + self.model.student.pos_conv_embed(x)
-            x = self.model.student.layer_norm(x)
-            for layer in self.model.student.layers:
-                x, layer_result = layer(x)
-                features.append(layer_result)
-
-            vectors = torch.concat([features[i] for i in layers], dim=-1)
-
-        return Features(data=vectors, source=self.model_id, layers=layers)
+        return Features(data=vectors, source=self.model_id)
