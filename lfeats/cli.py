@@ -31,13 +31,12 @@ def get_arguments() -> argparse.Namespace:
         help="The directory where the extracted features will be saved.",
     )
     parser.add_argument(
-        "--subdir_levels",
+        "--subdir_offset",
         type=int,
-        default=0,
+        default=None,
         help=(
-            "The number of subdirectory levels to preserve in the output path. "
-            "For example, if set to 2, the output path will include the last two "
-            "subdirectories from the input file's path."
+            "The offset from the beginning of the input file path to start creating "
+            "subdirectories in the output directory."
         ),
     )
     parser.add_argument(
@@ -210,16 +209,17 @@ def main() -> None:
         base, _ = os.path.splitext(os.path.basename(input_file))
         output_file = f"{base}.{output_ext}"
         output_dir = args.output_dir
-        if args.subdir_levels > 0:
-            dirname = os.path.dirname(os.path.abspath(input_file))
+        if args.subdir_offset is not None:
+            dirname = os.path.dirname(input_file)
             dirs = [d for d in dirname.split(os.sep) if d]
-            if args.subdir_levels > len(dirs):
-                logger.warning(
-                    f"Requested {args.subdir_levels} subdirectory levels, "
-                    f"but only {len(dirs)} are available for file {input_file}. "
-                    "Using all available subdirectories instead."
+            if args.subdir_offset >= len(dirs):
+                logger.error(
+                    f"Subdir offset {args.subdir_offset} is too large for file: "
+                    f"{input_file}. Skipping."
                 )
-            subdirs = dirs[-args.subdir_levels :]
+                num_errors += 1
+                continue
+            subdirs = dirs[args.subdir_offset :]
             output_dir = os.path.join(output_dir, *subdirs)
         os.makedirs(output_dir, exist_ok=True)
         output_file = os.path.join(output_dir, output_file)

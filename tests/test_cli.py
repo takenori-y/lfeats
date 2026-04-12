@@ -3,6 +3,7 @@
 
 """Test for the command-line interface."""
 
+import os
 import sys
 
 import numpy as np
@@ -72,9 +73,13 @@ def test_running(monkeypatch) -> None:
     data = np.fromfile(f"{output_dir}/noise.feats", dtype=np.float32).reshape(-1, 768)
 
 
-def test_subdir_levels(monkeypatch) -> None:
-    """Test the subdir_levels option."""
+def test_subdir_structure(monkeypatch) -> None:
+    """Test the subdir structure in the output directory."""
     output_dir = "tests/outputs"
+
+    output_file = f"{output_dir}/wav/noise.npz"
+    if os.path.exists(output_file):
+        os.remove(output_file)
 
     monkeypatch.setattr(
         sys,
@@ -86,12 +91,12 @@ def test_subdir_levels(monkeypatch) -> None:
             output_dir,
             "--output_format",
             "npz",
-            "--subdir_levels",
-            "1",
+            "--subdir_offset",
+            "2",
             "--quiet",
         ],
     )
     cli()
 
-    with np.load(f"{output_dir}/wav/noise.npz") as data:
+    with np.load(output_file) as data:
         assert "features" in data
