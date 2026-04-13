@@ -10,6 +10,7 @@ import logging
 import mimetypes
 import os
 import sys
+from pathlib import Path
 
 logger = logging.getLogger("lfeats")
 
@@ -27,7 +28,7 @@ def get_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--output_dir",
         type=str,
-        default=".",
+        default=None,
         help="The directory where the extracted features will be saved.",
     )
     parser.add_argument(
@@ -206,12 +207,10 @@ def main() -> None:
             num_errors += 1
             continue
 
-        base, _ = os.path.splitext(os.path.basename(input_file))
-        output_file = f"{base}.{output_ext}"
-        output_dir = args.output_dir
-        if args.subdir_offset is not None:
-            dirname = os.path.dirname(input_file)
-            dirs = [d for d in dirname.split(os.sep) if d]
+        if args.subdir_offset is None:
+            subdirs = ["."]
+        else:
+            dirs = Path(input_file).parent.parts
             if args.subdir_offset >= len(dirs):
                 logger.error(
                     f"Subdir offset {args.subdir_offset} is too large for file: "
@@ -220,9 +219,15 @@ def main() -> None:
                 num_errors += 1
                 continue
             subdirs = dirs[args.subdir_offset :]
-            output_dir = os.path.join(output_dir, *subdirs)
+
+        if args.output_dir is None:
+            output_dir = os.path.join(*subdirs)
+        else:
+            output_dir = os.path.join(args.output_dir, *subdirs)
         os.makedirs(output_dir, exist_ok=True)
-        output_file = os.path.join(output_dir, output_file)
+
+        base, _ = os.path.splitext(os.path.basename(input_file))
+        output_file = os.path.join(output_dir, f"{base}.{output_ext}")
 
         try:
             audio, sample_rate = load_audio(input_file)
