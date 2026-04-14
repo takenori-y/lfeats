@@ -28,7 +28,7 @@ def get_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--output_dir",
         type=str,
-        default=None,
+        default=".",
         help="The directory where the extracted features will be saved.",
     )
     parser.add_argument(
@@ -208,9 +208,10 @@ def main() -> None:
             continue
 
         if args.subdir_offset is None:
-            subdirs = ["."]
+            subdir = ""
         else:
-            dirs = Path(input_file).parent.parts
+            path = Path(input_file).parent
+            dirs = path.relative_to(path.anchor).parts
             if args.subdir_offset >= len(dirs):
                 logger.error(
                     f"Subdir offset {args.subdir_offset} is too large for file: "
@@ -219,11 +220,9 @@ def main() -> None:
                 num_errors += 1
                 continue
             subdirs = dirs[args.subdir_offset :]
+            subdir = Path(*subdirs)
 
-        if args.output_dir is None:
-            output_dir = os.path.join(*subdirs)
-        else:
-            output_dir = os.path.join(args.output_dir, *subdirs)
+        output_dir = os.path.join(args.output_dir, subdir)
         os.makedirs(output_dir, exist_ok=True)
 
         base, _ = os.path.splitext(os.path.basename(input_file))
