@@ -3,6 +3,7 @@
 
 """I/O utilities."""
 
+import logging
 from collections.abc import Generator
 from contextlib import contextmanager
 from importlib.metadata import PackageNotFoundError, version
@@ -10,6 +11,8 @@ from importlib.metadata import PackageNotFoundError, version
 import soundfile as sf
 import torch
 import torchaudio
+
+HF_HTTP_LOGGER = "huggingface_hub.utils._http"
 
 
 @contextmanager
@@ -42,12 +45,15 @@ def silence_transformers(enabled: bool = True) -> Generator[None, None, None]:
     """
     from transformers.utils.logging import disable_progress_bar, enable_progress_bar
 
+    org_level = logging.getLogger(HF_HTTP_LOGGER).level
     if enabled:
+        logging.getLogger(HF_HTTP_LOGGER).setLevel(logging.ERROR)
         disable_progress_bar()
     try:
         yield
     finally:
         if enabled:
+            logging.getLogger(HF_HTTP_LOGGER).setLevel(org_level)
             enable_progress_bar()
 
 
@@ -63,12 +69,15 @@ def silence_hf_hub(enabled: bool = True) -> Generator[None, None, None]:
     """
     from huggingface_hub.utils.tqdm import disable_progress_bars, enable_progress_bars
 
+    org_level = logging.getLogger(HF_HTTP_LOGGER).level
     if enabled:
+        logging.getLogger(HF_HTTP_LOGGER).setLevel(logging.ERROR)
         disable_progress_bars()
     try:
         yield
     finally:
         if enabled:
+            logging.getLogger(HF_HTTP_LOGGER).setLevel(org_level)
             enable_progress_bars()
 
 
