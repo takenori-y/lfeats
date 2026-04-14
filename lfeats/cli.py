@@ -138,6 +138,9 @@ def main() -> None:
     """Perform the main feature extraction process."""
     args = get_arguments()
 
+    if args.subdir_offset is not None and args.subdir_offset < 0:
+        raise ValueError("Subdir offset must be a non-negative integer.")
+
     logging.basicConfig(
         level=logging.ERROR if args.quiet else logging.INFO,
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
@@ -211,6 +214,7 @@ def main() -> None:
             subdir = ""
         else:
             path = Path(input_file).parent
+            # Remove the root part of the path.
             dirs = path.relative_to(path.anchor).parts
             if args.subdir_offset >= len(dirs):
                 logger.error(
