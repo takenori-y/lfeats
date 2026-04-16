@@ -4,12 +4,11 @@
 """A module for the SpidR model."""
 
 from enum import Enum
-from typing import Any
 
 import torch
 
 from ..interfaces.types import Audio, Features
-from ..utils.io import set_torch_hub_dir
+from ..utils.io import safe_torch_hub_load
 from ..utils.validation import validate_enum
 from .base import FrameLevelFeatureModel
 
@@ -57,10 +56,9 @@ class SpidRModel(FrameLevelFeatureModel):
         if self.model is not None:
             return
 
-        with set_torch_hub_dir(model_dir):
-            self.model: Any = torch.hub.load(
-                "facebookresearch/spidr", "spidr_base", verbose=not quiet
-            )
+        self.model = safe_torch_hub_load(
+            "facebookresearch/spidr", "spidr_base", model_dir, quiet=quiet
+        )
         self.model.eval()
         self.model.to(self.device)
 

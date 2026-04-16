@@ -139,7 +139,7 @@ class SpinModel(FrameLevelFeatureModel):
                 repo_id="vectominist/spin_ckpt",
                 filename=self.variant.checkpoint_filename,
                 repo_type="dataset",
-                local_dir=model_dir,
+                cache_dir=model_dir,
             )
 
         with lightning_mock_context():
@@ -147,11 +147,12 @@ class SpinModel(FrameLevelFeatureModel):
                 model_path, map_location=torch.device("cpu"), weights_only=False
             )
 
-        from lfeats.third_party.s3prl.util.download import set_dir
+        from lfeats.third_party.s3prl.util.download import set_dir, set_progress
         from lfeats.third_party.spin.model import SpinModel as _SpinModel
         from lfeats.third_party.spin.util import len_to_padding
 
         set_dir(model_dir)
+        set_progress(not quiet)
         self.model = _SpinModel(checkpoint["hyper_parameters"])
         self.model.load_state_dict(checkpoint["state_dict"])
         self.model.eval()

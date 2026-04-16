@@ -78,7 +78,7 @@ class Emotion2VecModel(FrameLevelFeatureModel):
                 repo_id=repo_id,
                 filename=filename,
                 repo_type="model",
-                local_dir=model_dir,
+                cache_dir=model_dir,
             )
 
         setup_third_party_path()

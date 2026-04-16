@@ -33,6 +33,7 @@ dependencies = [
   "hyperpyyaml >= 0.0.1",
   "huggingface-hub >= 0.23.0",
   "requests >= 2.27.0",
+  "filelock >= 3.10.0",
   "parfive >= 2.1.0",
   "platformdirs >= 2.0.0",
   "lilfilter >= 0.0.1",
