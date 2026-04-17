@@ -73,7 +73,20 @@ class TorchAudioResampler(BaseResampler):
 
         self.resampler = torchaudio.transforms.Resample(
             orig_freq=src_rate, new_freq=dst_rate, dtype=torch.float32, **params
-        ).to(device)
+        )
+        self.to(device)
+
+    def to(self, device: str) -> None:
+        """Move the resampler to the specified device.
+
+        Parameters
+        ----------
+        device : str
+            The device to move the resampler to (e.g., 'cpu' or 'cuda').
+
+        """
+        super().to(device)
+        self.resampler.to(device)
 
     def resample_impl(self, audio: Audio) -> Audio:
         """Resample the given audio to the target sample rate.

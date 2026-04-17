@@ -25,6 +25,7 @@ class BaseModel(ABC):
         """
         self.device = device
 
+        self.model = None
         self._model_id = None  # To be defined in subclasses
 
     @abstractmethod
@@ -41,6 +42,24 @@ class BaseModel(ABC):
 
         """
         raise NotImplementedError
+
+    def to(self, device: str) -> None:
+        """Move the model to the specified device.
+
+        Parameters
+        ----------
+        device : str
+            The device to move the model to (e.g., 'cpu' or 'cuda').
+
+        """
+        self.device = device
+        if self.model is not None and hasattr(self.model, "to"):
+            self.model.to(device)
+            if hasattr(self.model, "device"):
+                try:
+                    self.model.device = device
+                except AttributeError:
+                    pass
 
     def extract_features(self, audio: Audio, layers: list[int]) -> Features:
         """Extract features from the input audio data.

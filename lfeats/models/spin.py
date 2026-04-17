@@ -117,8 +117,6 @@ class SpinModel(FrameLevelFeatureModel):
         self.variant = validate_enum(variant, SpinVariant, SpinVariant.HUBERT_256)
         self._model_id = f"spin-{self.variant.value}"
 
-        self.model = None
-
     def load(self, model_dir: str, quiet: bool = False) -> None:
         """Load the model from the specified directory.
 

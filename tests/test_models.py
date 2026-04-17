@@ -12,41 +12,6 @@ from lfeats import Extractor, Features
 from tests.utils import generate_dummy_waveform
 
 
-def _worker_load_model(model_name: str, variant: str) -> None:
-    extractor = Extractor(model_name, variant, device="cpu")
-    try:
-        print("Loading model in parallel...")
-        extractor.load(quiet=False)
-        print("Model loaded successfully in parallel.")
-    except Exception as e:
-        raise RuntimeError(f"Failed to load the model in parallel: {e}") from e
-
-
-@pytest.mark.parametrize(
-    ("model_name", "variant"),
-    [
-        ("contentvec", "hubert-100"),
-        ("ecapa-tdnn", "base"),
-        ("emotion2vec", "base"),
-        ("hubert", "base"),
-        ("spidr", "base"),
-        ("spin", "wavlm-128"),
-        ("sslzip", "tiny"),
-    ],
-)
-def test_parallel_loading(model_name: str, variant: str) -> None:
-    """Test if the model can be loaded in parallel without errors."""
-    ctx = mp.get_context("spawn")
-    num_processes = 2
-    tasks = [(model_name, variant) for _ in range(num_processes)]
-
-    with ctx.Pool(processes=num_processes) as pool:
-        try:
-            pool.starmap_async(_worker_load_model, tasks).get()
-        except Exception as e:
-            raise RuntimeError(f"Failed to load the model in parallel: {e}") from e
-
-
 @pytest.mark.parametrize(
     ("model_name", "variant"),
     [
@@ -85,3 +50,40 @@ def test_running(model_name: str, variant: str, device: str) -> None:
     B, T, D = features.shape
     assert B == 1
     assert T == 1 or T == 50
+
+
+def _worker_load_model(model_name: str, variant: str, verbose: bool = False) -> None:
+    extractor = Extractor(model_name, variant, device="cpu")
+    try:
+        if verbose:
+            print("Loading model in parallel...")
+        extractor.load(quiet=not verbose)
+        if verbose:
+            print("Model loaded successfully in parallel.")
+    except Exception as e:
+        raise RuntimeError(f"Failed to load the model in parallel: {e}") from e
+
+
+@pytest.mark.parametrize(
+    ("model_name", "variant"),
+    [
+        ("contentvec", "hubert-100"),
+        ("ecapa-tdnn", "base"),
+        ("emotion2vec", "base"),
+        ("hubert", "base"),
+        ("spidr", "base"),
+        ("spin", "wavlm-128"),
+        ("sslzip", "tiny"),
+    ],
+)
+def test_parallel_loading(model_name: str, variant: str, verbose: bool = False) -> None:
+    """Test if the model can be loaded in parallel without errors."""
+    ctx = mp.get_context("spawn")
+    num_processes = 2
+    tasks = [(model_name, variant, verbose) for _ in range(num_processes)]
+
+    with ctx.Pool(processes=num_processes) as pool:
+        try:
+            pool.starmap_async(_worker_load_model, tasks).get()
+        except Exception as e:
+            raise RuntimeError(f"Failed to load the model in parallel: {e}") from e

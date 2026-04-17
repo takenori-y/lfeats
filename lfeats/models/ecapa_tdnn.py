@@ -40,8 +40,6 @@ class EcapaTDNNModel(UtteranceLevelFeatureModel):
         self.variant = validate_enum(variant, EcapaTDNNVariant, EcapaTDNNVariant.BASE)
         self._model_id = f"ecapa-tdnn-{self.variant.value}"
 
-        self.model = None
-
     def load(self, model_dir: str, quiet: bool = False) -> None:
         """Load the model from the specified directory.
 
@@ -78,11 +76,11 @@ class EcapaTDNNModel(UtteranceLevelFeatureModel):
             self.model = EncoderClassifier.from_hparams(
                 source="speechbrain/spkrec-ecapa-voxceleb",
                 fetch_config=fetch_config,
+                run_opts={"device": self.device},
             )
             if self.model is None:
                 raise RuntimeError("Failed to load the model.")
             self.model.eval()
-            self.model.to(self.device)
 
     def extract_features_impl(self, audio: Audio, layers: list[int]) -> Features:
         """Extract features from the input audio using the model.

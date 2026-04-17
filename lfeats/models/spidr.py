@@ -39,8 +39,6 @@ class SpidRModel(FrameLevelFeatureModel):
         self.variant = validate_enum(variant, SpidRVariant, SpidRVariant.BASE)
         self._model_id = f"spidr-{self.variant.value}"
 
-        self.model = None
-
     def load(self, model_dir: str, quiet: bool = False) -> None:
         """Load the model from the specified directory.
 

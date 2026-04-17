@@ -58,9 +58,6 @@ class Data2VecModel(FrameLevelFeatureModel):
         self.variant = validate_enum(variant, Data2VecVariant, Data2VecVariant.BASE)
         self._model_id = f"data2vec-{self.variant.value}"
 
-        self.processor = None
-        self.model = None
-
     def load(self, model_dir: str, quiet: bool = False) -> None:
         """Load the model from the specified directory.
 

@@ -63,8 +63,6 @@ class RSpinModel(FrameLevelFeatureModel):
         self.variant = validate_enum(variant, RSpinVariant, RSpinVariant.WAVLM_256)
         self._model_id = f"r-spin-{self.variant.value}"
 
-        self.model = None
-
     def load(self, model_dir: str, quiet: bool = False) -> None:
         """Load the model from the specified directory.
 

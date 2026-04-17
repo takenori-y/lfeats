@@ -63,6 +63,19 @@ class SSLZipModel(FrameLevelFeatureModel):
         self.upstream = HuBERTModel(variant=HuBERTVariant.BASE.value, device=device)
         self.model = None
 
+    def to(self, device: str) -> None:
+        """Move the model to the specified device.
+
+        Parameters
+        ----------
+        device : str
+            The device to move the model to (e.g., 'cpu' or 'cuda'). Note that the ONNX
+            model will be loaded on the specified device when calling the 'load' method.
+
+        """
+        self.device = device
+        self.upstream.to(device)
+
     def load(self, model_dir: str, quiet: bool = False) -> None:
         """Load the model from the specified directory.
 

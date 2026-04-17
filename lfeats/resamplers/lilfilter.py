@@ -56,7 +56,19 @@ class LilFilterResampler(BaseResampler):
             dst_rate,
             dtype=torch.float32,
         )
-        self.resampler.weights = self.resampler.weights.to(self.device)
+        self.to(device)
+
+    def to(self, device: str) -> None:
+        """Move the resampler to the specified device.
+
+        Parameters
+        ----------
+        device : str
+            The device to move the resampler to (e.g., 'cpu' or 'cuda').
+
+        """
+        super().to(device)
+        self.resampler.weights = self.resampler.weights.to(device)
 
     def resample_impl(self, audio: Audio) -> Audio:
         """Resample the given audio to the target sample rate.
