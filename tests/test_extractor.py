@@ -34,8 +34,7 @@ def test_device(model_name: str, variant: str, sample_rate: int) -> None:
         features = extractor(audio, sr)
         assert features.tensor.device.type == "cuda"
 
-        extractor = Extractor("hubert", "base", device="cpu")
-        extractor.to("cuda")
+        extractor = Extractor("hubert", "base", device="cuda")
         extractor.load(quiet=True)
         features = extractor(audio, sr)
         assert features.tensor.device.type == "cuda"

@@ -45,6 +45,17 @@ class Resampler:
                 f"Supported resamplers are: {[k for k in RESAMPLER_MAP.keys()]}"
             ) from e
 
+    def to(self, device: str) -> None:
+        """Move the resampler to the specified device.
+
+        Parameters
+        ----------
+        device : str
+            The device to move the resampler to (e.g., 'cpu' or 'cuda').
+
+        """
+        self.resampler_manager.to(device)
+
     def __call__(
         self,
         source: np.ndarray | torch.Tensor | Audio,
