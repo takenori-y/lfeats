@@ -6,7 +6,7 @@
 
 def test_readme_examples() -> None:
     """Test the example code in the README file."""
-    with open("README.md") as f:
+    with open("README.md", encoding="utf-8") as f:
         lines = f.read().splitlines()
 
     # Extract code blocks from the README file.

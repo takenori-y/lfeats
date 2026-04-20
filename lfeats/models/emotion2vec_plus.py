@@ -58,8 +58,6 @@ class Emotion2VecPlusModel(FrameLevelFeatureModel):
         )
         self._model_id = f"emotion2vec+-{self.variant.value}"
 
-        self.model = None
-
     def load(self, model_dir: str, quiet: bool = False) -> None:
         """Load the model from the specified directory.
 
@@ -81,13 +79,13 @@ class Emotion2VecPlusModel(FrameLevelFeatureModel):
                 repo_id=repo_id,
                 filename="model.pt",
                 repo_type="model",
-                local_dir=os.path.join(model_dir, sanitize(self.model_id)),
+                cache_dir=os.path.join(model_dir, sanitize(self.model_id)),
             )
             config = hf_hub_download(
                 repo_id=repo_id,
                 filename="config.yaml",
                 repo_type="model",
-                local_dir=os.path.join(model_dir, sanitize(self.model_id)),
+                cache_dir=os.path.join(model_dir, sanitize(self.model_id)),
             )
 
         from hyperpyyaml import load_hyperpyyaml

@@ -66,8 +66,6 @@ class NeXtTDNNModel(UtteranceLevelFeatureModel):
         self.variant = validate_enum(variant, NeXtTDNNVariant, NeXtTDNNVariant.BASE_V2)
         self._model_id = f"next-tdnn-{self.variant.value}"
 
-        self.model = None
-
     def load(self, model_dir: str, quiet: bool = False) -> None:
         """Load the model from the specified directory.
 

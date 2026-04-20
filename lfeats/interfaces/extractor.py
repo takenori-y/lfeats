@@ -90,6 +90,18 @@ class Extractor:
         """
         self.model_manager.get_model().load(self.cache_dir, quiet)
 
+    def to(self, device: str) -> None:
+        """Move the model to the specified device.
+
+        Parameters
+        ----------
+        device : str
+            The device to move the model to (e.g., 'cpu' or 'cuda').
+
+        """
+        self.model_manager.to(device)
+        self.resampler_manager.to(device)
+
     def __call__(
         self,
         source: np.ndarray | torch.Tensor | Audio,
