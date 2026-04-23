@@ -6,9 +6,42 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
+import torch
 
 from lfeats import Extractor, Features
 from tests.utils import generate_dummy_waveform
+
+
+@pytest.mark.parametrize(
+    ("model_name", "variant"),
+    [
+        ("hubert", "base"),
+        ("ecapa-tdnn", "base"),
+    ],
+)
+@pytest.mark.parametrize("sample_rate", [8000, 16000])
+def test_device(model_name: str, variant: str, sample_rate: int) -> None:
+    """Test if the model can be moved to the specified device."""
+    extractor = Extractor(model_name, variant, device="cpu")
+    extractor.load(quiet=True)
+
+    audio, sr = generate_dummy_waveform(1, sample_rate=sample_rate)
+    features = extractor(audio, sr)
+    assert features.tensor.device.type == "cpu"
+
+    if torch.cuda.is_available():
+        extractor.to("cuda")
+        features = extractor(audio, sr)
+        assert features.tensor.device.type == "cuda"
+
+        extractor = Extractor("hubert", "base", device="cuda")
+        extractor.load(quiet=True)
+        features = extractor(audio, sr)
+        assert features.tensor.device.type == "cuda"
+
+        extractor.to("cpu")
+        features = extractor(audio, sr)
+        assert features.tensor.device.type == "cpu"
 
 
 @pytest.mark.parametrize(

@@ -35,6 +35,17 @@ class BaseResampler(ABC):
         self.dst_rate = dst_rate
         self.device = device
 
+    def to(self, device: str) -> None:
+        """Move the resampler to the specified device.
+
+        Parameters
+        ----------
+        device : str
+            The device to move the resampler to (e.g., 'cpu' or 'cuda').
+
+        """
+        self.device = device
+
     def resample(self, audio: Audio) -> Audio:
         """Resample the given audio to the target sample rate.
 

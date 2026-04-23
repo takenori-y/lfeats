@@ -58,7 +58,6 @@ class WhisperModel(FrameLevelFeatureModel):
         self._model_id = f"whisper-{self.variant.value}"
 
         self.processor = None
-        self.model = None
 
     def load(self, model_dir: str, quiet: bool = False) -> None:
         """Load the model from the specified directory.

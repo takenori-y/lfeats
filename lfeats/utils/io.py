@@ -3,13 +3,19 @@
 
 """I/O utilities."""
 
+import logging
+import os
 from collections.abc import Generator
 from contextlib import contextmanager
 from importlib.metadata import PackageNotFoundError, version
+from typing import Any
 
 import soundfile as sf
 import torch
 import torchaudio
+from filelock import FileLock
+
+HF_HTTP_LOGGER = "huggingface_hub.utils._http"
 
 
 @contextmanager
@@ -42,12 +48,15 @@ def silence_transformers(enabled: bool = True) -> Generator[None, None, None]:
     """
     from transformers.utils.logging import disable_progress_bar, enable_progress_bar
 
+    org_level = logging.getLogger(HF_HTTP_LOGGER).level
     if enabled:
+        logging.getLogger(HF_HTTP_LOGGER).setLevel(logging.ERROR)
         disable_progress_bar()
     try:
         yield
     finally:
         if enabled:
+            logging.getLogger(HF_HTTP_LOGGER).setLevel(org_level)
             enable_progress_bar()
 
 
@@ -63,12 +72,15 @@ def silence_hf_hub(enabled: bool = True) -> Generator[None, None, None]:
     """
     from huggingface_hub.utils.tqdm import disable_progress_bars, enable_progress_bars
 
+    org_level = logging.getLogger(HF_HTTP_LOGGER).level
     if enabled:
+        logging.getLogger(HF_HTTP_LOGGER).setLevel(logging.ERROR)
         disable_progress_bars()
     try:
         yield
     finally:
         if enabled:
+            logging.getLogger(HF_HTTP_LOGGER).setLevel(org_level)
             enable_progress_bars()
 
 
@@ -99,14 +111,50 @@ def download_file(url: str, download_dir: str, quiet: bool = False) -> str:
     """
     from parfive import Downloader
 
-    dl = Downloader(progress=not quiet)
+    basename = os.path.basename(url)
+    lock_path = os.path.join(download_dir, f"{basename}.lock")
 
-    dl.enqueue_file(url, path=download_dir)
+    with FileLock(lock_path):
+        dl = Downloader(progress=not quiet)
 
-    results = dl.download()
-    if len(results) == 0:
-        raise RuntimeError(f"Failed to download file: {results.errors}")
-    return results[0]
+        dl.enqueue_file(url, path=download_dir)
+
+        results = dl.download()
+        if len(results) == 0:
+            raise RuntimeError(f"Failed to download file: {results.errors}")
+        return results[0]
+
+
+def safe_torch_hub_load(
+    repo_or_dir: str, model: str, download_dir: str, quiet: bool = False
+) -> Any:
+    """Safely load a model from PyTorch Hub.
+
+    Parameters
+    ----------
+    repo_or_dir : str
+        The repository or directory to load the model from.
+
+    model : str
+        The name of the model defined in the repository.
+
+    download_dir : str
+        The directory to use for caching the downloaded model files.
+
+    quiet : bool, optional
+        Whether to suppress output during the loading process.
+
+    Returns
+    -------
+    out : Any
+        The loaded object.
+
+    """
+    lock_path = os.path.join(download_dir, f"{model}.lock")
+
+    with FileLock(lock_path):
+        with set_torch_hub_dir(download_dir):
+            return torch.hub.load(repo_or_dir, model, verbose=not quiet)
 
 
 def load_audio(path: str) -> tuple[torch.Tensor, int]:

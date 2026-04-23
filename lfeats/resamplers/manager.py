@@ -32,6 +32,19 @@ class ResamplerManager:
 
         self._cache: dict[tuple[int, int], BaseResampler] = {}
 
+    def to(self, device: str) -> None:
+        """Move all resamplers to the specified device.
+
+        Parameters
+        ----------
+        device : str
+            The device to move the resamplers to (e.g., 'cpu' or 'cuda').
+
+        """
+        self.device = device
+        for resampler in self._cache.values():
+            resampler.to(device)
+
     def get_resampler(self, src_rate: int, dst_rate: int) -> BaseResampler:
         """Get the resampler instance.
 

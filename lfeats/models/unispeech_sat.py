@@ -56,8 +56,6 @@ class UniSpeechSATModel(FrameLevelFeatureModel):
         )
         self._model_id = f"unispeech-sat-{self.variant.value}"
 
-        self.model = None
-
     def load(self, model_dir: str, quiet: bool = False) -> None:
         """Load the model from the specified directory.
 

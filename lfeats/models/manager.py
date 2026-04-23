@@ -32,6 +32,19 @@ class ModelManager:
 
         self._cache: dict[str, BaseModel] = {}
 
+    def to(self, device: str) -> None:
+        """Move all models to the specified device.
+
+        Parameters
+        ----------
+        device : str
+            The device to move the models to (e.g., 'cpu' or 'cuda').
+
+        """
+        self.device = device
+        for model in self._cache.values():
+            model.to(device)
+
     def get_model(self) -> BaseModel:
         """Get the model instance.
 

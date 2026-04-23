@@ -68,8 +68,6 @@ class ContentVecModel(FrameLevelFeatureModel):
         )
         self._model_id = f"contentvec-{self.variant.value}"
 
-        self.model = None
-
     def load(self, model_dir: str, quiet: bool = False) -> None:
         """Load the model from the specified directory.
 

@@ -7,8 +7,10 @@
 
 import argparse
 import logging
+import mimetypes
 import os
 import sys
+from pathlib import Path
 
 logger = logging.getLogger("lfeats")
 
@@ -21,13 +23,22 @@ def get_arguments() -> argparse.Namespace:
     parser.add_argument(
         "source",
         type=str,
-        help="The source audio file, directory, or .scp file containing file paths.",
+        help="The source audio file, directory, or scp file containing file paths.",
     )
     parser.add_argument(
         "--output_dir",
         type=str,
-        default=None,
+        default=".",
         help="The directory where the extracted features will be saved.",
+    )
+    parser.add_argument(
+        "--subdir_offset",
+        type=int,
+        default=None,
+        help=(
+            "The offset from the beginning of the input file path to start creating "
+            "subdirectories in the output directory."
+        ),
     )
     parser.add_argument(
         "--output_format",
@@ -127,6 +138,9 @@ def main() -> None:
     """Perform the main feature extraction process."""
     args = get_arguments()
 
+    if args.subdir_offset is not None and args.subdir_offset < 0:
+        raise ValueError("Subdir offset must be a non-negative integer.")
+
     logging.basicConfig(
         level=logging.ERROR if args.quiet else logging.INFO,
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
@@ -141,11 +155,12 @@ def main() -> None:
 
     # Get the list of input files from the source argument.
     if os.path.isfile(args.source):
-        if args.source.endswith(".scp"):
+        mime_type, _ = mimetypes.guess_type(args.source)
+        if mime_type is not None and mime_type.startswith("audio/"):
+            input_files = [args.source]
+        else:
             with open(args.source) as f:
                 input_files = [line.strip() for line in f if line.strip()]
-        else:
-            input_files = [args.source]
     elif os.path.isdir(args.source):
         input_files = []
         for root, _, files in os.walk(args.source):
@@ -167,10 +182,6 @@ def main() -> None:
         layers = int(args.layers)
     else:
         raise ValueError(f"Invalid layers argument: {args.layers}")
-
-    # Prepare the output directory if specified.
-    if args.output_dir is not None:
-        os.makedirs(args.output_dir, exist_ok=True)
 
     output_ext = {
         "npz": "npz",
@@ -199,10 +210,27 @@ def main() -> None:
             num_errors += 1
             continue
 
+        if args.subdir_offset is None:
+            subdir = ""
+        else:
+            path = Path(input_file).parent
+            # Remove the root part of the path.
+            dirs = path.relative_to(path.anchor).parts
+            if args.subdir_offset >= len(dirs):
+                logger.error(
+                    f"Subdir offset {args.subdir_offset} is too large for file: "
+                    f"{input_file}. Skipping."
+                )
+                num_errors += 1
+                continue
+            subdirs = dirs[args.subdir_offset :]
+            subdir = Path(*subdirs)
+
+        output_dir = os.path.join(args.output_dir, subdir)
+        os.makedirs(output_dir, exist_ok=True)
+
         base, _ = os.path.splitext(os.path.basename(input_file))
-        output_file = f"{base}.{output_ext}"
-        if args.output_dir is not None:
-            output_file = os.path.join(args.output_dir, output_file)
+        output_file = os.path.join(output_dir, f"{base}.{output_ext}")
 
         try:
             audio, sample_rate = load_audio(input_file)

@@ -54,8 +54,6 @@ class WavLMModel(FrameLevelFeatureModel):
         self.variant = validate_enum(variant, WavLMVariant, WavLMVariant.BASE_PLUS)
         self._model_id = f"wavlm-{self.variant.value}"
 
-        self.model = None
-
     def load(self, model_dir: str, quiet: bool = False) -> None:
         """Load the model from the specified directory.
 

@@ -24,10 +24,13 @@ logger = logging.getLogger(__name__)
 
 
 _download_dir = Path.home() / ".cache" / "s3prl" / "download"
+_progress = True
 
 __all__ = [
     "get_dir",
     "set_dir",
+    "get_progress",
+    "set_progress",
     "download",
     "urls_to_filepaths",
 ]
@@ -41,6 +44,15 @@ def get_dir():
 def set_dir(d):
     global _download_dir
     _download_dir = Path(d)
+
+
+def get_progress():
+    return _progress
+
+
+def set_progress(progress):
+    global _progress
+    _progress = progress
 
 
 def _download_url_to_file(url, dst, hash_prefix=None, progress=True):
@@ -69,8 +81,9 @@ def _download_url_to_file(url, dst, hash_prefix=None, progress=True):
         if hash_prefix is not None:
             sha256 = hashlib.sha256()
 
-        tqdm.write(f"Downloading: {url}", file=sys.stderr)
-        tqdm.write(f"Destination: {dst}", file=sys.stderr)
+        if progress:
+            tqdm.write(f"Downloading: {url}", file=sys.stderr)
+            tqdm.write(f"Destination: {dst}", file=sys.stderr)
         with tqdm(
             total=file_size,
             disable=not progress,
@@ -120,12 +133,13 @@ def _download_url_to_file_requests(url, dst, hash_prefix=None, progress=True):
         if hash_prefix is not None:
             sha256 = hashlib.sha256()
 
-        tqdm.write(
-            f"urllib.Request method failed. Trying using another method...",
-            file=sys.stderr,
-        )
-        tqdm.write(f"Downloading: {url}", file=sys.stderr)
-        tqdm.write(f"Destination: {dst}", file=sys.stderr)
+        if progress:
+            tqdm.write(
+                f"urllib.Request method failed. Trying using another method...",
+                file=sys.stderr,
+            )
+            tqdm.write(f"Downloading: {url}", file=sys.stderr)
+            tqdm.write(f"Destination: {dst}", file=sys.stderr)
         with tqdm(
             total=file_size,
             disable=not progress,
@@ -176,9 +190,9 @@ def _download(filepath: Path, url, refresh: bool, new_enough_secs: float = 2.0):
             refresh and (time.time() - os.path.getmtime(filepath)) > new_enough_secs
         ):
             try:
-                _download_url_to_file(url, filepath)
+                _download_url_to_file(url, filepath, progress=_progress)
             except:
-                _download_url_to_file_requests(url, filepath)
+                _download_url_to_file_requests(url, filepath, progress=_progress)
 
     logger.info(f"Using URL's local file: {filepath}")
 

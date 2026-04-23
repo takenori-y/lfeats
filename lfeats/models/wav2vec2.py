@@ -64,9 +64,6 @@ class Wav2Vec2Model(FrameLevelFeatureModel):
         self.variant = validate_enum(variant, Wav2Vec2Variant, Wav2Vec2Variant.BASE)
         self._model_id = f"wav2vec2-{self.variant.value}"
 
-        self.processor = None
-        self.model = None
-
     def load(self, model_dir: str, quiet: bool = False) -> None:
         """Load the model from the specified directory.
 
