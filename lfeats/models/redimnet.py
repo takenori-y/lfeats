@@ -4,12 +4,11 @@
 """A module for the ReDimNet model."""
 
 from enum import Enum
-from typing import Any
 
 import torch
 
 from ..interfaces.types import Audio, Features
-from ..utils.io import set_torch_hub_dir
+from ..utils.io import safe_torch_hub_load
 from ..utils.validation import validate_enum
 from .base import UtteranceLevelFeatureModel
 
@@ -46,8 +45,6 @@ class ReDimNetModel(UtteranceLevelFeatureModel):
         self.variant = validate_enum(variant, ReDimNetVariant, ReDimNetVariant.B0)
         self._model_id = f"redimnet-{self.variant.value}"
 
-        self.model = None
-
     def load(self, model_dir: str, quiet: bool = False) -> None:
         """Load the model from the specified directory.
 
@@ -63,18 +60,17 @@ class ReDimNetModel(UtteranceLevelFeatureModel):
         if self.model is not None:
             return
 
-        with set_torch_hub_dir(model_dir):
-            self.model: Any = torch.hub.load(
-                "IDRnD/ReDimNet",
-                "ReDimNet",
-                model_name=self.variant.value,
-                train_type="ft_lm",
-                dataset="vox2",
-                trust_repo=True,
-                verbose=not quiet,
-            )
-            self.model.eval()
-            self.model.to(self.device)
+        self.model = safe_torch_hub_load(
+            "IDRnD/ReDimNet",
+            "ReDimNet",
+            model_dir,
+            quiet=quiet,
+            model_name=self.variant.value,
+            train_type="ft_lm",
+            dataset="vox2",
+        )
+        self.model.eval()
+        self.model.to(self.device)
 
     def extract_features_impl(self, audio: Audio, layers: list[int]) -> Features:
         """Extract features from the input audio using the model.

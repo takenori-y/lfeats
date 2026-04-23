@@ -126,7 +126,7 @@ def download_file(url: str, download_dir: str, quiet: bool = False) -> str:
 
 
 def safe_torch_hub_load(
-    repo_or_dir: str, model: str, download_dir: str, quiet: bool = False
+    repo_or_dir: str, model: str, download_dir: str, quiet: bool = False, **kwargs
 ) -> Any:
     """Safely load a model from PyTorch Hub.
 
@@ -144,6 +144,9 @@ def safe_torch_hub_load(
     quiet : bool, optional
         Whether to suppress output during the loading process.
 
+    **kwargs : Any
+        Additional keyword arguments to pass to `torch.hub.load`.
+
     Returns
     -------
     out : Any
@@ -154,7 +157,9 @@ def safe_torch_hub_load(
 
     with FileLock(lock_path):
         with set_torch_hub_dir(download_dir):
-            return torch.hub.load(repo_or_dir, model, verbose=not quiet)
+            return torch.hub.load(
+                repo_or_dir, model, verbose=not quiet, trust_repo="check", **kwargs
+            )
 
 
 def load_audio(path: str) -> tuple[torch.Tensor, int]:
