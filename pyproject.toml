@@ -51,7 +51,7 @@ dev = [
   "numpydoc",
   "pkginfo",
   "pydata-sphinx-theme",
-  "pyright",
+  "pyright <= 1.1.408",
   "pytest",
   "pytest-cov",
   "ruff",

@@ -2,7 +2,7 @@
 # Released under the MIT License.
 
 TAPLO_VERSION   := 0.10.0
-YAMLFMT_VERSION := 0.20.0
+YAMLFMT_VERSION := 0.21.0
 
 all: taplo yamlfmt
 
