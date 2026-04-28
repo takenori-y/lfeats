@@ -42,7 +42,7 @@ class ReDimNetModel(UtteranceLevelFeatureModel):
         """
         super().__init__(variant, device)
 
-        self.variant = validate_enum(variant, ReDimNetVariant, ReDimNetVariant.B0)
+        self.variant = validate_enum(variant, ReDimNetVariant, ReDimNetVariant.B6)
         self._model_id = f"redimnet-{self.variant.value}"
 
     def load(self, model_dir: str, quiet: bool = False) -> None:
