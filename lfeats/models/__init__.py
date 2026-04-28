@@ -14,6 +14,7 @@ from .manager import ModelManager
 from .next_tdnn import NeXtTDNNModel
 from .r_spin import RSpinModel
 from .r_vector import RVectorModel
+from .redimnet import ReDimNetModel
 from .spidr import SpidRModel
 from .spin import SpinModel
 from .sslzip import SSLZipModel
@@ -34,6 +35,7 @@ MODEL_MAP = {
     "next-tdnn": NeXtTDNNModel,
     "r-spin": RSpinModel,
     "r-vector": RVectorModel,
+    "redimnet": ReDimNetModel,
     "spidr": SpidRModel,
     "spin": SpinModel,
     "sslzip": SSLZipModel,

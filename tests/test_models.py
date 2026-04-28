@@ -25,6 +25,7 @@ from tests.utils import generate_dummy_waveform
         ("next-tdnn", "light"),
         ("r-spin", "wavlm-32"),
         ("r-vector", "base"),
+        ("redimnet", "b0"),
         ("spidr", "base"),
         ("spin", "hubert-128"),
         ("spin", "wavlm-128"),
