@@ -120,12 +120,14 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | Resampler Type | Quality Preset | Source | License |
 | :--- | :--- | :---: | :--- |
 | `lilfilter` | `base` | [GitHub](https://github.com/danpovey/filtering) | MIT |
+| `scipy` | `fft` | [Document](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.resample.html) | BSD 3-Clause |
+| | `poly` | [Document](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.resample_poly.html) | |
 | `soxr` | `quick` | [GitHub](https://github.com/dofuuz/python-soxr) | LGPL v2.1+ |
 | | `low` | | |
 | | `medium` | | |
 | | `high` | | |
 | | `very-high` | | |
-| `torchaudio` | `kaiser-fast` | [GitHub](https://github.com/pytorch/audio) | BSD 2-Clause |
+| `torchaudio` | `kaiser-fast` | [Document](https://docs.pytorch.org/audio/stable/tutorials/audio_resampling_tutorial.html) | BSD 2-Clause |
 | | `kaiser-best` | | |
 
 ## Examples

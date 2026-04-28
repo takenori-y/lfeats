@@ -34,6 +34,7 @@ def test_running(monkeypatch) -> None:
 
     with np.load(f"{output_dir}/noise.npz") as data:
         assert "features" in data
+        assert data["features"].dtype == np.float32
 
     # Directory input and PT output
     monkeypatch.setattr(
@@ -53,6 +54,8 @@ def test_running(monkeypatch) -> None:
 
     data = torch.load(f"{output_dir}/noise.pt")
     assert "features" in data
+    assert data["features"].dtype == torch.float32
+    length = data["features"].shape[-2]
 
     # SCP input and binary output
     monkeypatch.setattr(
@@ -71,6 +74,7 @@ def test_running(monkeypatch) -> None:
     cli()
 
     data = np.fromfile(f"{output_dir}/noise.feats", dtype=np.float32).reshape(-1, 768)
+    assert data.shape[-2] == length
 
 
 def test_subdir_structure(monkeypatch) -> None:

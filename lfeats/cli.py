@@ -147,9 +147,6 @@ def main() -> None:
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-    import numpy as np
-    import torch
-
     import lfeats
     from lfeats.utils.io import load_audio
 
@@ -252,26 +249,7 @@ def main() -> None:
             num_errors += 1
             continue
 
-        if args.output_format == "npz":
-            result = {
-                "features": features.array,
-                "source": features.source,
-                "layers": features.layers,
-            }
-            np.savez_compressed(output_file, **result)
-        elif args.output_format == "pt":
-            result = {
-                "features": features.tensor.cpu(),
-                "source": features.source,
-                "layers": features.layers,
-            }
-            torch.save(result, output_file)
-        elif args.output_format == "float":
-            features.array.tofile(output_file)
-        elif args.output_format == "double":
-            features.array.astype(np.float64).tofile(output_file)
-        else:
-            raise ValueError(f"Unsupported output format: {args.output_format}")
+        features.tofile(output_file, double=args.output_format == "double")
 
     if num_errors > 0:
         logger.error(f"{num_errors} files were skipped due to errors.")

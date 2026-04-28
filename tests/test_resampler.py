@@ -48,6 +48,8 @@ def test_device(
     ("resampler_type", "resampler_preset"),
     [
         ("lilfilter", "base"),
+        ("scipy", "fft"),
+        ("scipy", "poly"),
         ("soxr", "quick"),
         ("torchaudio", "kaiser-fast"),
         ("torchaudio", "kaiser-best"),
@@ -62,6 +64,7 @@ def test_running(
     device: str,
     src_rate: int = 44100,
     dst_rate: int = 16000,
+    verbose: bool = False,
 ) -> None:
     """Test if the resampler can run without errors."""
     resampler = Resampler(resampler_type, resampler_preset, device=device)
@@ -69,3 +72,6 @@ def test_running(
     audio, sr = generate_dummy_waveform(1, sample_rate=src_rate)
     resampled_audio = resampler(audio, src_rate=sr, dst_rate=dst_rate)
     assert resampled_audio.length == dst_rate
+
+    if verbose:
+        resampled_audio.tofile(f"resampled_{resampler_type}_{resampler_preset}.wav")

@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 import numpy as np
+import soundfile as sf
 import torch
 import torch.nn.functional as F
 
@@ -164,6 +165,28 @@ class Audio(Container):
         """
         return self.data.shape[1]
 
+    def tofile(self, path: str) -> None:
+        """Save the audio to a file.
+
+        Parameters
+        ----------
+        path : str
+            The path to save the audio to.
+
+        """
+        ext = path.split(".")[-1].lower()
+        if ext in ("wav", "flac"):
+            sf.write(path, self.array.T, self.sample_rate)
+        elif ext == "npz":
+            np.savez_compressed(path, samples=self.array, sample_rate=self.sample_rate)
+        elif ext == "pt":
+            torch.save(
+                {"samples": self.tensor.cpu(), "sample_rate": self.sample_rate},
+                path,
+            )
+        else:
+            self.array.tofile(path)
+
     def normalize(self, eps: float = 1e-5) -> Audio:
         """Normalize the audio samples to have zero mean and unit variance.
 
@@ -236,6 +259,40 @@ class Features(Container):
 
         """
         return self.data.shape[1]
+
+    def tofile(self, path: str, double: bool = False) -> None:
+        """Save the features to a file.
+
+        Parameters
+        ----------
+        path : str
+            The path to save the features to.
+
+        double : bool, optional
+            Whether to save the features in double precision instead of single one.
+
+        """
+        ext = path.split(".")[-1].lower()
+        if ext == "npz":
+            np.savez_compressed(
+                path,
+                features=self.array.astype(np.float64 if double else np.float32),
+                source=self.source,
+                layers=self.layers or [],
+            )
+        elif ext == "pt":
+            torch.save(
+                {
+                    "features": self.tensor.cpu().to(
+                        torch.float64 if double else torch.float32
+                    ),
+                    "source": self.source,
+                    "layers": self.layers,
+                },
+                path,
+            )
+        else:
+            self.array.astype(np.float64 if double else np.float32).tofile(path)
 
     def trim(self, start: int, end: int) -> Features:
         """Trim the features along the time dimension.
