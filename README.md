@@ -93,6 +93,12 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | | `large-v2` | 32 | 1280 | | | [🤗](https://huggingface.co/openai/whisper-large-v2) |
 | | `large-v3` | 32 | 1280 | | | [🤗](https://huggingface.co/openai/whisper-large-v3) |
 
+### Token-Level Features
+
+| Model Name | Model Variant | Hop Size [ms] | Dimension | Paper | Source | Model Hub |
+| :--- | :--- | ---: | ---: | :---: | :---: | :---: |
+| `higgs-audio` | `v2` | 40 | 1024 | | [GitHub](https://github.com/boson-ai/higgs-audio) | [🤗](https://huggingface.co/eustlb/higgs-audio-v2-tokenizer) |
+
 ### Utterance-Level Features
 
 | Model Name | Model Variant | Layers | Dimension | Paper | Source | Model Hub |

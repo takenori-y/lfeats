@@ -10,7 +10,7 @@ import torch
 from ..interfaces.types import Audio, Features
 from ..utils.io import silence_hf_hub
 from ..utils.paths import setup_third_party_path
-from ..utils.validation import validate_enum
+from ..utils.validation import validate_enum, validate_length
 from .base import UtteranceLevelFeatureModel
 
 
@@ -108,6 +108,8 @@ class XVectorModel(UtteranceLevelFeatureModel):
             raise RuntimeError("Model is not loaded. Call 'load' method first.")
 
         with torch.inference_mode():
-            vectors = self.model.encode_batch(audio.tensor.to(self.device))
+            inputs = audio.tensor.to(self.device)
+            inputs = validate_length(inputs, 640)
+            vectors = self.model.encode_batch(inputs)
 
         return Features(data=vectors, source=self.model_id)

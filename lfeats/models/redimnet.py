@@ -9,7 +9,7 @@ import torch
 
 from ..interfaces.types import Audio, Features
 from ..utils.io import safe_torch_hub_load
-from ..utils.validation import validate_enum
+from ..utils.validation import validate_enum, validate_length
 from .base import UtteranceLevelFeatureModel
 
 
@@ -42,7 +42,7 @@ class ReDimNetModel(UtteranceLevelFeatureModel):
         """
         super().__init__(variant, device)
 
-        self.variant = validate_enum(variant, ReDimNetVariant, ReDimNetVariant.B6)
+        self.variant = validate_enum(variant, ReDimNetVariant, ReDimNetVariant.B2)
         self._model_id = f"redimnet-{self.variant.value}"
 
     def load(self, model_dir: str, quiet: bool = False) -> None:
@@ -98,7 +98,9 @@ class ReDimNetModel(UtteranceLevelFeatureModel):
             raise RuntimeError("Model is not loaded. Call 'load' method first.")
 
         with torch.inference_mode():
-            vectors = self.model(audio.tensor.to(self.device))
+            inputs = audio.tensor.to(self.device)
+            inputs = validate_length(inputs, 320)
+            vectors = self.model(inputs)
             vectors = vectors.unsqueeze(1)
 
         return Features(data=vectors, source=self.model_id)
