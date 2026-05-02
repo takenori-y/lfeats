@@ -167,7 +167,8 @@ def main() -> None:
         raise ValueError(f"Invalid source: {args.source}")
 
     if len(input_files) == 0:
-        raise ValueError(f"No audio files found in the source: {args.source}")
+        logging.info(f"No audio files found in the source: {args.source}")
+        sys.exit(0)
     logger.info(f"Found {len(input_files)} audio files to process.")
 
     # Parse the layers argument.
@@ -213,7 +214,7 @@ def main() -> None:
             path = Path(input_file).parent
             # Remove the root part of the path.
             dirs = path.relative_to(path.anchor).parts
-            if args.subdir_offset >= len(dirs):
+            if args.subdir_offset > len(dirs):
                 logger.error(
                     f"Subdir offset {args.subdir_offset} is too large for file: "
                     f"{input_file}. Skipping."

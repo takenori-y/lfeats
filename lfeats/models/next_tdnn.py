@@ -11,7 +11,7 @@ import torch
 from ..interfaces.types import Audio, Features
 from ..utils.io import download_file
 from ..utils.paths import setup_third_party_path
-from ..utils.validation import validate_enum
+from ..utils.validation import validate_enum, validate_length
 from .base import UtteranceLevelFeatureModel
 
 
@@ -140,7 +140,9 @@ class NeXtTDNNModel(UtteranceLevelFeatureModel):
             raise RuntimeError("Model is not loaded. Call 'load' method first.")
 
         with torch.inference_mode():
-            vectors = self.model(audio.tensor.to(self.device))
+            inputs = audio.tensor.to(self.device)
+            inputs = validate_length(inputs, 640)
+            vectors = self.model(inputs)
             vectors = vectors.unsqueeze(1)
 
         return Features(data=vectors, source=self.model_id)

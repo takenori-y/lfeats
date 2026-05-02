@@ -256,6 +256,58 @@ class FrameLevelFeatureModel(BaseModel):
         return Granularity.FRAME
 
 
+class TokenLevelFeatureModel(BaseModel):
+    """An abstract base class for frame-level feature extraction models."""
+
+    @property
+    def num_layers(self) -> int:
+        """Get the number of layers in the model.
+
+        Returns
+        -------
+        out : int
+            The number of layers.
+
+        """
+        return 0
+
+    @property
+    def frame_shift(self) -> int:
+        """Get the frame shift of the model.
+
+        Returns
+        -------
+        out : int
+            The frame shift in samples.
+
+        """
+        return int(40.0 * self.sample_rate / 1000)
+
+    @property
+    def center_offset(self) -> int:
+        """Get the center offset of the model.
+
+        Returns
+        -------
+        out : int
+            The center offset in samples.
+
+        """
+        return 0
+
+    @property
+    def granularity(self) -> Granularity:
+        """Get the granularity of the features extracted by the model.
+
+        Returns
+        -------
+        out : str
+            The granularity of the features.
+
+        """
+        return Granularity.FRAME
+
+
 class UtteranceLevelFeatureModel(BaseModel):
     """An abstract base class for utterance-level feature extraction models."""
 
