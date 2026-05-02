@@ -200,7 +200,7 @@ def main() -> None:
         device=args.device,
         cache_dir=args.cache_dir,
     )
-    logger.info(f"Loading {args.model_name}-{args.model_variant} model...")
+    logger.info(f"Loading {extractor.get_model_id()} model...")
     extractor.load(quiet=args.quiet)
 
     num_errors = 0

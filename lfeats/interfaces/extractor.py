@@ -102,6 +102,17 @@ class Extractor:
         self.model_manager.to(device)
         self.resampler_manager.to(device)
 
+    def get_model_id(self) -> str:
+        """Return the identifier of the model being used.
+
+        Returns
+        -------
+        out : str
+            The identifier of the model being used.
+
+        """
+        return self.model_manager.get_model().model_id
+
     def __call__(
         self,
         source: np.ndarray | torch.Tensor | Audio,
