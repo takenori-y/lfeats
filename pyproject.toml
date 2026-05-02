@@ -40,6 +40,7 @@ dependencies = [
   "lilfilter >= 0.0.1",
   "soxr >= 0.4.0",
   "soundfile >= 0.10.2",
+  "tqdm >= 4.63.0",
 ]
 dynamic = ["version"]
 

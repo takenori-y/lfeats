@@ -12,6 +12,8 @@ import os
 import sys
 from pathlib import Path
 
+from tqdm import tqdm
+
 logger = logging.getLogger("lfeats")
 
 
@@ -163,6 +165,7 @@ def main() -> None:
         for root, _, files in os.walk(args.source):
             for file in files:
                 input_files.append(os.path.join(root, file))
+        input_files = sorted(input_files)
     else:
         raise ValueError(f"Invalid source: {args.source}")
 
@@ -197,12 +200,15 @@ def main() -> None:
         device=args.device,
         cache_dir=args.cache_dir,
     )
+    logger.info(f"Loading {args.model_name}-{args.model_variant} model...")
     extractor.load(quiet=args.quiet)
 
     num_errors = 0
 
     # Process each input file and extract features.
-    for input_file in input_files:
+    for input_file in tqdm(
+        input_files, desc="Processing files", unit="file", disable=args.quiet
+    ):
         if not os.path.isfile(input_file):
             logger.error(f"Could not find file: {input_file}. Skipping.")
             num_errors += 1
