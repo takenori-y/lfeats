@@ -281,7 +281,7 @@ class TokenLevelFeatureModel(BaseModel):
             The frame shift in samples.
 
         """
-        return int(40.0 * self.sample_rate / 1000)
+        return int(20.0 * self.sample_rate / 1000)
 
     @property
     def center_offset(self) -> int:

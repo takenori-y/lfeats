@@ -98,6 +98,8 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | Model Name | Model Variant | Hop Size [ms] | Dimension | Paper | Source | Model Hub |
 | :--- | :--- | ---: | ---: | :---: | :---: | :---: |
 | `higgs-audio` | `v2` | 40 | 1024 | | [GitHub](https://github.com/boson-ai/higgs-audio) | [🤗](https://huggingface.co/eustlb/higgs-audio-v2-tokenizer) |
+| `x-codec` | `hubert` | 20 | 1024 | | [GitHub](https://github.com/zhenye234/xcodec) | [🤗](https://huggingface.co/hf-audio/xcodec-hubert-librispeech) |
+| | `wavlm` | 20 | 1024 | | | [🤗](https://huggingface.co/hf-audio/xcodec-wavlm-more-data) |
 
 ### Utterance-Level Features
 
