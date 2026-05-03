@@ -55,9 +55,7 @@ class XCodecModel(TokenLevelFeatureModel):
         """
         super().__init__(variant, device)
 
-        self.variant = validate_enum(
-            variant, XCodecVariant, XCodecVariant.HUBERT
-        )
+        self.variant = validate_enum(variant, XCodecVariant, XCodecVariant.HUBERT)
         self._model_id = f"x-codec-{self.variant.value}"
 
         self.feature_extractor = None
