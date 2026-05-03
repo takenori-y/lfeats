@@ -14,10 +14,11 @@ from ..utils.validation import validate_enum
 from .base import TokenLevelFeatureModel
 
 
-class HiggsAudioTokenizerVariant(str, Enum):
-    """Enumeration of supported Higgs Audio tokenizer variants."""
+class XCodecVariant(str, Enum):
+    """Enumeration of supported X-Codec variants."""
 
-    V2 = "v2"
+    HUBERT = "hubert"
+    WAVLM = "wavlm"
 
     @property
     def model_name(self) -> str:
@@ -29,14 +30,19 @@ class HiggsAudioTokenizerVariant(str, Enum):
             The model name corresponding to the variant.
 
         """
-        return f"eustlb/higgs-audio-{self.value}-tokenizer"
+        base = f"hf-audio/xcodec-{self.value}"
+        if self.value == "hubert":
+            return f"{base}-librispeech"
+        elif self.value == "wavlm":
+            return f"{base}-more-data"
+        return base
 
 
-class HiggsAudioTokenizerModel(TokenLevelFeatureModel):
-    """A class for the Higgs Audio tokenizer model."""
+class XCodecModel(TokenLevelFeatureModel):
+    """A class for the X-Codec model."""
 
     def __init__(self, variant: str | None = None, device: str = "cpu") -> None:
-        """Initialize the Higgs Audio tokenizer model.
+        """Initialize the X-Codec model.
 
         Parameters
         ----------
@@ -49,10 +55,8 @@ class HiggsAudioTokenizerModel(TokenLevelFeatureModel):
         """
         super().__init__(variant, device)
 
-        self.variant = validate_enum(
-            variant, HiggsAudioTokenizerVariant, HiggsAudioTokenizerVariant.V2
-        )
-        self._model_id = f"higgs-audio-{self.variant.value}"
+        self.variant = validate_enum(variant, XCodecVariant, XCodecVariant.HUBERT)
+        self._model_id = f"x-codec-{self.variant.value}"
 
         self.feature_extractor = None
 
@@ -71,13 +75,13 @@ class HiggsAudioTokenizerModel(TokenLevelFeatureModel):
         if self.model is not None:
             return
 
-        from transformers import AutoFeatureExtractor, HiggsAudioV2TokenizerModel
+        from transformers import AutoFeatureExtractor, XcodecModel
 
         with silence_transformers(quiet):
             self.feature_extractor = AutoFeatureExtractor.from_pretrained(
                 self.variant.model_name, cache_dir=model_dir
             )
-            self.model = HiggsAudioV2TokenizerModel.from_pretrained(
+            self.model = XcodecModel.from_pretrained(
                 self.variant.model_name, cache_dir=model_dir
             )
             self.model.eval()
@@ -122,27 +126,3 @@ class HiggsAudioTokenizerModel(TokenLevelFeatureModel):
             vectors = vectors.transpose(1, 2)
 
         return Features(data=vectors, source=self.model_id)
-
-    @property
-    def frame_shift(self) -> int:
-        """Get the frame shift of the model.
-
-        Returns
-        -------
-        out : int
-            The frame shift in samples.
-
-        """
-        return int(40.0 * self.sample_rate / 1000)
-
-    @property
-    def sample_rate(self) -> int:
-        """Get the sample rate required by the model.
-
-        Returns
-        -------
-        out : int
-            The sample rate in Hz.
-
-        """
-        return 24000

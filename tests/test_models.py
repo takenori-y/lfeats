@@ -35,6 +35,7 @@ from tests.utils import generate_dummy_waveform
         ("wav2vec2", "base"),
         ("wavlm", "base"),
         ("whisper", "tiny"),
+        ("x-codec", "hubert"),
         ("x-vector", "base"),
     ],
 )
