@@ -9,13 +9,15 @@ TORCH_VERSION      := 2.6.0
 TORCHAUDIO_VERSION := 2.6.0
 PLATFORM           := cu124
 
+PIP_TIME_LIMIT := --uploaded-prior-to=$(shell date -u -d '14 days ago' '+%Y-%m-%dT%H:%M:%SZ')
+
 venv:
 	test -d .venv || python$(PYTHON_VERSION) -m venv .venv
 	. .venv/bin/activate && python -m pip install --upgrade pip
-	. .venv/bin/activate && python -m pip install --upgrade wheel
+	. .venv/bin/activate && python -m pip install --upgrade wheel $(PIP_TIME_LIMIT)
 	. .venv/bin/activate && python -m pip install torch==$(TORCH_VERSION)+$(PLATFORM) torchaudio==$(TORCHAUDIO_VERSION)+$(PLATFORM) \
 		--index-url https://download.pytorch.org/whl/$(PLATFORM)
-	. .venv/bin/activate && python -m pip install -e .[dev]
+	. .venv/bin/activate && python -m pip install -e .[dev] $(PIP_TIME_LIMIT)
 
 dist:
 	. .venv/bin/activate && python -m build
@@ -37,6 +39,7 @@ check: tool
 	. .venv/bin/activate && python -m ruff format --check $(PROJECT) tests docs/source
 	. .venv/bin/activate && python -m pyright $(PROJECT) tests
 	. .venv/bin/activate && python -m mdformat --check *.md
+	./tools/pinact/pinact run --check .github/workflows/*.yml
 	./tools/taplo/taplo fmt --check *.toml
 	./tools/yamlfmt/yamlfmt --lint *.yml .github/workflows/*.yml
 
@@ -44,6 +47,7 @@ format: tool
 	. .venv/bin/activate && python -m ruff check --fix $(PROJECT) tests
 	. .venv/bin/activate && python -m ruff format $(PROJECT) tests docs/source
 	. .venv/bin/activate && python -m mdformat *.md
+	./tools/pinact/pinact run -u --min-age 14 .github/workflows/*.yml
 	./tools/taplo/taplo fmt *.toml
 	./tools/yamlfmt/yamlfmt *.yml .github/workflows/*.yml
 
@@ -69,7 +73,7 @@ tool-clean:
 update: tool
 	. .venv/bin/activate && python -m pip install --upgrade pip
 	@./tools/taplo/taplo get -f pyproject.toml project.optional-dependencies.dev | while read -r package; do \
-		. .venv/bin/activate && python -m pip install --upgrade "$$package"; \
+		. .venv/bin/activate && python -m pip install --upgrade "$$package" $(PIP_TIME_LIMIT); \
 	done
 
 clean: dist-clean doc-clean test-clean tool-clean

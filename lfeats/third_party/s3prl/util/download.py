@@ -189,10 +189,17 @@ def _download(filepath: Path, url, refresh: bool, new_enough_secs: float = 2.0):
         if not filepath.is_file() or (
             refresh and (time.time() - os.path.getmtime(filepath)) > new_enough_secs
         ):
+            tmp_filepath = Path(str(filepath) + ".tmp")
             try:
-                _download_url_to_file(url, filepath, progress=_progress)
-            except:
-                _download_url_to_file_requests(url, filepath, progress=_progress)
+                try:
+                    _download_url_to_file(url, tmp_filepath, progress=_progress)
+                except:
+                    _download_url_to_file_requests(url, tmp_filepath, progress=_progress)
+                tmp_filepath.replace(filepath)
+            except Exception as e:
+                if tmp_filepath.is_file():
+                    tmp_filepath.unlink()
+                raise e
 
     logger.info(f"Using URL's local file: {filepath}")
 

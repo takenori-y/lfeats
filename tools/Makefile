@@ -1,10 +1,17 @@
 # Copyright (c) 2026 Takenori Yoshimura
 # Released under the MIT License.
 
+PINACT_VERSION  := 3.10.1
 TAPLO_VERSION   := 0.10.0
 YAMLFMT_VERSION := 0.21.0
 
-all: taplo yamlfmt
+all: pinact taplo yamlfmt
+
+pinact:
+	mkdir -p pinact
+	wget https://github.com/suzuki-shunsuke/pinact/releases/download/v$(PINACT_VERSION)/pinact_linux_amd64.tar.gz -O pinact.tar.gz
+	tar xzf pinact.tar.gz -C pinact
+	rm -f pinact.tar.gz
 
 taplo:
 	mkdir -p taplo
@@ -20,6 +27,6 @@ yamlfmt:
 	rm -f yamlfmt.tar.gz
 
 clean:
-	rm -rf taplo yamlfmt
+	rm -rf pinact taplo yamlfmt
 
 .PHONY: all clean
