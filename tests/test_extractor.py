@@ -102,6 +102,24 @@ def test_reduction(model_name: str, variant: str) -> None:
 @pytest.mark.parametrize(
     ("model_name", "variant"),
     [
+        ("ecapa-tdnn", "base"),
+        ("wavlm-sv", "base"),
+    ],
+)
+def test_normalize(model_name: str, variant: str) -> None:
+    """Test for the normalization of features along the feature axis."""
+    extractor = Extractor(model_name, variant)
+    extractor.load(quiet=True)
+
+    audio, sr = generate_dummy_waveform(10, num_channels=2)
+    features = extractor(audio, sr, normalize=True)
+    norm = np.linalg.norm(features.array, ord=2, axis=-1)
+    assert np.allclose(norm, 1.0, atol=1e-5)
+
+
+@pytest.mark.parametrize(
+    ("model_name", "variant"),
+    [
         ("hubert", "base"),
     ],
 )

@@ -128,6 +128,12 @@ def get_arguments() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--normalize",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Enable or disable L2 normalization of the extracted features.",
+    )
+    parser.add_argument(
         "-q",
         "--quiet",
         action="store_true",

@@ -124,6 +124,7 @@ class Extractor:
         overlap_length_sec: int = 5,
         upsample_factor: int = 1,
         reduction: Literal["none", "mean", "auto"] = "auto",
+        normalize: bool = False,
     ) -> Features:
         """Extract features from the input waveform.
 
@@ -158,6 +159,9 @@ class Extractor:
             reduction will be applied. If 'auto', the reduction method will be
             determined based on the feature granularity ('none' for frame-level features
             and 'mean' for utterance-level features).
+
+        normalize : bool, optional
+            If True, the extracted features will be L2-normalized.
 
         Returns
         -------
@@ -199,6 +203,7 @@ class Extractor:
                 chunk_length_sec=chunk_length_sec,
                 overlap_length_sec=overlap_length_sec,
                 reduction=reduction,
+                normalize=normalize,
             )
 
         model = self.model_manager.get_model()
@@ -254,6 +259,7 @@ class Extractor:
         chunk_length_sec: int = 30,
         overlap_length_sec: int = 5,
         reduction: Literal["none", "mean", "auto"] = "auto",
+        normalize: bool = False,
     ) -> Features:
         """Extract features from the input waveform.
 
@@ -285,6 +291,9 @@ class Extractor:
             reduction will be applied. If 'auto', the reduction method will be
             determined based on the feature granularity ('none' for frame-level features
             and 'mean' for utterance-level features).
+
+        normalize : bool, optional
+            If True, the extracted features will be L2-normalized.
 
         Returns
         -------
@@ -387,6 +396,10 @@ class Extractor:
             reduction == "auto" and model.granularity == Granularity.UTTERANCE
         ):
             features = features.reduce("mean")
+
+        # Apply normalization if specified.
+        if normalize:
+            features = features.normalize()
 
         return features
 

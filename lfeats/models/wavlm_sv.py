@@ -6,7 +6,6 @@
 from enum import Enum
 
 import torch
-import torch.nn.functional as F
 
 from ..interfaces.types import Audio, Features
 from ..utils.io import silence_transformers
