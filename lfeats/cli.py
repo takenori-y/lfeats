@@ -256,6 +256,7 @@ def main() -> None:
                 overlap_length_sec=args.overlap_length_sec,
                 upsample_factor=args.upsample_factor,
                 reduction=args.reduction,
+                normalize=args.normalize,
             )
         except Exception as e:
             logger.error(f"Error processing file {input_file}: {e}. Skipping.")
