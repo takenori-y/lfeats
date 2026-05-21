@@ -34,6 +34,7 @@ from tests.utils import generate_dummy_waveform
         ("unispeech-sat", "base"),
         ("wav2vec2", "base"),
         ("wavlm", "base"),
+        ("wavlm-sv", "base"),
         ("whisper", "tiny"),
         ("x-codec", "hubert"),
         ("x-vector", "base"),

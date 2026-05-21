@@ -22,6 +22,7 @@ from .sslzip import SSLZipModel
 from .unispeech_sat import UniSpeechSATModel
 from .wav2vec2 import Wav2Vec2Model
 from .wavlm import WavLMModel
+from .wavlm_sv import WavLMSVModel
 from .whisper import WhisperModel
 from .x_codec import XCodecModel
 from .x_vector import XVectorModel
@@ -45,6 +46,7 @@ MODEL_MAP = {
     "unispeech-sat": UniSpeechSATModel,
     "wav2vec2": Wav2Vec2Model,
     "wavlm": WavLMModel,
+    "wavlm-sv": WavLMSVModel,
     "whisper": WhisperModel,
     "x-codec": XCodecModel,
     "x-vector": XVectorModel,
