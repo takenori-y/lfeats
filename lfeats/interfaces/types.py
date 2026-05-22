@@ -356,6 +356,26 @@ class Features(Container):
 
         return Features(data=reduced_data, source=self.source, layers=self.layers)
 
+    def normalize(self) -> Features:
+        """Normalize the features in the L2 sense along the feature dimension.
+
+        Returns
+        -------
+        out : Features
+            A new Features instance with normalized data.
+
+        """
+        eps = 1e-12
+        if isinstance(self.data, np.ndarray):
+            norm = np.linalg.norm(self.array, ord=2, axis=-1, keepdims=True)
+            normalized_data = self.array / np.maximum(norm, eps)
+        else:
+            normalized_data = torch.nn.functional.normalize(
+                self.tensor, p=2, dim=-1, eps=eps
+            )
+
+        return Features(data=normalized_data, source=self.source, layers=self.layers)
+
     def concat(self, other: Features) -> Features:
         """Concatenate this Features instance with another one along the time dimension.
 

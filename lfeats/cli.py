@@ -128,6 +128,12 @@ def get_arguments() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--normalize",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Enable or disable L2 normalization of the extracted features.",
+    )
+    parser.add_argument(
         "-q",
         "--quiet",
         action="store_true",
@@ -250,6 +256,7 @@ def main() -> None:
                 overlap_length_sec=args.overlap_length_sec,
                 upsample_factor=args.upsample_factor,
                 reduction=args.reduction,
+                normalize=args.normalize,
             )
         except Exception as e:
             logger.error(f"Error processing file {input_file}: {e}. Skipping.")
