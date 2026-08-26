@@ -17,6 +17,6 @@ RESAMPLER_MAP = {
 }
 
 __all__ = [
-    "ResamplerManager",
     "RESAMPLER_MAP",
+    "ResamplerManager",
 ]
