@@ -8,7 +8,7 @@ from enum import Enum
 import torch
 
 from ..interfaces.types import Audio, Features
-from ..utils.io import silence_transformers
+from ..utils.io import setup_transformers
 from ..utils.paths import sanitize
 from ..utils.validation import validate_enum
 from .base import FrameLevelFeatureModel
@@ -73,7 +73,7 @@ class UniSpeechSATModel(FrameLevelFeatureModel):
 
         from transformers import UniSpeechSatForPreTraining as _UniSpeechSATModel
 
-        with silence_transformers(quiet):
+        with setup_transformers(quiet):
             self.model = _UniSpeechSATModel.from_pretrained(
                 self.variant.model_name, cache_dir=model_dir
             )

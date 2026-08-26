@@ -9,7 +9,7 @@ from typing import Any
 import torch
 
 from ..interfaces.types import Audio, Features
-from ..utils.io import silence_transformers
+from ..utils.io import setup_transformers
 from ..utils.validation import validate_enum
 from .base import TokenLevelFeatureModel
 
@@ -77,7 +77,7 @@ class XCodecModel(TokenLevelFeatureModel):
 
         from transformers import AutoFeatureExtractor, XcodecModel
 
-        with silence_transformers(quiet):
+        with setup_transformers(quiet):
             self.feature_extractor = AutoFeatureExtractor.from_pretrained(
                 self.variant.model_name, cache_dir=model_dir
             )

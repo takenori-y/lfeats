@@ -8,7 +8,7 @@ from enum import Enum
 import torch
 
 from ..interfaces.types import Audio, Features
-from ..utils.io import silence_transformers
+from ..utils.io import setup_transformers
 from ..utils.validation import validate_enum
 from .base import FrameLevelFeatureModel
 
@@ -76,7 +76,7 @@ class WhisperModel(FrameLevelFeatureModel):
 
         from transformers import WhisperModel, WhisperProcessor
 
-        with silence_transformers(quiet):
+        with setup_transformers(quiet):
             self.processor = WhisperProcessor.from_pretrained(
                 self.variant.model_name, cache_dir=model_dir
             )

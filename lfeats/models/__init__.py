@@ -53,6 +53,6 @@ MODEL_MAP = {
 }
 
 __all__ = [
-    "ModelManager",
     "MODEL_MAP",
+    "ModelManager",
 ]

@@ -8,7 +8,7 @@ from enum import Enum
 import torch
 
 from ..interfaces.types import Audio, Features
-from ..utils.io import silence_transformers
+from ..utils.io import setup_transformers
 from ..utils.validation import validate_enum
 from .base import FrameLevelFeatureModel
 
@@ -33,9 +33,7 @@ class HuBERTVariant(str, Enum):
         base = f"facebook/hubert-{self.value}"
         if self.value == "base":
             return f"{base}-ls960"
-        elif self.value == "large":
-            return f"{base}-ll60k"
-        elif self.value == "xlarge":
+        elif self.value == "large" or self.value == "xlarge":
             return f"{base}-ll60k"
         return base
 
@@ -77,7 +75,7 @@ class HuBERTModel(FrameLevelFeatureModel):
 
         from transformers import HubertModel
 
-        with silence_transformers(quiet):
+        with setup_transformers(quiet):
             self.model = HubertModel.from_pretrained(
                 self.variant.model_name, cache_dir=model_dir
             )

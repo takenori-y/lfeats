@@ -8,7 +8,7 @@ from enum import Enum
 import torch
 
 from ..interfaces.types import Audio, Features
-from ..utils.io import silence_transformers
+from ..utils.io import setup_transformers
 from ..utils.paths import sanitize
 from ..utils.validation import validate_enum
 from .base import FrameLevelFeatureModel
@@ -71,7 +71,7 @@ class WavLMModel(FrameLevelFeatureModel):
 
         from transformers import WavLMModel as _WavLMModel
 
-        with silence_transformers(quiet):
+        with setup_transformers(quiet):
             self.model = _WavLMModel.from_pretrained(
                 self.variant.model_name, cache_dir=model_dir
             )

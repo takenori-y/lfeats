@@ -51,8 +51,6 @@ format: tool
 	./tools/taplo/taplo fmt *.toml
 	./tools/yamlfmt/yamlfmt *.yml .github/workflows/*.yml
 
-test-all: test-example test
-
 test: tool
 	mkdir -p tests/outputs
 	[ -n "$(MODULE)" ] && module=tests/test_$(MODULE).py || module=; \

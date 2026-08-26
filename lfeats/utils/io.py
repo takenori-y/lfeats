@@ -19,7 +19,72 @@ HF_HTTP_LOGGER = "huggingface_hub.utils._http"
 
 
 @contextmanager
-def set_torch_hub_dir(path: str) -> Generator[None, None, None]:
+def setup_transformers(quiet: bool = False) -> Generator[None, None, None]:
+    """Context manager to prepare the environment for Transformers.
+
+    The progress bar from Transformers is silenced if requested, and the
+    automatic conversion to safetensors is always disabled. Transformers spawns
+    a non-daemon thread to ask the Hugging Face Hub for an on-the-fly conversion
+    when a checkpoint is only available in the legacy format. The thread waits
+    for the conversion without any timeout, and thus can block the interpreter
+    shutdown long after the work has been finished. Its result is never used for
+    the ongoing load.
+
+    Parameters
+    ----------
+    quiet : bool, optional
+        Whether to silence the progress bar.
+
+    """
+    from transformers.utils.logging import disable_progress_bar, enable_progress_bar
+
+    key = "DISABLE_SAFETENSORS_CONVERSION"
+    org_value = os.environ.get(key)
+    os.environ[key] = "true"
+
+    org_level = logging.getLogger(HF_HTTP_LOGGER).level
+    if quiet:
+        logging.getLogger(HF_HTTP_LOGGER).setLevel(logging.ERROR)
+        disable_progress_bar()
+    try:
+        yield
+    finally:
+        if quiet:
+            logging.getLogger(HF_HTTP_LOGGER).setLevel(org_level)
+            enable_progress_bar()
+
+        if org_value is None:
+            os.environ.pop(key, None)
+        else:
+            os.environ[key] = org_value
+
+
+@contextmanager
+def silence_hf_hub(quiet: bool = True) -> Generator[None, None, None]:
+    """Context manager to silence the progress bars from Hugging Face Hub.
+
+    Parameters
+    ----------
+    quiet : bool, optional
+        Whether to silence the progress bars.
+
+    """
+    from huggingface_hub.utils.tqdm import disable_progress_bars, enable_progress_bars
+
+    org_level = logging.getLogger(HF_HTTP_LOGGER).level
+    if quiet:
+        logging.getLogger(HF_HTTP_LOGGER).setLevel(logging.ERROR)
+        disable_progress_bars()
+    try:
+        yield
+    finally:
+        if quiet:
+            logging.getLogger(HF_HTTP_LOGGER).setLevel(org_level)
+            enable_progress_bars()
+
+
+@contextmanager
+def _set_torch_hub_dir(path: str) -> Generator[None, None, None]:
     """Context manager to temporarily set the PyTorch Hub directory.
 
     Parameters
@@ -34,54 +99,6 @@ def set_torch_hub_dir(path: str) -> Generator[None, None, None]:
         yield
     finally:
         torch.hub.set_dir(org_dir)
-
-
-@contextmanager
-def silence_transformers(enabled: bool = True) -> Generator[None, None, None]:
-    """Context manager to silence the progress bar from Transformers.
-
-    Parameters
-    ----------
-    enabled : bool, optional
-        Whether to silence the progress bar.
-
-    """
-    from transformers.utils.logging import disable_progress_bar, enable_progress_bar
-
-    org_level = logging.getLogger(HF_HTTP_LOGGER).level
-    if enabled:
-        logging.getLogger(HF_HTTP_LOGGER).setLevel(logging.ERROR)
-        disable_progress_bar()
-    try:
-        yield
-    finally:
-        if enabled:
-            logging.getLogger(HF_HTTP_LOGGER).setLevel(org_level)
-            enable_progress_bar()
-
-
-@contextmanager
-def silence_hf_hub(enabled: bool = True) -> Generator[None, None, None]:
-    """Context manager to silence the progress bars from Hugging Face Hub.
-
-    Parameters
-    ----------
-    enabled : bool, optional
-        Whether to silence the progress bars.
-
-    """
-    from huggingface_hub.utils.tqdm import disable_progress_bars, enable_progress_bars
-
-    org_level = logging.getLogger(HF_HTTP_LOGGER).level
-    if enabled:
-        logging.getLogger(HF_HTTP_LOGGER).setLevel(logging.ERROR)
-        disable_progress_bars()
-    try:
-        yield
-    finally:
-        if enabled:
-            logging.getLogger(HF_HTTP_LOGGER).setLevel(org_level)
-            enable_progress_bars()
 
 
 def download_file(url: str, download_dir: str, quiet: bool = False) -> str:
@@ -155,11 +172,10 @@ def safe_torch_hub_load(
     """
     lock_path = os.path.join(download_dir, f"{model}.lock")
 
-    with FileLock(lock_path):
-        with set_torch_hub_dir(download_dir):
-            return torch.hub.load(
-                repo_or_dir, model, verbose=not quiet, trust_repo="check", **kwargs
-            )
+    with FileLock(lock_path), _set_torch_hub_dir(download_dir):
+        return torch.hub.load(
+            repo_or_dir, model, verbose=not quiet, trust_repo="check", **kwargs
+        )
 
 
 def load_audio(path: str) -> tuple[torch.Tensor, int]:
