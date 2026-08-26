@@ -6,7 +6,7 @@ extract hidden representations from various speech foundation models.
 
 .. toctree::
 
-    API reference <reference>
+    API Reference <reference>
 
 
 Indices
