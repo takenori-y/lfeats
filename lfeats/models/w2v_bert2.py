@@ -106,9 +106,9 @@ class W2VBert2Model(FrameLevelFeatureModel):
             raise RuntimeError("Model not loaded. Call 'load' method first.")
 
         with torch.inference_mode():
-            wavs = validate_length(audio.tensor, 560)
+            wavs = validate_length(audio.array, 560)
             inputs = self.feature_extractor(
-                raw_speech=[x.numpy() for x in wavs],
+                raw_speech=[x for x in wavs],
                 sampling_rate=self.feature_extractor.sampling_rate,
                 pad_to_multiple_of=None,
                 return_tensors="pt",

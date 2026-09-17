@@ -122,6 +122,7 @@ def get_arguments() -> argparse.Namespace:
         "--reduction",
         type=str,
         default="auto",
+        choices=["none", "mean", "auto"],
         help=(
             "The reduction method to apply to the extracted features. Can be 'none', "
             "'mean', or 'auto'."
@@ -183,12 +184,14 @@ def main() -> None:
     # Parse the layers argument.
     if args.layers in ("all", "last"):
         layers = args.layers
-    elif "," in args.layers:
-        layers = [int(layer.strip()) for layer in args.layers.split(",")]
-    elif args.layers.isdigit():
-        layers = int(args.layers)
     else:
-        raise ValueError(f"Invalid layers argument: {args.layers}")
+        try:
+            if "," in args.layers:
+                layers = [int(layer.strip()) for layer in args.layers.split(",")]
+            else:
+                layers = int(args.layers)
+        except ValueError as e:
+            raise ValueError(f"Invalid layers argument: {args.layers}") from e
 
     output_ext = {
         "npz": "npz",

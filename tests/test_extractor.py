@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 import torch
+import torchaudio
 
 from lfeats import Extractor, Features
 from tests.utils import generate_dummy_waveform
@@ -139,6 +140,44 @@ def test_upsampling(model_name: str, variant: str) -> None:
     error2 = np.abs(features2.array - upsampled_features.array[:, 1::2])[0]
     assert error1.sum() == 0
     assert error2.sum() == 0
+
+
+@pytest.mark.parametrize(
+    ("model_name", "variant"),
+    [
+        ("hubert", "base"),
+    ],
+)
+def test_upsampling_with_resampling(model_name: str, variant: str) -> None:
+    """Test if the upsampling works when the input needs to be resampled.
+
+    The shifted frames extracted from the resampled input should match those
+    extracted from the original input as well as the unshifted frames do.
+
+    """
+    extractor = Extractor(model_name, variant)
+    extractor.load(quiet=True)
+
+    audio, sr = generate_dummy_waveform(5)
+    resampled_sr = 3 * sr
+    resampled_audio = torchaudio.functional.resample(
+        torch.from_numpy(audio).float(), sr, resampled_sr
+    ).numpy()
+
+    features = extractor(audio, sr, upsample_factor=2).array[0]
+    resampled_features = extractor(
+        resampled_audio, resampled_sr, upsample_factor=2
+    ).array[0]
+
+    def similarity(x: np.ndarray, y: np.ndarray) -> float:
+        cos = np.sum(x * y, -1) / (
+            np.linalg.norm(x, axis=-1) * np.linalg.norm(y, axis=-1)
+        )
+        return float(np.mean(cos))
+
+    unshifted = similarity(features[0::2], resampled_features[0::2])
+    shifted = similarity(features[1::2], resampled_features[1::2])
+    assert unshifted - shifted < 0.01
 
 
 @pytest.mark.parametrize(

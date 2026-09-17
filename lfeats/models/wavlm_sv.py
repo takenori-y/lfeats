@@ -51,7 +51,7 @@ class WavLMSVModel(UtteranceLevelFeatureModel):
         super().__init__(variant, device)
 
         self.variant = validate_enum(variant, WavLMSVVariant, WavLMSVVariant.BASE_PLUS)
-        self._model_id = f"wavlm-{self.variant.value}"
+        self._model_id = f"wavlm-sv-{self.variant.value}"
 
         self.feature_extractor = None
 
