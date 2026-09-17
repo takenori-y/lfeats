@@ -78,6 +78,7 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | `unispeech-sat` | `base` | 12 | 768 | [arXiv](https://arxiv.org/abs/2110.05752) | [GitHub](https://github.com/microsoft/UniSpeech) | [🤗](https://huggingface.co/microsoft/unispeech-sat-base) |
 | | `base+` | 12 | 768 | | | [🤗](https://huggingface.co/microsoft/unispeech-sat-base-plus) |
 | | `large` | 24 | 1024 | | | [🤗](https://huggingface.co/microsoft/unispeech-sat-large) |
+| `w2v-bert2` | `base` | 24 | 1024 | [arXiv](https://arxiv.org/abs/2312.05187) | [GitHub](https://github.com/facebookresearch/seamless_communication) | [🤗](https://huggingface.co/facebook/w2v-bert-2.0) |
 | `wav2vec2` | `base` | 12 | 768 | [arXiv](https://arxiv.org/abs/2006.11477) | [GitHub](https://github.com/facebookresearch/fairseq/tree/main/examples/wav2vec) | |
 | | `large` | 24 | 1024 | | | |
 | | `xlsr` | 24 | 1024 | [arXiv](https://arxiv.org/abs/2006.13979) | | |

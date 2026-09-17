@@ -36,6 +36,7 @@ from tests.utils import generate_dummy_waveform
         ("spin", "wavlm-128"),
         ("sslzip", "tiny"),
         ("unispeech-sat", "base"),
+        ("w2v-bert2", "base"),
         ("wav2vec2", "base"),
         ("wavlm", "base"),
         ("wavlm-sv", "base"),
@@ -64,29 +65,42 @@ def test_running(model_name: str, variant: str, device: str) -> None:
     [
         ("dacvae", "base", 48000, 1920),
         ("mimi", "base", 24000, 1920),
+        ("w2v-bert2", "base", 16000, 320),
     ],
 )
 def test_frame_center(
     model_name: str, variant: str, sample_rate: int, frame_shift: int
 ) -> None:
-    """Test if the n-th frame is centered at the n-th frame shift."""
+    """Test if the n-th frame is centered at the n-th frame shift.
+
+    An impulse is swept around the n-th frame, and the center of the range where the
+    n-th frame is the most affected one is compared with the n-th frame shift. The
+    first layer is used since the alignment is determined by the front-end.
+
+    """
     extractor = Extractor(model_name, variant)
     extractor.load(quiet=True)
 
     audio, sr = generate_dummy_waveform(5.0, sample_rate=sample_rate)
-    base = extractor(audio, sr).array[0]
+    base = extractor(audio, sr, layers=0).array[0]
     impulse = np.hanning(9)
 
     def most_affected_frame(position: int) -> int:
         perturbed = audio.copy()
         perturbed[position - 4 : position + 5] += impulse
-        diff = extractor(perturbed, sr).array[0] - base
+        diff = extractor(perturbed, sr, layers=0).array[0] - base
         return int(np.argmax(np.linalg.norm(diff, axis=-1)))
 
     n = 30
-    for offset, expected in [(-5, n - 1), (-3, n), (3, n), (5, n + 1)]:
-        position = n * frame_shift + offset * frame_shift // 8
-        assert most_affected_frame(position) == expected
+    step = frame_shift // 16
+    offsets = [
+        offset
+        for offset in range(-frame_shift, frame_shift + 1, step)
+        if most_affected_frame(n * frame_shift + offset) == n
+    ]
+    assert 0 < len(offsets)
+    center = (offsets[0] + offsets[-1]) / 2
+    assert abs(center) <= frame_shift / 8
 
 
 def _worker_load_model(model_name: str, variant: str, verbose: bool = False) -> None:
