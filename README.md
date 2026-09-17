@@ -162,7 +162,7 @@ import lfeats
 import numpy as np
 
 # Prepare an audio waveform without zero-mean and unit-variance normalization.
-# Either a NumPy array or a Torch tensor are accepted as the input of the extractor.
+# Either a NumPy array or a Torch tensor is accepted as the input of the extractor.
 sample_rate = 16000
 waveform = np.random.uniform(-1, 1, sample_rate)
 
@@ -183,7 +183,7 @@ extractor.load()
 features = extractor(waveform, sample_rate)
 print(f"Shape: {features.shape}")  # (1, 50, 768)
 
-# You can access the features as a Numpy array.
+# You can access the features as a NumPy array.
 print(type(features.array))  # <class 'numpy.ndarray'>
 
 # You can also access the features as a Torch tensor.
@@ -217,7 +217,7 @@ features = extractor(waveform, sample_rate, layers="all")
 print(f"Shape: {features.shape}")  # (1, 50, 9984)
 ```
 
-### Audio Chuking
+### Audio Chunking
 
 To be computationally efficient and prevent mismatches between training and inference,
 long audio files can be processed by splitting them into chunks.
@@ -238,8 +238,8 @@ print(f"Shape: {features.shape}")  # (1, 500, 768)
 
 ### Sliding-Window Upsampling
 
-Since the frame rate of speech foundation models is typically 20ms,
-it often doesn't match the 5ms requirement of speech generation tasks.
+Since the frame rate of speech foundation models is typically 20 ms,
+it often doesn't match the 5 ms requirement of speech generation tasks.
 `lfeats` bridges this gap by sliding the input waveform and interleaving the resulting features,
 providing a high-resolution output.
 
@@ -252,7 +252,7 @@ waveform = np.random.uniform(-1, 1, sample_rate)
 
 extractor = lfeats.Extractor(model_name="hubert")
 
-# Extract features at a 5ms frame rate.
+# Extract features at a 5 ms frame shift.
 features = extractor(waveform, sample_rate, upsample_factor=4)
 print(f"Shape: {features.shape}")  # (1, 200, 768)
 ```
@@ -275,7 +275,7 @@ features = extractor(waveform, sample_rate, overlap_length_sec=0, reduction="mea
 print(f"Shape: {features.shape}")  # (1, 1, 192)
 ```
 
-### Command-line Interface
+### Command-Line Interface
 
 Once installed via pip, you can use the `lfeats` command directly from your terminal.
 
@@ -290,7 +290,7 @@ $ lfeats input/dir --output_dir feats
 $ lfeats input.scp --output_dir feats
 
 # Specify model and layer
-$ lfeats input.wav --model_name hubert --model_variant base --layer 12
+$ lfeats input.wav --model_name hubert --model_variant base --layers 12
 ```
 
 > [!TIP]
