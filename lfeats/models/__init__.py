@@ -4,6 +4,7 @@
 """The module for audio feature extraction models."""
 
 from .contentvec import ContentVecModel
+from .dacvae import DACVAEModel
 from .data2vec import Data2VecModel
 from .data2vec2 import Data2Vec2Model
 from .ecapa_tdnn import EcapaTDNNModel
@@ -29,6 +30,7 @@ from .x_vector import XVectorModel
 
 MODEL_MAP = {
     "contentvec": ContentVecModel,
+    "dacvae": DACVAEModel,
     "data2vec": Data2VecModel,
     "data2vec2": Data2Vec2Model,
     "ecapa-tdnn": EcapaTDNNModel,
