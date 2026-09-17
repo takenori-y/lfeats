@@ -97,6 +97,7 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 
 | Model Name | Model Variant | Hop Size [ms] | Dimension | Paper | Source | Model Hub |
 | :--- | :--- | ---: | ---: | :---: | :---: | :---: |
+| `dacvae` | `base` | 40 | 128 | [arXiv](https://arxiv.org/abs/2410.13720) | [GitHub](https://github.com/facebookresearch/dacvae) | [🤗](https://huggingface.co/facebook/dacvae-watermarked) |
 | `higgs-audio` | `v2` | 40 | 1024 | [Blog](https://github.com/Render-AI-Code/cog-higgs-audio/blob/main/tech_blogs/TOKENIZER_BLOG.md) | [GitHub](https://github.com/boson-ai/higgs-audio) | [🤗](https://huggingface.co/eustlb/higgs-audio-v2-tokenizer) |
 | `x-codec` | `hubert` | 20 | 1024 | [arXiv](https://arxiv.org/abs/2408.17175) | [GitHub](https://github.com/zhenye234/xcodec) | [🤗](https://huggingface.co/hf-audio/xcodec-hubert-librispeech) |
 | | `wavlm` | 20 | 1024 | | | [🤗](https://huggingface.co/hf-audio/xcodec-wavlm-more-data) |
@@ -300,10 +301,11 @@ This project is released under the MIT License.
 
 | Repository | License |
 | :--- | :--- |
+| [DAC-VAE](https://github.com/facebookresearch/dacvae) | Apache-2.0 |
 | [fairseq](https://github.com/facebookresearch/fairseq) | MIT |
-| [NeXt_TDNN_ASV](https://github.com/dmlguq456/NeXt_TDNN_ASV) | Apache-2.0 |
+| [NeXt-TDNN](https://github.com/dmlguq456/NeXt_TDNN_ASV) | Apache-2.0 |
 | [R-Spin](https://github.com/vectominist/rspin) | MIT |
 | [S3PRL](https://github.com/s3prl/s3prl) | Apache-2.0 |
 | [SpeechBrain](https://github.com/speechbrain/speechbrain) | Apache-2.0 |
 | [Spin](https://github.com/vectominist/spin) | MIT |
-| [timm](https://github.com/huggingface/pytorch-image-models) | Apache-2.0 |
+| [TIMM](https://github.com/huggingface/pytorch-image-models) | Apache-2.0 |

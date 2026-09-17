@@ -16,6 +16,7 @@ from tests.utils import generate_dummy_waveform
     ("model_name", "variant"),
     [
         ("contentvec", "hubert-100"),
+        ("dacvae", "base"),
         ("data2vec", "base"),
         ("data2vec2", "base"),
         ("ecapa-tdnn", "base"),
