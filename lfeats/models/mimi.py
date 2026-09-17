@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Takenori Yoshimura
 # Released under the MIT License.
 
-"""A module for the Higgs Audio tokenizer."""
+"""A module for the Mimi model."""
 
 from enum import Enum
 from typing import Any
@@ -14,10 +14,10 @@ from ..utils.validation import validate_enum
 from .base import TokenLevelFeatureModel
 
 
-class HiggsAudioTokenizerVariant(str, Enum):
-    """Enumeration of supported Higgs Audio tokenizer variants."""
+class MimiVariant(str, Enum):
+    """Enumeration of supported Mimi variants."""
 
-    V2 = "v2"
+    BASE = "base"
 
     @property
     def model_name(self) -> str:
@@ -29,14 +29,14 @@ class HiggsAudioTokenizerVariant(str, Enum):
             The model name corresponding to the variant.
 
         """
-        return f"eustlb/higgs-audio-{self.value}-tokenizer"
+        return "kyutai/mimi"
 
 
-class HiggsAudioTokenizerModel(TokenLevelFeatureModel):
-    """A class for the Higgs Audio tokenizer model."""
+class MimiModel(TokenLevelFeatureModel):
+    """A class for the Mimi model."""
 
     def __init__(self, variant: str | None = None, device: str = "cpu") -> None:
-        """Initialize the Higgs Audio tokenizer model.
+        """Initialize the Mimi model.
 
         Parameters
         ----------
@@ -49,10 +49,8 @@ class HiggsAudioTokenizerModel(TokenLevelFeatureModel):
         """
         super().__init__(variant, device)
 
-        self.variant = validate_enum(
-            variant, HiggsAudioTokenizerVariant, HiggsAudioTokenizerVariant.V2
-        )
-        self._model_id = f"higgs-audio-{self.variant.value}"
+        self.variant = validate_enum(variant, MimiVariant, MimiVariant.BASE)
+        self._model_id = f"mimi-{self.variant.value}"
 
         self.feature_extractor = None
 
@@ -71,13 +69,14 @@ class HiggsAudioTokenizerModel(TokenLevelFeatureModel):
         if self.model is not None:
             return
 
-        from transformers import AutoFeatureExtractor, HiggsAudioV2TokenizerModel
+        from transformers import AutoFeatureExtractor
+        from transformers import MimiModel as _MimiModel
 
         with setup_transformers(quiet):
             self.feature_extractor = AutoFeatureExtractor.from_pretrained(
                 self.variant.model_name, cache_dir=model_dir
             )
-            self.model = HiggsAudioV2TokenizerModel.from_pretrained(
+            self.model = _MimiModel.from_pretrained(
                 self.variant.model_name, cache_dir=model_dir
             )
             self.model.eval()
@@ -115,11 +114,13 @@ class HiggsAudioTokenizerModel(TokenLevelFeatureModel):
                 return_tensors="pt",
             ).to(self.device)
 
-            encoder_outputs: Any = self.model.encode(inputs["input_values"])
+            encoder_outputs: Any = self.model.encode(
+                inputs["input_values"], inputs["padding_mask"]
+            )
             indices = encoder_outputs.audio_codes  # (B, Q, N)
-            indices = indices.transpose(0, 1)
             vectors = self.model.quantizer.decode(indices)  # (B, D, N)
             vectors = vectors.transpose(1, 2)
+            vectors = vectors[:, : audio.length // self.frame_shift]  # due to padding
 
         return Features(data=vectors, source=self.model_id)
 
@@ -127,17 +128,13 @@ class HiggsAudioTokenizerModel(TokenLevelFeatureModel):
     def center_offset(self) -> int:
         """Get the center offset of the model.
 
-        The model concatenates the outputs of the semantic branch (HuBERT) and the
-        acoustic branch (DAC encoder), which are delayed by different amounts. Since
-        no single offset can align both branches, no compensation is applied.
-
         Returns
         -------
         out : int
             The center offset in samples.
 
         """
-        return 0
+        return self.frame_shift // 2
 
     @property
     def frame_shift(self) -> int:
@@ -149,7 +146,7 @@ class HiggsAudioTokenizerModel(TokenLevelFeatureModel):
             The frame shift in samples.
 
         """
-        return int(40.0 * self.sample_rate / 1000)
+        return int(80.0 * self.sample_rate / 1000)
 
     @property
     def sample_rate(self) -> int:

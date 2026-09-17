@@ -132,13 +132,24 @@ class DACVAEModel(TokenLevelFeatureModel):
 
         with torch.inference_mode():
             inputs = audio.tensor.to(self.device)
-            # The model pads the input in the reflect mode, which requires the padding
-            # size to be smaller than the input length.
             inputs = validate_length(inputs, self.frame_shift // 2 + 1)
             vectors = self.model.encode(inputs.unsqueeze(1))  # (B, D, N)
             vectors = vectors.transpose(1, 2)
+            vectors = vectors[:, : audio.length // self.frame_shift]  # due to padding
 
         return Features(data=vectors, source=self.model_id)
+
+    @property
+    def center_offset(self) -> int:
+        """Get the center offset of the model.
+
+        Returns
+        -------
+        out : int
+            The center offset in samples.
+
+        """
+        return self.frame_shift // 2
 
     @property
     def frame_shift(self) -> int:
