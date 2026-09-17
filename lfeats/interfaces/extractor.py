@@ -210,8 +210,10 @@ class Extractor:
         if model.granularity != Granularity.FRAME or reduction == "mean":
             raise ValueError("Upsampling is only supported for frame-level features.")
 
-        # Prepare the audio data and validate the upsample factor.
+        # Prepare the audio data at the model's sample rate so that the shifts below
+        # are measured in the same unit as the frame shift.
         audio = create_audio_object(source, sample_rate)
+        audio = self._resample(audio, model.sample_rate)
         B, T = audio.data.shape
         frame_shift = model.frame_shift
         if frame_shift % upsample_factor != 0:
@@ -225,8 +227,10 @@ class Extractor:
         shifted_waveforms = audio.zeros((B * upsample_factor, T))
         for i in range(upsample_factor):
             offset = i * step
-            end = T - offset
-            shifted_waveforms[i::upsample_factor, :end] = audio.data[:, offset:]  # type: ignore
+            if offset < T:
+                shifted_waveforms[i::upsample_factor, : T - offset] = audio.data[  # type: ignore
+                    :, offset:
+                ]
 
         # Extract features from the shifted waveforms.
         features = self._extract(
@@ -236,6 +240,7 @@ class Extractor:
             center=center,
             chunk_length_sec=chunk_length_sec,
             overlap_length_sec=overlap_length_sec,
+            normalize=normalize,
         )
 
         # Interleave the features from the shifted waveforms.
@@ -321,17 +326,16 @@ class Extractor:
         model.load(self.cache_dir, quiet=False)
         if model.chunk_length_sec is not None:
             chunk_length_sec = model.chunk_length_sec
+            if chunk_length_sec <= overlap_length_sec:
+                raise ValueError(
+                    f"overlap_length_sec ({overlap_length_sec}) must be less than the "
+                    f"model's fixed chunk length ({chunk_length_sec})."
+                )
         normalized_layers = self._normalize_layers(layers, model.num_layers + 1)
 
         # Prepare the audio data.
         audio = create_audio_object(source, sample_rate)
-
-        # Resample the audio if needed.
-        if audio.sample_rate != model.sample_rate:
-            resampler = self.resampler_manager.get_resampler(
-                audio.sample_rate, model.sample_rate
-            )
-            audio = resampler.resample(audio)
+        audio = self._resample(audio, model.sample_rate)
         expected_num_frames = self._get_num_frames(audio.length, model.frame_shift)
 
         # Pad the audio if needed.
@@ -402,6 +406,28 @@ class Extractor:
             features = features.normalize()
 
         return features
+
+    def _resample(self, audio: Audio, sample_rate: int) -> Audio:
+        """Resample the audio to the specified sample rate if needed.
+
+        Parameters
+        ----------
+        audio : Audio
+            The input audio data.
+
+        sample_rate : int
+            The target sample rate in Hz.
+
+        Returns
+        -------
+        out : Audio
+            The resampled audio data.
+
+        """
+        if audio.sample_rate == sample_rate:
+            return audio
+        resampler = self.resampler_manager.get_resampler(audio.sample_rate, sample_rate)
+        return resampler.resample(audio)
 
     @staticmethod
     def _get_num_frames(length: int, frame_shift: int) -> int:
