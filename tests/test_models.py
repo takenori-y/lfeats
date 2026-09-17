@@ -5,6 +5,7 @@
 
 import multiprocessing as mp
 
+import numpy as np
 import pytest
 import torch
 
@@ -24,6 +25,7 @@ from tests.utils import generate_dummy_waveform
         ("emotion2vec+", "base"),
         ("higgs-audio", "v2"),
         ("hubert", "base"),
+        ("mimi", "base"),
         ("next-tdnn", "light"),
         ("r-spin", "wavlm-32"),
         ("r-vector", "base"),
@@ -54,6 +56,36 @@ def test_running(model_name: str, variant: str, device: str) -> None:
     assert isinstance(features, Features)
     B, _, _ = features.shape
     assert B == 1
+
+
+@pytest.mark.parametrize(
+    ("model_name", "variant", "sample_rate", "frame_shift"),
+    [
+        ("dacvae", "base", 48000, 1920),
+        ("mimi", "base", 24000, 1920),
+    ],
+)
+def test_frame_center(
+    model_name: str, variant: str, sample_rate: int, frame_shift: int
+) -> None:
+    """Test if the n-th frame is centered at the n-th frame shift."""
+    extractor = Extractor(model_name, variant)
+    extractor.load(quiet=True)
+
+    audio, sr = generate_dummy_waveform(5.0, sample_rate=sample_rate)
+    base = extractor(audio, sr).array[0]
+    impulse = np.hanning(9)
+
+    def most_affected_frame(position: int) -> int:
+        perturbed = audio.copy()
+        perturbed[position - 4 : position + 5] += impulse
+        diff = extractor(perturbed, sr).array[0] - base
+        return int(np.argmax(np.linalg.norm(diff, axis=-1)))
+
+    n = 30
+    for offset, expected in [(-5, n - 1), (-3, n), (3, n), (5, n + 1)]:
+        position = n * frame_shift + offset * frame_shift // 8
+        assert most_affected_frame(position) == expected
 
 
 def _worker_load_model(model_name: str, variant: str, verbose: bool = False) -> None:

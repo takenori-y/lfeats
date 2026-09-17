@@ -13,6 +13,7 @@ from .emotion2vec_plus import Emotion2VecPlusModel
 from .higgs_audio import HiggsAudioTokenizerModel
 from .hubert import HuBERTModel
 from .manager import ModelManager
+from .mimi import MimiModel
 from .next_tdnn import NeXtTDNNModel
 from .r_spin import RSpinModel
 from .r_vector import RVectorModel
@@ -38,6 +39,7 @@ MODEL_MAP = {
     "emotion2vec+": Emotion2VecPlusModel,
     "higgs-audio": HiggsAudioTokenizerModel,
     "hubert": HuBERTModel,
+    "mimi": MimiModel,
     "next-tdnn": NeXtTDNNModel,
     "r-spin": RSpinModel,
     "r-vector": RVectorModel,

@@ -99,6 +99,7 @@ pip install git+https://github.com/takenori-y/lfeats.git@master
 | :--- | :--- | ---: | ---: | :---: | :---: | :---: |
 | `dacvae` | `base` | 40 | 128 | [arXiv](https://arxiv.org/abs/2410.13720) | [GitHub](https://github.com/facebookresearch/dacvae) | [🤗](https://huggingface.co/facebook/dacvae-watermarked) |
 | `higgs-audio` | `v2` | 40 | 1024 | [Blog](https://github.com/Render-AI-Code/cog-higgs-audio/blob/main/tech_blogs/TOKENIZER_BLOG.md) | [GitHub](https://github.com/boson-ai/higgs-audio) | [🤗](https://huggingface.co/eustlb/higgs-audio-v2-tokenizer) |
+| `mimi` | `base` | 80 | 512 | [arXiv](https://arxiv.org/abs/2410.00037) | [GitHub](https://github.com/kyutai-labs/moshi) | [🤗](https://huggingface.co/kyutai/mimi) |
 | `x-codec` | `hubert` | 20 | 1024 | [arXiv](https://arxiv.org/abs/2408.17175) | [GitHub](https://github.com/zhenye234/xcodec) | [🤗](https://huggingface.co/hf-audio/xcodec-hubert-librispeech) |
 | | `wavlm` | 20 | 1024 | | | [🤗](https://huggingface.co/hf-audio/xcodec-wavlm-more-data) |
 

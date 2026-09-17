@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Takenori Yoshimura
 # Released under the MIT License.
 
-PINACT_VERSION  := 3.10.1
+PINACT_VERSION  := 5.0.0
 TAPLO_VERSION   := 0.10.0
 YAMLFMT_VERSION := 0.21.0
 

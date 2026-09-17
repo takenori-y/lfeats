@@ -126,3 +126,19 @@ class XCodecModel(TokenLevelFeatureModel):
             vectors = vectors.transpose(1, 2)
 
         return Features(data=vectors, source=self.model_id)
+
+    @property
+    def center_offset(self) -> int:
+        """Get the center offset of the model.
+
+        The model concatenates the outputs of the semantic branch (HuBERT or WavLM)
+        and the acoustic branch (DAC encoder), which are delayed by different amounts.
+        Since no single offset can align both branches, no compensation is applied.
+
+        Returns
+        -------
+        out : int
+            The center offset in samples.
+
+        """
+        return 0
