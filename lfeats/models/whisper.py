@@ -114,21 +114,16 @@ class WhisperModel(FrameLevelFeatureModel):
         inputs = self.processor(
             audio.array,
             return_tensors="pt",
-            return_attention_mask=True,
             sampling_rate=audio.sample_rate,
         )
 
         with torch.inference_mode():
-            input_features = self.model._mask_input_features(
-                inputs.input_features, attention_mask=inputs.attention_mask
-            ).to(device=self.device, dtype=self.model.encoder.dtype)
+            input_features = inputs.input_features.to(
+                device=self.device, dtype=self.model.encoder.dtype
+            )
 
             hidden_states = self.model.encoder(
-                input_features,
-                head_mask=None,
-                output_attentions=False,
-                output_hidden_states=True,
-                return_dict=True,
+                input_features, output_hidden_states=True, return_dict=True
             ).hidden_states
 
             vectors = torch.concat([hidden_states[i] for i in layers], dim=-1)
@@ -167,6 +162,20 @@ class WhisperModel(FrameLevelFeatureModel):
 
         """
         return 0
+
+    @property
+    def supports_uncentered(self) -> bool:
+        """Get whether the model can output features without delay compensation.
+
+        The STFT and the convolutional layers of the encoder pad the input internally.
+
+        Returns
+        -------
+        out : bool
+            True if the features can be extracted without delay compensation.
+
+        """
+        return False
 
     @property
     def chunk_length_sec(self) -> int | None:

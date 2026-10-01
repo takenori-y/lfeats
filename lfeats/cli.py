@@ -143,6 +143,24 @@ def get_arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def is_audio_file(path: str) -> bool:
+    """Check if the given file is an audio file based on its extension.
+
+    Parameters
+    ----------
+    path : str
+        The path to the file.
+
+    Returns
+    -------
+    out : bool
+        True if the file is an audio file, False otherwise.
+
+    """
+    mime_type, _ = mimetypes.guess_type(path)
+    return mime_type is not None and mime_type.startswith("audio/")
+
+
 def main() -> None:
     """Perform the main feature extraction process."""
     args = get_arguments()
@@ -161,8 +179,7 @@ def main() -> None:
 
     # Get the list of input files from the source argument.
     if os.path.isfile(args.source):
-        mime_type, _ = mimetypes.guess_type(args.source)
-        if mime_type is not None and mime_type.startswith("audio/"):
+        if is_audio_file(args.source):
             input_files = [args.source]
         else:
             with open(args.source) as f:
@@ -171,13 +188,15 @@ def main() -> None:
         input_files = []
         for root, _, files in os.walk(args.source):
             for file in files:
-                input_files.append(os.path.join(root, file))
+                path = os.path.join(root, file)
+                if is_audio_file(path):
+                    input_files.append(path)
         input_files = sorted(input_files)
     else:
         raise ValueError(f"Invalid source: {args.source}")
 
     if len(input_files) == 0:
-        logging.info(f"No audio files found in the source: {args.source}")
+        logger.info(f"No audio files found in the source: {args.source}")
         sys.exit(0)
     logger.info(f"Found {len(input_files)} audio files to process.")
 
@@ -261,12 +280,12 @@ def main() -> None:
                 reduction=args.reduction,
                 normalize=args.normalize,
             )
+
+            features.tofile(output_file, double=args.output_format == "double")
         except Exception as e:
             logger.error(f"Error processing file {input_file}: {e}. Skipping.")
             num_errors += 1
             continue
-
-        features.tofile(output_file, double=args.output_format == "double")
 
     if num_errors > 0:
         logger.error(f"{num_errors} files were skipped due to errors.")

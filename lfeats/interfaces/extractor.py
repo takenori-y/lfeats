@@ -142,7 +142,8 @@ class Extractor:
 
         center : bool, optional
             If True, the input audio will be padded to compensate for the delay caused
-            by the model's convolutional layers.
+            by the model's convolutional layers. False is not supported by models that
+            pad the input internally.
 
         chunk_length_sec : int, optional
             The chunk length in seconds for processing long audio.
@@ -282,7 +283,8 @@ class Extractor:
 
         center : bool, optional
             If True, the input audio will be padded to compensate for the delay caused
-            by the model's convolutional layers.
+            by the model's convolutional layers. False is not supported by models that
+            pad the input internally.
 
         chunk_length_sec : int, optional
             The chunk length in seconds for processing long audio.
@@ -339,16 +341,16 @@ class Extractor:
         expected_num_frames = self._get_num_frames(audio.length, model.frame_shift)
 
         # Pad the audio if needed.
+        if not center and not model.supports_uncentered:
+            raise ValueError(
+                "The selected model does not support 'center=False' because it pads "
+                "the input internally, so the uncompensated position is undefined."
+            )
         total_padding = max(2 * model.center_offset - 1, 0)
         left_padding = model.center_offset if center else 0
         padding = (left_padding, total_padding - left_padding)
         if total_padding > 0:
             audio = audio.pad(padding)
-        elif not center:
-            raise ValueError(
-                "The selected model does not support 'center=False' "
-                "because it already compensates for the delay internally."
-            )
 
         # Calculate chunk start and end indices considering padding and overlap.
         chunks = self._create_chunks(

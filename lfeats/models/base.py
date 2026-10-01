@@ -174,6 +174,21 @@ class BaseModel(ABC):
         return None
 
     @property
+    def supports_uncentered(self) -> bool:
+        """Get whether the model can output features without delay compensation.
+
+        This is the case only when the model does not pad the input internally, so
+        that removing the external padding yields the uncompensated position.
+
+        Returns
+        -------
+        out : bool
+            True if the features can be extracted without delay compensation.
+
+        """
+        return True
+
+    @property
     @abstractmethod
     def granularity(self) -> Granularity:
         """Get the granularity of the features extracted by the model.
@@ -294,6 +309,20 @@ class TokenLevelFeatureModel(BaseModel):
 
         """
         return 0
+
+    @property
+    def supports_uncentered(self) -> bool:
+        """Get whether the model can output features without delay compensation.
+
+        The encoder of the codec model pads the input internally.
+
+        Returns
+        -------
+        out : bool
+            True if the features can be extracted without delay compensation.
+
+        """
+        return False
 
     @property
     def granularity(self) -> Granularity:
