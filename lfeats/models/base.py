@@ -177,8 +177,9 @@ class BaseModel(ABC):
     def supports_uncentered(self) -> bool:
         """Get whether the model can output features without delay compensation.
 
-        This is the case only when the model does not pad the input internally, so
-        that removing the external padding yields the uncompensated position.
+        This is the case only when the model does not shift the alignment internally,
+        e.g., by asymmetric or centered padding of the input, so that removing the
+        external padding yields the uncompensated position.
 
         Returns
         -------
@@ -314,7 +315,8 @@ class TokenLevelFeatureModel(BaseModel):
     def supports_uncentered(self) -> bool:
         """Get whether the model can output features without delay compensation.
 
-        The encoder of the codec model pads the input internally.
+        The encoder of the codec model shifts the alignment by padding the input
+        internally.
 
         Returns
         -------

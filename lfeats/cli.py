@@ -98,7 +98,10 @@ def get_arguments() -> argparse.Namespace:
         "--center",
         action=argparse.BooleanOptionalAction,
         default=True,
-        help="Enable or disable center padding for input audio.",
+        help=(
+            "Align each frame to its center (default) or to the start of its "
+            "receptive field (--no-center)."
+        ),
     )
     parser.add_argument(
         "--chunk_length_sec",

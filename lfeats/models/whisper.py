@@ -167,7 +167,8 @@ class WhisperModel(FrameLevelFeatureModel):
     def supports_uncentered(self) -> bool:
         """Get whether the model can output features without delay compensation.
 
-        The STFT and the convolutional layers of the encoder pad the input internally.
+        The centered STFT and the padded convolutions of the encoder shift the
+        alignment internally.
 
         Returns
         -------
