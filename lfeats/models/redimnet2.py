@@ -61,7 +61,7 @@ class ReDimNet2Model(UtteranceLevelFeatureModel):
             return
 
         self.model = safe_torch_hub_load(
-            "PalabraAI/redimnet2",
+            "PalabraAI/redimnet2:main",
             "redimnet2",
             model_dir,
             quiet=quiet,
