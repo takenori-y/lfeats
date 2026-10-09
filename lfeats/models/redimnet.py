@@ -61,7 +61,7 @@ class ReDimNetModel(UtteranceLevelFeatureModel):
             return
 
         self.model = safe_torch_hub_load(
-            "IDRnD/ReDimNet",
+            "IDRnD/ReDimNet:master",
             "ReDimNet",
             model_dir,
             quiet=quiet,

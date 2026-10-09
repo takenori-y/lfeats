@@ -55,7 +55,7 @@ class SpidRModel(FrameLevelFeatureModel):
             return
 
         self.model = safe_torch_hub_load(
-            "facebookresearch/spidr", "spidr_base", model_dir, quiet=quiet
+            "facebookresearch/spidr:main", "spidr_base", model_dir, quiet=quiet
         )
         self.model.eval()
         self.model.to(self.device)

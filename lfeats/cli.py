@@ -269,8 +269,8 @@ def main() -> None:
 
         try:
             audio, sample_rate = load_audio(input_file)
-            if audio.ndim > 1:
-                audio = audio.mean(dim=0)  # Convert to mono by averaging channels.
+            # Convert to mono by averaging channels.
+            audio = audio[0] if audio.shape[0] == 1 else audio.mean(dim=0)
 
             features = extractor(
                 source=audio,
